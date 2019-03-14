@@ -1,0 +1,20 @@
+version: '3'
+services:
+  rabbitmq:
+    build: ../docker/rabbitmq
+    ports:
+    - "5672:5672"
+    volumes:
+    - rabbitmq_data:/var/lib/rabbitmq
+  mongodb:
+    build: ../docker/mongodb
+    ports:
+    - "27017:27017"
+    volumes:
+    - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+volumes:
+  rabbitmq_data: {}
+  mongodb_data: {}

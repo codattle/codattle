@@ -1,0 +1,31 @@
+- hosts: all
+  remote_user: root
+  tasks:
+  - name: update repositories
+    apt:
+      cache_valid_time: 86400
+  - name: install java
+    apt:
+      name: openjdk-8-jdk
+      state: latest
+  - name: install npm
+    apt:
+      name: npm
+      state: latest
+  - name: install nodemon
+    npm:
+      name: nodemon
+      global: yes
+  - name: install docker-compose
+    apt:
+      name: docker-compose
+      state: latest
+  - name: create "docker" group
+    group:
+      name: docker
+      state: present
+  - name: add "vagrant" user to "docker" group
+    user:
+      name: vagrant
+      groups: docker
+      append: yes
