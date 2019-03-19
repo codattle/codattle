@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
     "webpack:production": "NODE_ENV=production webpack",
-    "server": "webpack-dev-server --host 0.0.0.0"
+    "server": "webpack-dev-server --host 0.0.0.0",
+    "generateSchema": "node node_modules/graphql_ppx/sendIntrospectionQuery.js http://localhost:8080/graphql"
   },
   "keywords": [
     "BuckleScript"
@@ -16,6 +17,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@aantron/repromise": "^0.6.0",
+    "bs-fetch": "^0.3.1",
+    "dotenv-webpack": "^1.7.0",
+    "graphql_ppx": "^0.2.8",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "reason-react": ">=0.4.0"

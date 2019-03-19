@@ -1,0 +1,20 @@
+repository: gcr.io/codattle
+
+images:
+  core:
+    tag: latest
+  frontend:
+    tag: latest
+  simulation:
+    tag: latest
+
+rabbitmq:
+  rbacEnabled: false
+  rabbitmq:
+    username: guest
+    password: guest
+
+mongodb:
+  mongodbUsername: mongo
+  mongodbPassword: mongo
+  mongodbDatabase: default

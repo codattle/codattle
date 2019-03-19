@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: com.codattle
----
-testFramework: spek
-sourceLanguage: kotlin

@@ -1,0 +1,7 @@
+dependencies:
+  - name: mongodb
+    version: 5.3.4
+    repository: https://kubernetes-charts.storage.googleapis.com
+  - name: rabbitmq
+    version: 4.2.0
+    repository: https://kubernetes-charts.storage.googleapis.com

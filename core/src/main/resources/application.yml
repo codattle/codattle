@@ -1,0 +1,9 @@
+micronaut:
+    application:
+        name: core
+jackson:
+    module-scan: false
+
+graphql:
+    graphiql:
+        enabled: true

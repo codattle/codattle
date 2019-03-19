@@ -1,0 +1,14 @@
+type Query {
+    simulations: [Simulation!]!
+}
+
+type Mutation {
+    executeSimulation(name: String!): Simulation!
+    removeSimulation(id: ID!): Boolean
+}
+
+type Simulation {
+    id: ID!
+    name: String!
+}
+

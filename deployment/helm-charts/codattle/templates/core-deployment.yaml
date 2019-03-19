@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codattle-core
+  labels:
+    app.kubernetes.io/name: codattle-core
+    helm.sh/chart: {{ include "codattle.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: codattle-core
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: codattle-core
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: codattle-core
+          image: {{ .Values.repository }}/codattle-core:{{ .Values.images.core.tag }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          env:
+            - name: CODATTLE_MONGODB_HOST
+              value: "codattle-mongodb"
+            - name: CODATTLE_MONGODB_PORT
+              value: "27017"
+            - name: CODATTLE_MONGODB_AUTHENTICATION_USERNAME
+              value: "mongo"
+            - name: CODATTLE_MONGODB_AUTHENTICATION_PASSWORD
+              value: "mongo"
+            - name: CODATTLE_MONGODB_AUTHENTICATION_DATABASE
+              value: "default"
+            - name: CODATTLE_MONGODB_PORT
+              value: "27017"
+            - name: CODATTLE_QUEUE_HOST
+              value: "codattle-rabbitmq"
+            - name: CODATTLE_QUEUE_PORT
+              value: "5672"

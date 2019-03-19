@@ -1,0 +1,12 @@
+FROM openjdk:8u191-alpine
+WORKDIR /usr/src/app
+COPY gradle gradle
+COPY gradlew ./
+RUN ./gradlew
+COPY src src
+COPY build.gradle gradle.properties settings.gradle ./
+RUN ./gradlew shadowJar
+
+FROM openjdk:8u191-alpine
+COPY --from=0 /usr/src/app/build/libs/core-*.jar /app/core.jar
+CMD ["java", "-jar", "/app/core.jar"]

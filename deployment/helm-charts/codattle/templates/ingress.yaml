@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  labels:
+    app.kubernetes.io/name: codattle-ingress
+    helm.sh/chart: {{ include "codattle.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  backend:
+    serviceName: codattle-frontend
+    servicePort: 80
+  rules:
+    - http:
+        paths:
+          - path: /graphql
+            backend:
+              serviceName: codattle-core
+              servicePort: 80
+          - path: /graphql/*
+            backend:
+              serviceName: codattle-core
+              servicePort: 80
+          - path: /graphiql
+            backend:
+              serviceName: codattle-core
+              servicePort: 80

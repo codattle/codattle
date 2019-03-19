@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const outputDir = path.join(__dirname, 'build/');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -15,12 +16,20 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/index.html',
       inject: false
+    }),
+    new Dotenv({
+      path: isProd ? './.env.prod' : './.env.dev'
     })
   ],
   devServer: {
     compress: true,
     contentBase: outputDir,
     port: process.env.PORT || 8000,
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/graphql': {
+        target: 'http://localhost:8080'
+      }
+    }
   }
 };

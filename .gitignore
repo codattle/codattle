@@ -1,6 +1,5 @@
-.idea/
-.gradle/
 .vagrant/
-/main-service/build/
-/main-service/out/
-node_modules/
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+playbook.retry
