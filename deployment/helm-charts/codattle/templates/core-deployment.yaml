@@ -44,8 +44,6 @@ spec:
               value: "mongo"
             - name: CODATTLE_MONGODB_AUTHENTICATION_DATABASE
               value: "default"
-            - name: CODATTLE_MONGODB_PORT
-              value: "27017"
             - name: CODATTLE_QUEUE_HOST
               value: "codattle-rabbitmq"
             - name: CODATTLE_QUEUE_PORT
