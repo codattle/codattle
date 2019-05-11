@@ -9,18 +9,18 @@ var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 
 function executeQuery(grapqhQuery) {
-  return Repromise.map((function (optionalJson) {
-                if (optionalJson !== undefined) {
-                  var match = Js_json.decodeObject(Caml_option.valFromOption(optionalJson));
-                  if (match !== undefined) {
-                    return Caml_option.some(Curry._1(grapqhQuery.parse, Caml_option.valFromOption(match)["data"]));
-                  } else {
-                    return undefined;
-                  }
-                }
-                
-              }), Repromise.Rejectable[/* catch */7]((function (_error) {
-                    return Repromise.resolved(undefined);
+  return Repromise.Rejectable[/* catch */7]((function (_error) {
+                return Repromise.resolved(undefined);
+              }), Repromise.Rejectable[/* map */5]((function (optionalJson) {
+                    if (optionalJson !== undefined) {
+                      var match = Js_json.decodeObject(Caml_option.valFromOption(optionalJson));
+                      if (match !== undefined) {
+                        return Caml_option.some(Curry._1(grapqhQuery.parse, Caml_option.valFromOption(match)["data"]));
+                      } else {
+                        return undefined;
+                      }
+                    }
+                    
                   }), Repromise.Rejectable[/* andThen */4]((function (response) {
                         if (response.ok) {
                           return Repromise.Rejectable[/* map */5]((function (json) {

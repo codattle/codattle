@@ -1,14 +1,53 @@
+type Game {
+    id: ID!
+    name: String!
+    mainLoop: String!
+}
+
+type Script {
+    id: ID!
+    content: String!
+}
+
+type ResultFrame {
+    order: Int!
+    content: String!
+}
+
+type Result {
+    winner: Int
+    resultFrames: [ResultFrame!]!
+}
+
+type Match {
+    id: ID!
+    name: String!
+    scripts: [Script!]!
+    result: Result
+}
+
+input NewResultFrame {
+    order: Int!
+    content: String!
+}
+
 type Query {
-    simulations: [Simulation!]!
+    games: [Game!]!
+
+    matches(gameId: ID!): [Match!]!
+
+    scripts: [Script!]!
 }
 
 type Mutation {
-    executeSimulation(name: String!): Simulation!
-    removeSimulation(id: ID!): Boolean
-}
+    createGame(name: String!, mainLoop: String!): Game
 
-type Simulation {
-    id: ID!
-    name: String!
+    createMatch(name: String!, gameId: ID!): Match
+
+    sendScript(gameId: ID!, content: String!): Script
+
+    joinMatch(matchId: ID!, scriptId: ID!): Boolean
+
+    provideResultFrames(matchId: ID!, resultFrames: [NewResultFrame!]!): Boolean
 }
 

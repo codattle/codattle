@@ -6,6 +6,7 @@ import com.mongodb.MongoCredential
 import com.mongodb.ServerAddress
 import dev.morphia.Datastore
 import dev.morphia.Morphia
+import dev.morphia.mapping.Mapper
 import io.micronaut.context.annotation.Value
 import org.bson.types.ObjectId
 import javax.annotation.PreDestroy
@@ -47,12 +48,29 @@ class Dao(
         return datastore.save(entity).id as ObjectId
     }
 
+    fun <T : DaoModel> saveAndGet(entity: T): T {
+        val id = save(entity)
+        return get(id, entity.javaClass)
+    }
+
     fun <T> get(id: ObjectId, clazz: Class<T>): T {
         return datastore.get(clazz, id)
     }
 
+    fun <T> getWithFields(id: ObjectId, clazz: Class<T>, includedFields: List<String>): T {
+        var query = datastore.find(clazz).field(Mapper.ID_KEY).equal(id)
+        for (includedField in includedFields) {
+            query = query.project(includedField, true)
+        }
+        return query.get()
+    }
+
     fun <T> getAll(clazz: Class<T>): List<T> {
         return datastore.find(clazz).asList()
+    }
+
+    fun <T> getAllWithFieldEqual(clazz: Class<T>, field: String, value: Any): List<T> {
+        return datastore.find(clazz).field(field).equal(value).asList()
     }
 
     fun <T> remove(id: ObjectId, clazz: Class<T>): Boolean {

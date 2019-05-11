@@ -14,14 +14,14 @@ var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var GraphqlService$ReactTemplate = require("../service/GraphqlService.bs.js");
 
-var component = ReasonReact.reducerComponent("SimulationsList");
+var component = ReasonReact.reducerComponent("GameSelector");
 
-var ppx_printed_query = "query   {\nsimulations  {\nid  \nname  \n}\n\n}\n";
+var ppx_printed_query = "query   {\ngames  {\nid  \nname  \n}\n\n}\n";
 
 function parse(value) {
   var match = Js_json.decodeObject(value);
   if (match !== undefined) {
-    var match$1 = Js_dict.get(Caml_option.valFromOption(match), "simulations");
+    var match$1 = Js_dict.get(Caml_option.valFromOption(match), "games");
     var tmp;
     if (match$1 !== undefined) {
       var value$1 = Caml_option.valFromOption(match$1);
@@ -37,7 +37,7 @@ function parse(value) {
                     var match$2 = Js_json.decodeString(value$2);
                     tmp = match$2 !== undefined ? match$2 : Js_exn.raiseError("graphql_ppx: Expected string, got " + JSON.stringify(value$2));
                   } else {
-                    tmp = Js_exn.raiseError("graphql_ppx: Field id on type Simulation is missing");
+                    tmp = Js_exn.raiseError("graphql_ppx: Field id on type Game is missing");
                   }
                   var match$3 = Js_dict.get(value$1, "name");
                   var tmp$1;
@@ -46,7 +46,7 @@ function parse(value) {
                     var match$4 = Js_json.decodeString(value$3);
                     tmp$1 = match$4 !== undefined ? match$4 : Js_exn.raiseError("graphql_ppx: Expected string, got " + JSON.stringify(value$3));
                   } else {
-                    tmp$1 = Js_exn.raiseError("graphql_ppx: Field name on type Simulation is missing");
+                    tmp$1 = Js_exn.raiseError("graphql_ppx: Field name on type Game is missing");
                   }
                   return {
                           id: tmp,
@@ -57,10 +57,10 @@ function parse(value) {
                 }
               })) : Js_exn.raiseError("graphql_ppx: Expected array, got " + JSON.stringify(value$1));
     } else {
-      tmp = Js_exn.raiseError("graphql_ppx: Field simulations on type Query is missing");
+      tmp = Js_exn.raiseError("graphql_ppx: Field games on type Query is missing");
     }
     return {
-            simulations: tmp
+            games: tmp
           };
   } else {
     return Js_exn.raiseError("graphql_ppx: Object is not a value");
@@ -89,7 +89,7 @@ function ret_type(f) {
 
 var MT_Ret = /* module */[];
 
-var GetSimulationsQuery = /* module */[
+var GetGamesQuery = /* module */[
   /* ppx_printed_query */ppx_printed_query,
   /* query */ppx_printed_query,
   /* parse */parse,
@@ -99,18 +99,18 @@ var GetSimulationsQuery = /* module */[
   /* MT_Ret */MT_Ret
 ];
 
-function getSimulations(param) {
+function getGames(param) {
   return GraphqlService$ReactTemplate.executeQuery(make(/* () */0));
 }
 
-function make$1(_children) {
+function make$1(onSelect, _children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
           /* handedOffState */component[/* handedOffState */2],
           /* willReceiveProps */component[/* willReceiveProps */3],
           /* didMount */(function (param) {
-              return Curry._1(param[/* send */3], /* FetchSimulations */0);
+              return Curry._1(param[/* send */3], /* LoadGames */0);
             }),
           /* didUpdate */component[/* didUpdate */5],
           /* willUnmount */component[/* willUnmount */6],
@@ -134,20 +134,30 @@ function make$1(_children) {
                   
                 }
               } else {
-                var simulations = state[0];
-                var simulationsList = List.length(simulations) === 0 ? React.createElement("span", undefined, "No simulations") : React.createElement("ul", undefined, $$Array.of_list(List.map((function (simulation) {
-                                  return React.createElement("li", undefined, simulation[/* name */0]);
-                                }), simulations)));
+                var games = state[0];
+                var gameList = List.length(games) === 0 ? React.createElement("span", undefined, "No games") : React.createElement("ul", undefined, $$Array.of_list(List.map((function (game) {
+                                  return React.createElement("li", {
+                                              key: game[/* id */0],
+                                              onClick: (function (_event) {
+                                                  var gameId = game[/* id */0];
+                                                  if (onSelect !== undefined) {
+                                                    return Curry._1(onSelect, gameId);
+                                                  } else {
+                                                    return /* () */0;
+                                                  }
+                                                })
+                                            }, game[/* name */1]);
+                                }), games)));
                 tmp = React.createElement(React.Fragment, undefined, React.createElement("button", {
                           onClick: (function (_event) {
-                              return Curry._1(send, /* FetchSimulations */0);
+                              return Curry._1(send, /* LoadGames */0);
                             })
-                        }, "refresh"), simulationsList);
+                        }, "Refresh"), gameList);
               }
               return React.createElement("div", undefined, tmp);
             }),
           /* initialState */(function (param) {
-              return /* Init */0;
+              return /* NotLoaded */0;
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, _state) {
@@ -156,15 +166,18 @@ function make$1(_children) {
                   return /* Update */Block.__(0, [/* Error */2]);
                 } else {
                   return /* UpdateWithSideEffects */Block.__(2, [
-                            /* LoadingSimulations */1,
+                            /* Loading */1,
                             (function (param) {
                                 var send = param[/* send */3];
                                 return Repromise.wait((function (result) {
                                               if (result !== undefined) {
-                                                var simulationsList = List.map((function (simulation) {
-                                                        return /* record */[/* name */simulation.name];
-                                                      }), $$Array.to_list(Caml_option.valFromOption(result).simulations));
-                                                return Curry._1(send, /* SetSimulations */[simulationsList]);
+                                                var games = List.map((function (game) {
+                                                        return /* record */[
+                                                                /* id */game.id,
+                                                                /* name */game.name
+                                                              ];
+                                                      }), $$Array.to_list(Caml_option.valFromOption(result).games));
+                                                return Curry._1(send, /* SetGames */[games]);
                                               } else {
                                                 return Curry._1(send, /* SetError */1);
                                               }
@@ -173,7 +186,7 @@ function make$1(_children) {
                           ]);
                 }
               } else {
-                return /* Update */Block.__(0, [/* LoadedSimulations */[action[0]]]);
+                return /* Update */Block.__(0, [/* Loaded */[action[0]]]);
               }
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
@@ -181,7 +194,7 @@ function make$1(_children) {
 }
 
 exports.component = component;
-exports.GetSimulationsQuery = GetSimulationsQuery;
-exports.getSimulations = getSimulations;
+exports.GetGamesQuery = GetGamesQuery;
+exports.getGames = getGames;
 exports.make = make$1;
 /* component Not a pure module */

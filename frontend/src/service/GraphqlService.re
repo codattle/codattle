@@ -20,8 +20,7 @@ let executeQuery = grapqhQuery =>
          Repromise.Rejectable.resolved(None);
        }
      )
-  |> Repromise.Rejectable.catch(_error => Repromise.resolved(None))
-  |> Repromise.map(optionalJson =>
+  |> Repromise.Rejectable.map(optionalJson =>
        switch (optionalJson) {
        | Some(json) =>
          switch (Js.Json.decodeObject(json)) {
@@ -30,4 +29,5 @@ let executeQuery = grapqhQuery =>
          }
        | None => None
        }
-     );
+     )
+  |> Repromise.Rejectable.catch(_error => Repromise.resolved(None));
