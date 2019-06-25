@@ -29,5 +29,9 @@ DAO.connect(
 
 QueueService.startConsuming(async (message) => {
   const matchId = new ObjectID(message.content.toString('hex'));
-  executeSimulation(matchId);
+  try {
+    executeSimulation(matchId);
+  } catch(err) {
+    console.error(err);
+  }
 });
