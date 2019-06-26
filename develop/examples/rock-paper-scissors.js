@@ -1,4 +1,4 @@
-function initData() {
+function initState() {
   return {
     score1: 0,
     score2: 0
@@ -6,19 +6,19 @@ function initData() {
 }
 
 function parseChoice(choice) {
-  return ["ROCK", "PAPER", "SCISSOR"].includes(choice) ? choice : "NO_CHOICE";
+  return ["ROCK", "PAPER", "SCISSORS"].includes(choice) ? choice : "NO_CHOICE";
 }
 
 function isWin(firstChoice, secondChoice) {
   return (
     (firstChoice !== "NO_CHOICE" && secondChoice === "NO_CHOICE") ||
-    (firstChoice === "ROCK" && secondChoice === "SCISSOR") ||
+    (firstChoice === "ROCK" && secondChoice === "SCISSORS") ||
     (firstChoice === "PAPER" && secondChoice === "ROCK") ||
-    (firstChoice === "SCISSOR" && secondChoice === "PAPER")
+    (firstChoice === "SCISSORS" && secondChoice === "PAPER")
   );
 }
 
-var data = getCycle() === 0 ? initData() : loadData();
+var data = getCycle() === 0 ? initState() : loadState();
 
 var firstPlayerChoice = parseChoice(runPlayerScript(0));
 var secondPlayerChoice = parseChoice(runPlayerScript(1));
@@ -34,7 +34,7 @@ if (isWin(firstPlayerChoice, secondPlayerChoice)) {
   data.score2++;
 }
 
-saveData(data);
+saveState(data);
 
 if (data.score1 === 3) {
   end(0);

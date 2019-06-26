@@ -18,6 +18,7 @@
     "@types/mongoose": "^5.5.6",
     "amqplib": "^0.5.3",
     "dotenv": "^7.0.0",
+    "immutable": "^4.0.0-rc.12",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "mongoose": "^5.6.1",
