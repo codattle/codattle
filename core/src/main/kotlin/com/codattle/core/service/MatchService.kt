@@ -17,12 +17,18 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
         queueService.createQueue(SIMULATION_QUEUE)
     }
 
+    fun getMatch(matchId: ObjectId): Match {
+        return dao.get(matchId, Match::class.java)
+                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exists.")
+    }
+
     fun getMatches(gameId: ObjectId): List<Match> {
         return dao.getAllWithFieldEqual(Match::class.java, "game._id", gameId)
     }
 
     fun getResultOfMatch(matchId: ObjectId): Result {
         val match = dao.getWithFields(matchId, Match::class.java, listOf("result"))
+                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exists.")
         return match.result!!
     }
 
@@ -34,7 +40,7 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
     }
 
     fun joinMatch(matchId: ObjectId, scriptId: ObjectId) {
-        val match = dao.get(matchId, Match::class.java)
+        val match = getMatch(matchId)
         if (!canJoinMatch(match)) {
             throw IllegalArgumentException("Cannot join to match with id $matchId")
         }
@@ -55,7 +61,7 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
     }
 
     fun provideResultFrames(matchId: ObjectId, resultFrames: List<ResultFrame>) {
-        val match = dao.get(matchId, Match::class.java)
+        val match = getMatch(matchId)
         match.result!!.resultFrames += resultFrames
         dao.save(match)
     }

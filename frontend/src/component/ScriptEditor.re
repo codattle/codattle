@@ -1,26 +1,11 @@
-type state = {text: string};
+[@react.component]
+let make = (~onChange=?) => {
+  let (script, setScript) = React.useState(() => "");
 
-type action =
-  | ChangeText(string);
+  let changeScript = script => {
+    setScript(_ => script);
+    Belt.Option.mapWithDefault(onChange, (), onChange => onChange(script));
+  };
 
-let component = ReasonReact.reducerComponent("ScriptEditor");
-
-let make = (~onChange=?, _children) => {
-  ...component,
-  initialState: () => {text: ""},
-  reducer: (action, _state) =>
-    switch (action) {
-    | ChangeText(text) =>
-      ReasonReact.UpdateWithSideEffects(
-        {text: text},
-        _ =>
-          switch (onChange) {
-          | Some(onChange) => onChange(text)
-          | None => ()
-          },
-      )
-    },
-  render: ({state, send}) => {
-    <textarea value={state.text} onChange={event => send(ChangeText(ReactEvent.Form.target(event)##value))} />;
-  },
+  <textarea value=script onChange={event => changeScript(ReactEvent.Form.target(event)##value)} />;
 };

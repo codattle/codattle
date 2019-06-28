@@ -1,5 +1,6 @@
 package com.codattle.core.resolver
 
+import com.codattle.core.dto.MatchWithGameDTO
 import com.codattle.core.model.Game
 import com.codattle.core.model.Match
 import com.codattle.core.model.Result
@@ -18,6 +19,12 @@ class Query(private val gameService: GameService,
 
     fun games(): List<Game> {
         return gameService.getGames()
+    }
+
+    fun match(matchId: ObjectId): MatchWithGameDTO {
+        val match = matchService.getMatch(matchId)
+        val game = gameService.getGame(match.game?.id!!)
+        return MatchWithGameDTO(match.id!!, match.name!!, match.scripts, match.result, game)
     }
 
     fun matches(gameId: ObjectId): List<Match> {

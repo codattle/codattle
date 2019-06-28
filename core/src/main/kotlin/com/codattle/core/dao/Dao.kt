@@ -50,14 +50,14 @@ class Dao(
 
     fun <T : DaoModel> saveAndGet(entity: T): T {
         val id = save(entity)
-        return get(id, entity.javaClass)
+        return get(id, entity.javaClass)!!
     }
 
-    fun <T> get(id: ObjectId, clazz: Class<T>): T {
+    fun <T> get(id: ObjectId, clazz: Class<T>): T? {
         return datastore.get(clazz, id)
     }
 
-    fun <T> getWithFields(id: ObjectId, clazz: Class<T>, includedFields: List<String>): T {
+    fun <T> getWithFields(id: ObjectId, clazz: Class<T>, includedFields: List<String>): T? {
         var query = datastore.find(clazz).field(Mapper.ID_KEY).equal(id)
         for (includedField in includedFields) {
             query = query.project(includedField, true)
