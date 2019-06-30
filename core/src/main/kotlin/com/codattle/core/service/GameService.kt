@@ -10,7 +10,7 @@ class GameService(private val dao: Dao) {
 
     fun getGame(gameId: ObjectId): Game {
         return dao.get(gameId, Game::class.java)
-                ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exists.")
+                ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exist.")
     }
 
     fun getGames(): List<Game> {

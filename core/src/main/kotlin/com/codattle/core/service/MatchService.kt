@@ -19,7 +19,7 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
 
     fun getMatch(matchId: ObjectId): Match {
         return dao.get(matchId, Match::class.java)
-                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exists.")
+                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
     }
 
     fun getMatches(gameId: ObjectId): List<Match> {
@@ -28,7 +28,7 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
 
     fun getResultOfMatch(matchId: ObjectId): Result {
         val match = dao.getWithFields(matchId, Match::class.java, listOf("result"))
-                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exists.")
+                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
         return match.result!!
     }
 
