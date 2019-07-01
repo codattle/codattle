@@ -1,3 +1,5 @@
+[@bs.config {jsx: 2}];
+
 type match = {
   id: string,
   name: string,
@@ -132,11 +134,9 @@ let make = (~gameId, ~onSelect=?, _children) => {
            } else {
              <ul>
                {matches
-                |> List.map(match =>
+                |> Utils.componentList(match =>
                      <li key={match.id} onClick={_event => onSelect(match.id)}> {ReasonReact.string(getMatchDescription(match))} </li>
-                   )
-                |> Array.of_list
-                |> ReasonReact.array}
+                   )}
              </ul>;
            };
          <>

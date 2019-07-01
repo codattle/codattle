@@ -26,6 +26,14 @@ type Match {
     result: Result
 }
 
+type MatchWithGame {
+    id: ID!
+    name: String!
+    scripts: [Script!]!
+    result: Result
+    game: Game!
+}
+
 input NewResultFrame {
     order: Int!
     content: String!
@@ -34,20 +42,22 @@ input NewResultFrame {
 type Query {
     games: [Game!]!
 
+    match(matchId: ID!): MatchWithGame!
+
     matches(gameId: ID!): [Match!]!
 
     scripts: [Script!]!
 }
 
 type Mutation {
-    createGame(name: String!, mainLoop: String!): Game
+    createGame(name: String!, mainLoop: String!): Game!
 
-    createMatch(name: String!, gameId: ID!): Match
+    createMatch(name: String!, gameId: ID!): Match!
 
-    sendScript(gameId: ID!, content: String!): Script
+    sendScript(gameId: ID!, content: String!): Script!
 
-    joinMatch(matchId: ID!, scriptId: ID!): Boolean
+    joinMatch(matchId: ID!, scriptId: ID!): Boolean!
 
-    provideResultFrames(matchId: ID!, resultFrames: [NewResultFrame!]!): Boolean
+    provideResultFrames(matchId: ID!, resultFrames: [NewResultFrame!]!): Boolean!
 }
 

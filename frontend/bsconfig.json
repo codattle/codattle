@@ -1,7 +1,7 @@
 {
   "name": "react-template",
   "reason": {
-    "react-jsx": 2
+    "react-jsx": 3
   },
   "sources": {
     "dir" : "src",
@@ -17,7 +17,8 @@
     "reason-react",
     "@aantron/repromise",
     "bs-fetch",
-    "@jsiebern/bs-material-ui"
+    "@jsiebern/bs-material-ui",
+    "bs-css"
   ],
   "ppx-flags": [
     "graphql_ppx/ppx"

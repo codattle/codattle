@@ -5,7 +5,7 @@ import { List } from 'immutable';
 export const findById = async <T extends mongoose.Document>(id: ObjectID, model: mongoose.Model<T>): Promise<T> => {
   const document = await model.findById(id);
   if (!document) {
-    throw new Error(`Document with id ${id} doesn't exists.`);
+    throw new Error(`Document with id ${id} doesn't exist.`);
   }
   return document;
 };
@@ -15,7 +15,7 @@ export const findByIds = async <T extends mongoose.Document>(ids: ObjectID[], mo
   return List(ids.map((id) => {
     const document = documents.find((docuement) => id.equals(docuement._id));
     if (!document) {
-      throw new Error(`Document with id ${id} doesn't exists.`);
+      throw new Error(`Document with id ${id} doesn't exist.`);
     }
     return document;
   }));
