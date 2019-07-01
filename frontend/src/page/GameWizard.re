@@ -13,6 +13,14 @@ module CreateGameMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let section = style([display(`flex), alignItems(`center), margin2(~v=20 |> px, ~h=10 |> px)]);
+  let sectionElement = style([display(`inlineBlock), marginLeft(5 |> px), marginRight(5 |> px)]);
+  let scriptEditor = merge([style([width(300 |> px), height(500 |> px)]), sectionElement]);
+};
+
 [@react.component]
 let make = () => {
   let (mode, setMode) = React.useState(() => Editing);
@@ -32,14 +40,15 @@ let make = () => {
 
   switch (mode) {
   | Editing =>
-    <div>
-      <button onClick={_ => createGame()}> {ReasonReact.string("Create game")} </button>
+    Styles.(
       <div>
-        <label htmlFor="gameName"> {ReasonReact.string("Name")} </label>
-        <input id="gameName" value=name onChange={event => setName(ReactEvent.Form.target(event)##value)} />
+        <div className=section>
+          <div className=sectionElement> <TextField label="Name" onChange={name => setName(_ => name)} /> </div>
+          <div className=sectionElement> <Button onClick={_ => createGame()}> {ReasonReact.string("Create game")} </Button> </div>
+        </div>
+        <div className=section> <div className=scriptEditor> <ScriptEditor onChange={script => setScript(_ => script)} /> </div> </div>
       </div>
-      <ScriptEditor onChange={script => setScript(_ => script)} />
-    </div>
+    )
   | Creating => <div> {ReasonReact.string("Creating...")} </div>
   | Failure => <div> {ReasonReact.string("Creating fail :(")} </div>
   };

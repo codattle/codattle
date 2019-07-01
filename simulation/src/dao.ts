@@ -13,7 +13,7 @@ export const findById = async <T extends mongoose.Document>(id: ObjectID, model:
 export const findByIds = async <T extends mongoose.Document>(ids: ObjectID[], model: mongoose.Model<T>): Promise<List<T>> => {
   const documents = await model.find({ _id: { $in: ids } });
   return List(ids.map((id) => {
-    const document = documents.find((docuement) => id.equals(docuement._id));
+    const document = documents.find((document) => id.equals(document._id));
     if (!document) {
       throw new Error(`Document with id ${id} doesn't exist.`);
     }

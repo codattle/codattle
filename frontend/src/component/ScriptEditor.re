@@ -1,3 +1,9 @@
+module Styles = {
+  open Css;
+
+  let fillParent = style([width(`percent(100.0)), height(`percent(100.0))]);
+};
+
 [@react.component]
 let make = (~onChange=?) => {
   let (script, setScript) = React.useState(() => "");
@@ -7,5 +13,5 @@ let make = (~onChange=?) => {
     Belt.Option.mapWithDefault(onChange, (), onChange => onChange(script));
   };
 
-  <textarea value=script onChange={event => changeScript(ReactEvent.Form.target(event)##value)} />;
+  <textarea className=Styles.fillParent value=script onChange={event => changeScript(ReactEvent.Form.target(event)##value)} />;
 };
