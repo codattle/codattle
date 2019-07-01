@@ -17,8 +17,8 @@
     "reason-react",
     "@aantron/repromise",
     "bs-fetch",
-    "@jsiebern/bs-material-ui",
-    "bs-css"
+    "bs-css",
+    "@jsiebern/bs-material-ui"
   ],
   "ppx-flags": [
     "graphql_ppx/ppx"
