@@ -18,3 +18,9 @@ gcloud docker -- push gcr.io/$PROJECT/codattle-frontend
 
 yes | gcloud beta container images add-tag gcr.io/$PROJECT/codattle-core:$TRAVIS_COMMIT gcr.io/$PROJECT/codattle-core:latest
 yes | gcloud beta container images add-tag gcr.io/$PROJECT/codattle-frontend:$TRAVIS_COMMIT gcr.io/$PROJECT/codattle-frontend:latest
+
+kubectl config view
+kubectl config current-context
+
+kubectl set image deployment/codattle-core codattle-core=gcr.io/$PROJECT/codattle-core:$TRAVIS_COMMIT
+kubectl set image deployment/codattle-frontend codattle-frontend=gcr.io/$PROJECT/codattle-frontend:$TRAVIS_COMMIT
