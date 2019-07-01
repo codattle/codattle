@@ -9,7 +9,7 @@ services:
 env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
-    - PROJECT=Codattle
+    - PROJECT=codattle
     - CLUSTER=codattle-kubernetes
     - ZONE=europe-west2-a
 before_deploy:
