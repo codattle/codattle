@@ -21,6 +21,14 @@ module.exports = {
       path: isProd ? './.env.prod' : './.env.dev'
     })
   ],
+  module: {
+    rules: [
+      {
+        test: /\.yaml$/,
+        use: ['json-loader', 'yaml-flat-loader']
+      }
+    ]
+  },
   devServer: {
     compress: true,
     contentBase: outputDir,

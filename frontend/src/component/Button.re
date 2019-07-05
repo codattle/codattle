@@ -1,5 +1,3 @@
-[@bs.config {jsx: 2}];
-
 open Style.Color;
 
 let rootStyle =
@@ -7,9 +5,13 @@ let rootStyle =
 let labelStyle = Css.(style([color(textColor)]));
 
 [@react.component]
-let make = (~onClick=?, ~children) => {
-  <MaterialUi.Button
-    onClick={_ => onClick |> Utils.ifSome(onClick => onClick())} variant=`Contained classes=[Root(rootStyle), Label(labelStyle)]>
-    children
-  </MaterialUi.Button>;
+let make = (~onClick=?, ~label=?, ~children=?) => {
+  ReasonReact.element(
+    MaterialUi.Button.make(
+      ~onClick=_ => onClick |> Utils.ifSome(onClick => onClick()),
+      ~variant=`Contained,
+      ~classes=[Root(rootStyle), Label(labelStyle)],
+      label->Belt.Option.mapWithDefault(children->Belt.Option.getWithDefault(<> </>), label => <Translation id=label />),
+    ),
+  );
 };

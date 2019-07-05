@@ -16,9 +16,8 @@ module CreateGameMutation = [%graphql
 module Styles = {
   open Css;
 
-  let section = style([display(`flex), alignItems(`center), margin2(~v=20 |> px, ~h=10 |> px)]);
-  let sectionElement = style([display(`inlineBlock), marginLeft(5 |> px), marginRight(5 |> px)]);
-  let scriptEditor = merge([style([width(300 |> px), height(500 |> px)]), sectionElement]);
+  let section = style([margin2(~v=20 |> px, ~h=10 |> px)]);
+  let scriptEditor = style([width(300 |> px), height(500 |> px)]);
 };
 
 [@react.component]
@@ -42,14 +41,12 @@ let make = () => {
   | Editing =>
     Styles.(
       <div>
-        <div className=section>
-          <div className=sectionElement> <TextField label="Name" onChange={name => setName(_ => name)} /> </div>
-          <div className=sectionElement> <Button onClick={_ => createGame()}> {ReasonReact.string("Create game")} </Button> </div>
-        </div>
-        <div className=section> <div className=scriptEditor> <ScriptEditor onChange={script => setScript(_ => script)} /> </div> </div>
+        <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} /> </div>
+        <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} /> </div>
+        <div className={j|$section $scriptEditor|j}> <ScriptEditor onChange={script => setScript(_ => script)} /> </div>
       </div>
     )
-  | Creating => <div> {ReasonReact.string("Creating...")} </div>
-  | Failure => <div> {ReasonReact.string("Creating fail :(")} </div>
+  | Creating => <div> <Translation id="gameWizard.creating" /> </div>
+  | Failure => <div> <Translation id="gameWizard.errorWhileCreatingGame" /> </div>
   };
 };
