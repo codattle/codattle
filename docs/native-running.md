@@ -3,6 +3,7 @@
 ## Requirements
 
 - Docker
+- Docker Compose
 - Node
 - NPM
 - Java 8
@@ -13,7 +14,7 @@ Run `MongoDB` and `RabbitMQ` via `Docker`
 
 ```
 cd develop
-docker compose up -d
+docker-compose up -d
 ```
 
 ## Core
@@ -29,6 +30,7 @@ After modification of source files manual restart is needed.
 
 ```
 cd simulation
+npm install
 npm start
 ```
 
@@ -40,6 +42,7 @@ Start building source files:
 
 ```
 cd frontend
+npm install
 npm start
 ```
 

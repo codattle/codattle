@@ -18,7 +18,8 @@
     "@aantron/repromise",
     "bs-fetch",
     "bs-css",
-    "@jsiebern/bs-material-ui"
+    "@jsiebern/bs-material-ui",
+    "bs-react-intl"
   ],
   "ppx-flags": [
     "graphql_ppx/ppx"

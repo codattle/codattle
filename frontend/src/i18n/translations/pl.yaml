@@ -1,0 +1,7 @@
+gameWizard:
+  name: Nazwa
+  createGame: Stwórz grę
+  creating: Tworzenie...
+  errorWhileCreatingGame: Błąd podczas tworzenia gry :(
+scriptEditor:
+  code: Kod
