@@ -1,12 +1,13 @@
 type Game {
     id: ID!
     name: String!
-    mainLoop: String!
+    description: String!
+    code: String!
 }
 
 type Script {
     id: ID!
-    content: String!
+    code: String!
 }
 
 type ResultFrame {
@@ -50,14 +51,16 @@ type Query {
 }
 
 type Mutation {
-    createGame(name: String!, mainLoop: String!): Game!
+    createGame(name: String!, description: String!, code: String!): Game!
 
     createMatch(name: String!, gameId: ID!): Match!
 
-    sendScript(gameId: ID!, content: String!): Script!
+    sendScript(gameId: ID!, code: String!): Script!
 
     joinMatch(matchId: ID!, scriptId: ID!): Boolean!
 
     provideResultFrames(matchId: ID!, resultFrames: [NewResultFrame!]!): Boolean!
+
+    provideMatchWinner(matchId: ID!, winner: Int!): Boolean!
 }
 

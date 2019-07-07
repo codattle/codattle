@@ -19,8 +19,8 @@ module GetMatchQuery = [%graphql
 
 module SendScriptMutation = [%graphql
   {|
-  mutation($gameId: ID!, $content: String!) {
-    sendScript(gameId: $gameId, content: $content) {
+  mutation($gameId: ID!, $code: String!) {
+    sendScript(gameId: $gameId, code: $code) {
       id
     }
   }
@@ -44,7 +44,7 @@ let make = (~matchId) => {
 
   let joinMatchWithNewScript = (script: string, gameId: string, matchId: string) => {
     setMode(_ => Joining);
-    GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~content=script, ()))
+    GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code=script, ()))
     |> Repromise.map(result => result->Belt.Option.map(result => result##sendScript))
     |> Repromise.andThen(createdScript =>
          createdScript->Belt.Option.mapWithDefault(Repromise.resolved(None), createdScript =>

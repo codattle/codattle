@@ -5,8 +5,8 @@ type mode =
 
 module CreateGameMutation = [%graphql
   {|
-  mutation($name: String!, $mainLoop: String!) {
-    createGame(name: $name, mainLoop: $mainLoop) {
+  mutation($name: String!, $description: String!, $code: String!) {
+    createGame(name: $name, description: $description code: $code) {
       id
     }
   }
@@ -28,7 +28,7 @@ let make = () => {
 
   let createGame = () => {
     setMode(_ => Creating);
-    GraphqlService.executeQuery(CreateGameMutation.make(~name, ~mainLoop=script, ()))
+    GraphqlService.executeQuery(CreateGameMutation.make(~name, ~description="", ~code=script, ()))
     |> Repromise.wait(result =>
          switch (result) {
          | Some(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)

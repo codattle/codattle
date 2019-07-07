@@ -1,6 +1,8 @@
 package com.codattle.core.resolver
 
+import com.codattle.core.dao.Id
 import com.codattle.core.dto.MatchWithGameDTO
+import com.codattle.core.dto.MatchWithScriptsDTO
 import com.codattle.core.model.Game
 import com.codattle.core.model.Match
 import com.codattle.core.model.Result
@@ -21,21 +23,22 @@ class Query(private val gameService: GameService,
         return gameService.getGames()
     }
 
-    fun match(matchId: ObjectId): MatchWithGameDTO {
+    fun match(matchId: Id<Match>): MatchWithGameDTO {
         val match = matchService.getMatch(matchId)
-        val game = gameService.getGame(match.game?.id!!)
-        return MatchWithGameDTO(match.id!!, match.name!!, match.scripts, match.result, game)
+        val game = gameService.getGame(match.game)
+        val scripts = scriptService.getScripts(match.scripts)
+        return MatchWithGameDTO(matchId, match.name, scripts, match.result, game)
     }
 
-    fun matches(gameId: ObjectId): List<Match> {
-        return matchService.getMatches(gameId)
+    fun matches(gameId: Id<Game>): List<MatchWithScriptsDTO> {
+        return matchService.getMatches(gameId).map { MatchWithScriptsDTO.from(it, scriptService) }
     }
 
     fun scripts(): List<Script> {
         return scriptService.getScripts()
     }
 
-    fun result(matchId: ObjectId): Result {
+    fun result(matchId: Id<Match>): Result? {
         return matchService.getResultOfMatch(matchId)
     }
 

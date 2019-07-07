@@ -1,17 +1,11 @@
 package com.codattle.core.model
 
 import com.codattle.core.dao.DaoModel
-import dev.morphia.annotations.Entity
+import com.codattle.core.dao.Id
 
-@Entity(noClassnameStored = true)
-class Match : DaoModel() {
-
-    var name: String? = null
-
-    var game: Game? = null
-
-    var scripts: List<Script> = listOf()
-
-    var result: Result? = null
-
-}
+data class Match(
+        var name: String,
+        var game: Id<Game>,
+        var scripts: List<Id<Script>>,
+        var result: Result? = null
+) : DaoModel<Match>()

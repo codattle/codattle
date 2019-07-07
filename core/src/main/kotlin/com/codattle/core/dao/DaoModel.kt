@@ -1,11 +1,10 @@
 package com.codattle.core.dao
 
-import dev.morphia.annotations.Id
+import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
 
-abstract class DaoModel {
+abstract class DaoModel<T: DaoModel<T>> {
 
-    @Id
-    var id: ObjectId? = null
-
+    @BsonId var internalId: ObjectId? = null
+    var id: Id<T>? = null
 }

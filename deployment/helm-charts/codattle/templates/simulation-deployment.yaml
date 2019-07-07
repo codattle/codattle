@@ -36,11 +36,5 @@ spec:
           env:
             - name: QUEUE_URL
               value: "amqp://codattle-rabbitmq"
-            - name: MONGODB_URI
-              value: "mongodb://codattle-mongodb:27017/default"
-            - name: MONGODB_USER
-              value: "mongo"
-            - name: MONGODB_PASSWORD
-              value: "mongo"
-            - name: MONGODB_DATABASE
-              value: "default"
+            - name: GRAPHQL_URL
+              value: "http://codattle-core:80/graphql"
