@@ -37,7 +37,7 @@ dependencies {
     compile "com.rabbitmq:amqp-client:5.6.0"
     compile "io.micronaut.configuration:micronaut-hibernate-validator"
     compile "io.micronaut.graphql:micronaut-graphql:1.0.0.RC1"
-    compile 'dev.morphia.morphia:core:1.4.1'
+    compile 'org.litote.kmongo:kmongo:3.10.2'
     compile 'com.graphql-java-kickstart:graphql-java-tools:5.5.1'
     kapt "io.micronaut:micronaut-inject-java"
     kapt "io.micronaut:micronaut-validation"

@@ -1,80 +1,58 @@
 package com.codattle.core.dao
 
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
-import com.mongodb.MongoCredential
-import com.mongodb.ServerAddress
-import dev.morphia.Datastore
-import dev.morphia.Morphia
-import dev.morphia.mapping.Mapper
-import io.micronaut.context.annotation.Value
-import org.bson.types.ObjectId
-import javax.annotation.PreDestroy
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.mongodb.client.MongoCollection
+import org.bson.conversions.Bson
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.projection
+import org.litote.kmongo.util.KMongoUtil
 import javax.inject.Singleton
+import kotlin.reflect.full.memberProperties
 
 @Singleton
 class Dao(
-        @Value("\${codattle.mongodb.host:localhost}") private val host: String,
-        @Value("\${codattle.mongodb.port:27017}") private val port: Int,
-        @Value("\${codattle.mongodb.authentication.username:mongo}") private val authenticationUsername: String,
-        @Value("\${codattle.mongodb.authentication.password:mongo}") private val authenticationPassword: String,
-        @Value("\${codattle.mongodb.authentication.database:admin}") private val authenticationDatabase: String
+        private val mongoProvider: MongoProvider,
+        private val sequence: Sequence,
+        private val objectMapper: ObjectMapper
 ) {
 
-    companion object {
-        private const val DATABASE = "default"
-    }
-
-    private val mongoClient: MongoClient
-    private val morphia = Morphia()
-    private val datastore: Datastore
-
-    init {
-        val credential = MongoCredential.createCredential(authenticationUsername, authenticationDatabase, authenticationPassword.toCharArray())
-        mongoClient = MongoClient(ServerAddress(host, port), credential, MongoClientOptions.builder().build())
-
-        morphia.mapPackage("com.codattle.core.dto")
-
-        datastore = morphia.createDatastore(mongoClient, DATABASE)
-        datastore.ensureIndexes()
-    }
-
-    @PreDestroy
-    private fun destroy() {
-        mongoClient.close()
-    }
-
-    fun <T : DaoModel> save(entity: T): ObjectId {
-        return datastore.save(entity).id as ObjectId
-    }
-
-    fun <T : DaoModel> saveAndGet(entity: T): T {
-        val id = save(entity)
-        return get(id, entity.javaClass)!!
-    }
-
-    fun <T> get(id: ObjectId, clazz: Class<T>): T? {
-        return datastore.get(clazz, id)
-    }
-
-    fun <T> getWithFields(id: ObjectId, clazz: Class<T>, includedFields: List<String>): T? {
-        var query = datastore.find(clazz).field(Mapper.ID_KEY).equal(id)
-        for (includedField in includedFields) {
-            query = query.project(includedField, true)
+    fun <T : DaoModel<T>> save(entity: T): T {
+        if (entity.id == null) {
+            entity.id = Id(sequence.getNext(KMongoUtil.defaultCollectionName(entity.javaClass.kotlin)))
+            getCollection(entity.javaClass).insertOne(entity)
+        } else {
+            getCollection(entity.javaClass).replaceOne(DaoModel<T>::id.eq(entity.id), entity)
         }
-        return query.get()
+        return entity
     }
 
-    fun <T> getAll(clazz: Class<T>): List<T> {
-        return datastore.find(clazz).asList()
+    fun <T : DaoModel<T>> get(id: Id<T>, model: Class<T>): T? {
+        return getCollection(model).findOne(DaoModel<T>::id.eq(id))
     }
 
-    fun <T> getAllWithFieldEqual(clazz: Class<T>, field: String, value: Any): List<T> {
-        return datastore.find(clazz).field(field).equal(value).asList()
+    fun <T : DaoModel<T>, R> getWithFields(id: Id<T>, model: Class<T>, projection: Class<R>): R? {
+        val document = mongoProvider.database.getCollection(KMongoUtil.defaultCollectionName(model.kotlin))
+                .find(DaoModel<T>::id.eq(id))
+                .projection(*projection.javaClass.kotlin.memberProperties.toTypedArray())
+                .first()
+        return if (document != null) objectMapper.readValue(document.toJson(), projection) else null
     }
 
-    fun <T> remove(id: ObjectId, clazz: Class<T>): Boolean {
-        return datastore.delete(clazz, id).n > 0
+    fun <T : DaoModel<T>> getMany(model: Class<T>, filter: Bson? = null): List<T> {
+        return if (filter == null) {
+            getCollection(model).find().toList()
+        } else {
+            getCollection(model).find(filter).toList()
+        }
     }
 
+
+    fun <T : DaoModel<T>> remove(id: Id<T>, model: Class<T>): Boolean {
+        return getCollection(model).deleteOne(DaoModel<T>::id.eq(id)).deletedCount > 0
+    }
+
+    private fun <T : DaoModel<T>> getCollection(model: Class<T>): MongoCollection<T> {
+        return mongoProvider.database.getCollection(KMongoUtil.defaultCollectionName(model.kotlin), model)
+    }
 }

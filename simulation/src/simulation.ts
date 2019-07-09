@@ -1,45 +1,48 @@
-import { ObjectID } from 'bson';
+import { request } from 'graphql-request';
 import { List, Map } from 'immutable';
 import { isNumber } from 'util';
 import { VM } from 'vm2';
-import * as dao from './dao';
-import { Game, IGame } from './model/game';
-import { Match } from './model/match';
-import { IScript, Script } from './model/script';
 
 const maxCyclesCount = 100;
 
-export const executeSimulation = async (matchId: ObjectID) => {
-  const match = await dao.findById(matchId, Match);
-  const game = await dao.findById(match.game, Game);
-  const scripts = await dao.findByIds(match.scripts, Script);
+export const executeSimulation = async (matchId: string) => {
+  const match = await fetchMatch(matchId);
 
   let frameOrder = 0;
 
-  const gameVM = new GameVM(game, scripts);
-
-  match.result = {
-    winner: null,
-    resultFrames: [],
-  };
+  const gameVM = new GameVM(match.game, List(match.scripts));
 
   while (!gameVM.isGameEnded() && gameVM.getExecutedCyclesCount() < maxCyclesCount) {
     const cycleResult = gameVM.executeCycle();
 
     const newFrames = cycleResult.frames.map((frame: any) => ({ order: frameOrder++, content: frame }));
-    
-    try {
-      match.result.resultFrames.push(...newFrames);
-      await dao.save(match);
-    } catch (err) {
-      console.error('Cannot save result frames. Probably frame has invalid format. Original error: ' + err);
-      return;
-    }
+
+    await provideResultFrames(matchId, newFrames);
   }
 
-  match.result.winner = gameVM.getWinner();
-  await dao.save(match);
+  const winner = gameVM.getWinner();
+  if (isNumber(winner)) {
+    await provideMatchWinner(matchId, winner);
+  }
 };
+
+interface Match {
+  game: Game;
+  scripts: Script[];
+}
+
+interface Game {
+  code: string;
+}
+
+interface Script {
+  code: string;
+}
+
+interface ResultFrame {
+  order: number;
+  content: string;
+}
 
 class GameVM {
   public readonly maxCycles = 100;
@@ -53,7 +56,7 @@ class GameVM {
   private winner: number | null | undefined = undefined;
   private cycle: number = 0;
 
-  constructor(private game: IGame, private scripts: List<IScript>) {
+  constructor(private game: Game, private scripts: List<Script>) {
     const sandbox = {
       loadState: () => this.gameState,
       saveState: (state: any) => (this.gameState = state),
@@ -80,7 +83,7 @@ class GameVM {
       throw new Error('Cannot execute cycle on ended game');
     }
 
-    this.runVM(this.vm, this.game.mainLoop);
+    this.runVM(this.vm, this.game.code);
 
     const result = {
       frames: this.frames,
@@ -122,8 +125,8 @@ class GameVM {
       },
     });
 
-    const script = this.scripts.get(playerIndex) as IScript;
-    this.runVM(vm, script.content);
+    const script = this.scripts.get(playerIndex) as Script;
+    this.runVM(vm, script.code);
 
     return answer;
   }
@@ -136,3 +139,43 @@ class GameVM {
     }
   }
 }
+
+const fetchMatch = async (matchId: string): Promise<Match> => {
+  const query = `
+    query($matchId: ID!) {
+      match(matchId: $matchId) {
+        game {
+          code
+        }
+        scripts {
+          code
+        }
+      }
+    }`;
+
+  const data = await request(process.env.GRAPHQL_URL as string, query, { matchId });
+
+  return data.match as Match;
+};
+
+const provideResultFrames = async (matchId: string, resultFrames: List<ResultFrame>): Promise<boolean> => {
+  const mutation = `
+    mutation($matchId: ID!, $resultFrames: [NewResultFrame!]!) {
+      provideResultFrames(matchId: $matchId, resultFrames: $resultFrames)
+    }`;
+
+  const data = await request(process.env.GRAPHQL_URL as string, mutation, { matchId, resultFrames });
+
+  return data.provideResultFrames as boolean;
+}
+
+const provideMatchWinner = async (matchId: string, winner: number): Promise<boolean> => {
+  const mutation = `
+    mutation($matchId: ID!, $winner: Int!) {
+      provideMatchWinner(matchId: $matchId, winner: $winner)
+    }`;
+
+  const data = await request(process.env.GRAPHQL_URL as string, mutation, { matchId, winner });
+
+  return data.provideMatchWinner as boolean;
+} 

@@ -1,8 +1,6 @@
-import { ObjectID } from 'bson';
 import * as Dotenv from 'dotenv';
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
-import * as DAO from './dao';
 import * as QueueService from './queue-service';
 import { executeSimulation } from './simulation';
 
@@ -20,17 +18,10 @@ router.get('/', async (ctx) => {
 app.use(router.routes());
 app.listen(3000);
 
-DAO.connect(
-  process.env.MONGODB_URI as string,
-  process.env.MONGODB_USER as string,
-  process.env.MONGODB_PASSWORD as string,
-  process.env.MONGODB_DATABASE as string,
-);
-
 QueueService.startConsuming(async (message) => {
-  const matchId = new ObjectID(message.content.toString('hex'));
+  const matchId = message.content.readInt32BE(0);
   try {
-    executeSimulation(matchId);
+    executeSimulation(matchId.toString());
   } catch(err) {
     console.error(err);
   }

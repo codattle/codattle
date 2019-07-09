@@ -1,22 +1,7 @@
 package com.codattle.core.model
 
 import com.codattle.core.dao.DaoModel
-import dev.morphia.annotations.Entity
-import org.bson.types.ObjectId
+import com.codattle.core.dao.Id
 
-@Entity(noClassnameStored = true)
-class Script : DaoModel() {
+data class Script(var game: Id<Game>, var code: String) : DaoModel<Script>()
 
-    companion object {
-        fun ref(id: ObjectId): Script {
-            val script = Script()
-            script.id = id
-            return script
-        }
-    }
-
-    var content: String? = null
-
-    var game: Game? = null
-
-}

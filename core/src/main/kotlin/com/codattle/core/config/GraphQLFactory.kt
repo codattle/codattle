@@ -1,9 +1,8 @@
 package com.codattle.core.config
 
-import com.codattle.core.dto.NewResultFrameDTO
 import com.codattle.core.resolver.Mutation
 import com.codattle.core.resolver.Query
-import com.codattle.core.scalar.ObjectIdScalar
+import com.codattle.core.scalar.IdScalar
 import com.coxautodev.graphql.tools.SchemaParser
 import graphql.GraphQL
 import io.micronaut.context.annotation.Bean
@@ -20,8 +19,7 @@ class GraphQLFactory {
         val graphQLSchema = SchemaParser.newParser()
                 .file("schema.graphqls")
                 .resolvers(query, mutation)
-                .dictionary("NewResultFrame", NewResultFrameDTO::class.java)
-                .scalars(ObjectIdScalar())
+                .scalars(IdScalar())
                 .build()
                 .makeExecutableSchema()
 

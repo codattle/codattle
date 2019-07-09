@@ -1,12 +1,3 @@
 package com.codattle.core.model
 
-import dev.morphia.annotations.Embedded
-
-@Embedded
-class Result {
-
-    var winner: Int? = null
-
-    var resultFrames: List<ResultFrame> = listOf()
-
-}
+data class Result(var resultFrames: List<ResultFrame> = listOf(), var winner: Int? = null)
