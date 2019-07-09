@@ -1,13 +1,21 @@
 package com.codattle.core.dao
 
-import com.mongodb.MongoClient
-import com.mongodb.MongoCredential
-import com.mongodb.ServerAddress
+import com.codattle.core.serialization.deserializer.IdDeserializer
+import com.codattle.core.serialization.serializer.IdSerializer
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.mongodb.*
 import com.mongodb.client.MongoDatabase
 import io.micronaut.context.annotation.Value
+import org.bson.codecs.Codec
+import org.bson.codecs.configuration.CodecRegistries
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.util.KMongoCodecProvider
+import org.litote.kmongo.util.KMongoConfiguration
+import org.litote.kmongo.util.ObjectMappingConfiguration
+import java.util.stream.Stream
 import javax.annotation.PreDestroy
 import javax.inject.Singleton
+import kotlin.streams.toList
 
 @Singleton
 class MongoProvider(
@@ -27,8 +35,14 @@ class MongoProvider(
     private val client: MongoClient
 
     init {
-        val address = ServerAddress(host, port);
+        val address = ServerAddress(host, port)
         val credentials = MongoCredential.createCredential(authenticationUsername, authenticationDatabase, authenticationPassword.toCharArray())
+
+        val module = SimpleModule()
+                .addSerializer(Id::class.java, IdSerializer())
+                .addDeserializer(Id::class.java, IdDeserializer())
+        KMongoConfiguration.registerBsonModule(module)
+
         client = KMongo.createClient(address, listOf(credentials))
         database = client.getDatabase(DATABASE)
     }

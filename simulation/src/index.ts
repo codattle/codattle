@@ -19,7 +19,7 @@ app.use(router.routes());
 app.listen(3000);
 
 QueueService.startConsuming(async (message) => {
-  const matchId = message.content.readInt32BE(0);
+  const matchId =  message.content.toString('utf8');
   try {
     executeSimulation(matchId.toString());
   } catch(err) {

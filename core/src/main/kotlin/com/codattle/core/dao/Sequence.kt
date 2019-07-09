@@ -15,11 +15,11 @@ class Sequence(private val mongoProvider: MongoProvider) {
         private const val SEQ = "seq"
     }
 
-    fun getNext(key: String): Int {
+    fun getNext(key: String): String {
         val sequence = mongoProvider.database.getCollection(SEQUENCE_COLLECTION_NAME).findOneAndUpdate(
                 Filters.eq(KEY, key),
                 Updates.inc(SEQ, 1),
                 FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER))
-        return sequence!!.getInteger(SEQ)
+        return sequence!!.getInteger(SEQ).toString()
     }
 }
