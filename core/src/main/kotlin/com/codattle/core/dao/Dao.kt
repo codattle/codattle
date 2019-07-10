@@ -2,6 +2,7 @@ package com.codattle.core.dao
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
 import org.bson.conversions.Bson
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne

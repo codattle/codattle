@@ -60,7 +60,7 @@ class MatchService(private val dao: Dao, private val queueService: QueueService,
     }
 
     private fun startMatch(matchId: Id<Match>) {
-        queueService.sendMessage(SIMULATION_QUEUE, ByteBuffer.allocate(Int.SIZE_BYTES).putInt(matchId.id).array())
+        queueService.sendMessage(SIMULATION_QUEUE, matchId.id.toByteArray())
     }
 
     // TODO: operation should be atomic
