@@ -44,11 +44,27 @@ interface ResultFrame {
   content: string;
 }
 
+interface GameSandbox {
+  loadState: () => any;
+  saveState: (state: any) => any;
+  emitFrame: (frame: any) => any;
+  end: (newWinderIndex: any) => void;
+  runPlayerScript: (playerIndx: any, gameState: any) => any;
+  getCycle: () => number;
+}
+
+interface PlayerSandbox {
+  answer: (playerAnswer: any) => any;
+  loadState: () => any;
+  saveState: (state: any) => any;
+  getGameState: () => any;
+}
+
 class GameVM {
   public readonly maxCycles = 100;
   public readonly gameCycleTimeout = 10000;
   public readonly playerAnswerTimeout = 1000;
-  public readonly vm: VM;
+  public readonly gameSandbox: GameSandbox;
 
   private gameState: any = null;
   private playerStates: Map<number, any> = Map();
@@ -57,7 +73,7 @@ class GameVM {
   private cycle: number = 0;
 
   constructor(private game: Game, private scripts: List<Script>) {
-    const sandbox = {
+    this.gameSandbox = {
       loadState: () => this.gameState,
       saveState: (state: any) => (this.gameState = state),
       emitFrame: (frame: any) => (this.frames = this.frames.push(frame)),
@@ -71,11 +87,6 @@ class GameVM {
       },
       getCycle: () => this.cycle,
     };
-
-    this.vm = new VM({
-      timeout: this.gameCycleTimeout,
-      sandbox,
-    });
   }
 
   public executeCycle(): { frames: List<any> } {
@@ -83,7 +94,11 @@ class GameVM {
       throw new Error('Cannot execute cycle on ended game');
     }
 
-    this.runVM(this.vm, this.game.code);
+    const vm = new VM({
+      timeout: this.gameCycleTimeout,
+      sandbox: this.gameSandbox
+    });
+    this.runVM(vm, this.game.code);
 
     const result = {
       frames: this.frames,
@@ -115,14 +130,17 @@ class GameVM {
 
   private runPlayerScript(playerIndex: number, gameState: any): any {
     let answer: any;
+
+    const playerSandbox : PlayerSandbox = {
+      answer: (playerAnswer: any) => (answer = playerAnswer),
+      loadState: () => this.playerStates.get(playerIndex),
+      saveState: (state: any) => (this.playerStates = this.playerStates.set(playerIndex, state)),
+      getGameState: () => gameState,
+    };
+
     const vm = new VM({
       timeout: this.playerAnswerTimeout,
-      sandbox: {
-        answer: (playerAnswer: any) => (answer = playerAnswer),
-        loadState: () => this.playerStates.get(playerIndex),
-        saveState: (state: any) => (this.playerStates = this.playerStates.set(playerIndex, state)),
-        getGameState: () => gameState,
-      },
+      sandbox: playerSandbox
     });
 
     const script = this.scripts.get(playerIndex) as Script;
