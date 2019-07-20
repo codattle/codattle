@@ -1,5 +1,7 @@
 # Codattle
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7f62cdbd09de4134997e293c3176fb03)](https://app.codacy.com/app/piotrwalkusz1/codattle?utm_source=github.com&utm_medium=referral&utm_content=codattle/codattle&utm_campaign=Badge_Grade_Dashboard)
+
 (TODO) One Paragraph of project description goes here
 
 ### Prerequisites
