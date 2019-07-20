@@ -1,8 +1,8 @@
 package com.codattle.core.dao
 
-class Id<T : DaoModel<T>>(val id: String) {
+data class Id<T : DaoModel<T>>(val id: String) {
 
-    private class UncheckedDaoModel : DaoModel<UncheckedDaoModel>()
+    private interface UncheckedDaoModel : DaoModel<UncheckedDaoModel>
 
     companion object {
         fun unchecked(id: String): Id<*> {

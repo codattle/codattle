@@ -18,7 +18,7 @@ class GameService(private val dao: Dao) {
     }
 
     fun createGame(name: String, description: String, code: String): Game {
-        val game = Game(name, description, code)
+        val game = Game(name = name, description =  description, code = code)
         return dao.save(game)
     }
 }

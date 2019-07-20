@@ -4,8 +4,9 @@ import com.codattle.core.dao.DaoModel
 import com.codattle.core.dao.Id
 
 data class Match(
-        var name: String,
-        var game: Id<Game>,
-        var scripts: List<Id<Script>>,
-        var result: Result? = null
-) : DaoModel<Match>()
+        override var id: Id<Match>? = null,
+        val name: String,
+        val game: Id<Game>,
+        val scripts: List<Id<Script>> = listOf(),
+        val result: MatchResult? = null
+) : DaoModel<Match>

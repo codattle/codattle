@@ -1,10 +1,6 @@
 package com.codattle.core.dao
 
-import org.bson.codecs.pojo.annotations.BsonId
-import org.bson.types.ObjectId
+interface DaoModel<T : DaoModel<T>> {
 
-abstract class DaoModel<T: DaoModel<T>> {
-
-    @BsonId var internalId: ObjectId? = null
-    var id: Id<T>? = null
+    var id: Id<T>?
 }
