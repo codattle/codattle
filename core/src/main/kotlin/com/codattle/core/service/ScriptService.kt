@@ -20,7 +20,7 @@ class ScriptService(private val dao: Dao) {
     }
 
     fun createScript(gameId: Id<Game>, code: String): Script {
-        val script = Script(gameId, code)
+        val script = Script(game = gameId, code = code)
         return dao.save(script)
     }
 

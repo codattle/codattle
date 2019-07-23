@@ -4,6 +4,7 @@ import com.codattle.core.serialization.deserializer.IdDeserializer
 import com.codattle.core.serialization.serializer.IdSerializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.mongodb.*
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import io.micronaut.context.annotation.Value
 import org.bson.codecs.Codec
@@ -11,6 +12,7 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoCodecProvider
 import org.litote.kmongo.util.KMongoConfiguration
+import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.ObjectMappingConfiguration
 import java.util.stream.Stream
 import javax.annotation.PreDestroy

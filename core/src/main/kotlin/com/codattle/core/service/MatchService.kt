@@ -3,14 +3,11 @@ package com.codattle.core.service
 import com.codattle.core.dao.Dao
 import com.codattle.core.dao.Id
 import com.codattle.core.model.*
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.bson.types.ObjectId
-import org.litote.kmongo.eq
-import java.nio.ByteBuffer
+import org.litote.kmongo.*
 import javax.inject.Singleton
 
 @Singleton
-class MatchService(private val dao: Dao, private val queueService: QueueService, private val objectMapper: ObjectMapper) {
+class MatchService(private val dao: Dao, private val queueService: QueueService) {
 
     companion object {
         private const val SIMULATION_QUEUE = "simulation"
@@ -27,27 +24,25 @@ class MatchService(private val dao: Dao, private val queueService: QueueService,
     }
 
     fun getMatches(gameId: Id<Game>): List<Match> {
-        return dao.getMany(Match::class.java, Match::game.eq(gameId))
+        return dao.getMany(Match::class.java, Match::game eq gameId)
     }
 
-    private data class MatchProjection(val result: Result?)
-
-    fun getResultOfMatch(matchId: Id<Match>): Result? {
-        val match = dao.getWithFields(matchId, Match::class.java, MatchProjection::class.java)
+    fun getResultOfMatch(matchId: Id<Match>): MatchResult? {
+        return dao.getWithFields(matchId, Match::class.java, Match::result)
                 ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
-        return match.result
     }
 
     fun createMatch(name: String, gameId: Id<Game>): Match {
-        return dao.save(Match(name, gameId, listOf()))
+        return dao.save(Match(name = name, game = gameId))
     }
 
+    // TODO: should be atomic
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {
-        val match = getMatch(matchId)
+        var match = getMatch(matchId)
         if (!canJoinMatch(match)) {
             throw IllegalArgumentException("Cannot join to match with id $matchId")
         }
-        match.scripts += scriptId
+        match = match.copy(scripts = match.scripts + scriptId)
         dao.save(match)
 
         if (match.scripts.size == SCRIPTS_PER_MATCH) {
@@ -63,22 +58,21 @@ class MatchService(private val dao: Dao, private val queueService: QueueService,
         queueService.sendMessage(SIMULATION_QUEUE, matchId.id.toByteArray())
     }
 
-    // TODO: operation should be atomic
     fun provideResultFrames(matchId: Id<Match>, resultFrames: List<ResultFrame>) {
-        val match = getMatch(matchId)
-        match.result = match.result ?: Result()
-        match.result!!.resultFrames += resultFrames
-        dao.save(match)
+        createEmptyMatchResultIfDoesNotExist(matchId)
+        dao.findAndModify(Match::class.java, Match::id eq matchId, pushEach(Match::result / MatchResult::resultFrames, resultFrames))
     }
 
-    // TODO: operation should be atomic
     fun provideMatchWinner(matchId: Id<Match>, winner: Int) {
-        val match = getMatch(matchId)
-        when {
-            match.result == null -> match.result = Result(listOf(), winner)
-            match.result!!.winner == null -> match.result!!.winner = winner
-            else -> throw IllegalArgumentException("Match with id $matchId has already winner")
-        }
-        dao.save(match)
+        createEmptyMatchResultIfDoesNotExist(matchId)
+        val match = dao.findAndModify(
+                Match::class.java,
+                and(Match::id eq matchId, (Match::result / MatchResult::winner) eq (null as Int?)),
+                setValue(Match::result / MatchResult::winner, winner))
+        match ?: throw IllegalArgumentException("Match with id $matchId doesn't exist or has already winner")
+    }
+
+    private fun createEmptyMatchResultIfDoesNotExist(matchId: Id<Match>) {
+        dao.findAndModify(Match::class.java, and(Match::id eq matchId, Match::result eq (null as MatchResult?)), setValue(Match::result, MatchResult()))
     }
 }

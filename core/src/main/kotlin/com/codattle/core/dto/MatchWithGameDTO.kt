@@ -4,13 +4,12 @@ import com.codattle.core.dao.Id
 import com.codattle.core.model.Game
 import com.codattle.core.model.Match
 import com.codattle.core.model.Script
-import com.codattle.core.model.Result
-import org.bson.types.ObjectId
+import com.codattle.core.model.MatchResult
 
 data class MatchWithGameDTO(
         val id: Id<Match>,
         val name: String,
         val scripts: List<Script>,
-        val result: Result?,
+        val result: MatchResult?,
         val game: Game
 )
