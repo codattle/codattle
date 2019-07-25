@@ -1,5 +1,3 @@
-/// <reference types="Cypress" />
-
 context("Games", () => {
   it("Create game", () => {
     cy.visit("/new-game");
@@ -10,6 +8,6 @@ context("Games", () => {
     });
     cy.get("[data-cy=create]").click();
 
-    cy.contains(/Details of game with id: \d+/)
+    cy.contains(/Details of game with id: \d+/);
   });
 });
