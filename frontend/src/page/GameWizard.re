@@ -41,9 +41,9 @@ let make = () => {
   | Editing =>
     Styles.(
       <div>
-        <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} /> </div>
-        <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} /> </div>
-        <div className={j|$section $scriptEditor|j}> <ScriptEditor onChange={script => setScript(_ => script)} /> </div>
+        <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} dataCy="name" /> </div>
+        <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create"/> </div>
+        <div className={j|$section $scriptEditor|j}> <ScriptEditor onChange={script => setScript(_ => script)} dataCy="code" /> </div>
       </div>
     )
   | Creating => <div> <Translation id="gameWizard.creating" /> </div>
