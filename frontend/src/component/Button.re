@@ -5,13 +5,15 @@ let rootStyle =
 let labelStyle = Css.(style([color(textColor)]));
 
 [@react.component]
-let make = (~onClick=?, ~label=?, ~children=?) => {
-  ReasonReact.element(
-    MaterialUi.Button.make(
-      ~onClick=_ => onClick |> Utils.ifSome(onClick => onClick()),
-      ~variant=`Contained,
-      ~classes=[Root(rootStyle), Label(labelStyle)],
-      label->Belt.Option.mapWithDefault(children->Belt.Option.getWithDefault(<> </>), label => <Translation id=label />),
+let make = (~onClick=?, ~label=?, ~children=?, ~dataCy=?) =>
+  Utils.withDataCy(
+    ~dataCy,
+    ReasonReact.element(
+      MaterialUi.Button.make(
+        ~onClick=_ => onClick |> Utils.ifSome(onClick => onClick()),
+        ~variant=`Contained,
+        ~classes=[Root(rootStyle), Label(labelStyle)],
+        label->Belt.Option.mapWithDefault(children->Belt.Option.getWithDefault(<> </>), label => <Translation id=label />),
+      ),
     ),
   );
-};

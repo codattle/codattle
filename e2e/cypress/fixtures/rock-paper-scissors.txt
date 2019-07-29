@@ -43,4 +43,3 @@ if (data.score1 === 3) {
 } else if (getCycle() === 10) {
   end(null);
 }
-

@@ -1,3 +1,0 @@
-{
-  "description": "Rock-Paper-Scissor game. It takes one of the three values: 'ROCK', 'PAPER', 'SCISSOR'. If other value will given, function won't take effect. Succeeding executions will override preceding executions."
-}
