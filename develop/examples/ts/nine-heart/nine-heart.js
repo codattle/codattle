@@ -160,10 +160,9 @@ function shuffle(array) {
     }
     return array;
 }
-// Game moc
+// Game section
 var countOfPlayers = 2;
 var state = loadInitState();
-// const state: GameState = initGame();
 var tableStack = state.stack;
 var currentPlayerIndex = state.playerIndex;
 var currentPlayerCards = state.playersCards[currentPlayerIndex];
@@ -174,11 +173,3 @@ if (isWin()) {
 else {
     nextTour();
 }
-// Mock
-// console.log('TableStack:', tableStack);
-// console.log('currentPlayerIndex:', currentPlayerIndex);
-// console.log('currentPlayerCards:', currentPlayerCards);
-// backCardToStack(0);
-// console.log('TableStack:', tableStack);
-// console.log('currentPlayerIndex:', currentPlayerIndex);
-// console.log('currentPlayerCards:', currentPlayerCards);

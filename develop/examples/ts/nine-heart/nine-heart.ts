@@ -231,11 +231,10 @@ function shuffle<T>(array: T[]) : T[] {
     return array;
 }
 
-// Game moc
+// Game section
 
 const countOfPlayers : number = 2;
 const state: GameState = loadInitState();
-// const state: GameState = initGame();
 
 const tableStack: Card[] = state.stack;
 const currentPlayerIndex : number = state.playerIndex;
@@ -248,16 +247,3 @@ if (isWin()) {
 } else {
     nextTour();
 }
-
-
-// Mock
-
-// console.log('TableStack:', tableStack);
-// console.log('currentPlayerIndex:', currentPlayerIndex);
-// console.log('currentPlayerCards:', currentPlayerCards);
-
-// backCardToStack(0);
-
-// console.log('TableStack:', tableStack);
-// console.log('currentPlayerIndex:', currentPlayerIndex);
-// console.log('currentPlayerCards:', currentPlayerCards);
