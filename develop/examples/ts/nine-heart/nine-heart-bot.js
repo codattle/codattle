@@ -6,7 +6,7 @@ function compareCards(a, b) {
 }
 
 var state = getGameState();
-var stack = state.stack
+var stack = state.stack;
 var cards = state.playerCards;
 
 var stackTop = stack[stack.length - 1];

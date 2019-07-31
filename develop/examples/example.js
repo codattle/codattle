@@ -2,7 +2,7 @@ function initState() {
     return {
         value: Math.floor(Math.random() * 100),
         points: [0, 0]
-    }  
+    };
 }
 
 var state = getCycle() === 0 ? initState() : loadState();
