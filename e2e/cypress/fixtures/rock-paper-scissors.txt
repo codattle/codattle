@@ -24,8 +24,7 @@ var firstPlayerChoice = parseChoice(runPlayerScript(0));
 var secondPlayerChoice = parseChoice(runPlayerScript(1));
 
 emitFrame({
-  first: firstPlayerChoice,
-  second: secondPlayerChoice
+  output: firstPlayerChoice + " vs " + secondPlayerChoice
 });
 
 if (isWin(firstPlayerChoice, secondPlayerChoice)) {

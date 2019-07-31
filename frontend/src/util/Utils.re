@@ -15,7 +15,7 @@ let loadResource = (query, setter, mapper) => {
      );
 };
 
-let useResource = (query, shouldRefresh, mapper) => {
+let useEditableResource = (query, shouldRefresh, mapper) => {
   let (resource, setResource) = React.useState(() => NotLoaded);
 
   React.useEffect1(
@@ -28,6 +28,18 @@ let useResource = (query, shouldRefresh, mapper) => {
     shouldRefresh,
   );
 
+  (
+    resource,
+    newResourceProducer =>
+      switch (resource) {
+      | Loaded(loadedResource) => setResource(_ => Loaded(newResourceProducer(loadedResource)))
+      | _ => ()
+      },
+  );
+};
+
+let useResource = (query, shouldRefresh, mapper) => {
+  let (resource, _) = useEditableResource(query, shouldRefresh, mapper);
   resource;
 };
 

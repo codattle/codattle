@@ -101,7 +101,7 @@ class GameVM {
     this.runVM(vm, this.game.code);
 
     const result = {
-      frames: this.frames,
+      frames: this.frames.map(frame => JSON.stringify(frame)),
     };
 
     this.cycle++;
@@ -153,7 +153,7 @@ class GameVM {
     try {
       vm.run(script);
     } catch (err) {
-      console.error('Error occured while running vm script: ' + err);
+      console.error('Error occurred while running vm script: ' + err);
     }
   }
 }
