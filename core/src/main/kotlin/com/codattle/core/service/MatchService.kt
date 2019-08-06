@@ -1,13 +1,14 @@
 package com.codattle.core.service
 
-import com.codattle.core.dao.Dao
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.MatchDao
+import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
 import org.litote.kmongo.*
+import java.lang.IllegalStateException
 import javax.inject.Singleton
 
 @Singleton
-class MatchService(private val dao: Dao, private val queueService: QueueService) {
+class MatchService(private val matchDao: MatchDao, private val queueService: QueueService) {
 
     companion object {
         private const val SIMULATION_QUEUE = "simulation"
@@ -19,31 +20,30 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
     }
 
     fun getMatch(matchId: Id<Match>): Match {
-        return dao.get(matchId, Match::class.java)
-                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
+        return matchDao.getMatch(matchId)
     }
 
     fun getMatches(gameId: Id<Game>): List<Match> {
-        return dao.getMany(Match::class.java, Match::game eq gameId)
+        return matchDao.getMatches(gameId)
     }
 
     fun getResultOfMatch(matchId: Id<Match>): MatchResult? {
-        return dao.getWithFields(matchId, Match::class.java, Match::result)
-                ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
+        return matchDao.getResultOfMatch(matchId)
     }
 
     fun createMatch(name: String, gameId: Id<Game>): Match {
-        return dao.save(Match(name = name, game = gameId))
+        return matchDao.createMatch(Match.Builder(name = name, game = gameId))
     }
 
-    // TODO: should be atomic
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {
         var match = getMatch(matchId)
+
         if (!canJoinMatch(match)) {
             throw IllegalArgumentException("Cannot join to match with id $matchId")
         }
-        match = match.copy(scripts = match.scripts + scriptId)
-        dao.save(match)
+
+        match = matchDao.addScriptIfScriptsCountEquals(matchId, scriptId, match.scripts.size)
+                ?: throw IllegalStateException("Scripts count have changed while joining. Probably race occurred.")
 
         if (match.scripts.size == SCRIPTS_PER_MATCH) {
             startMatch(matchId)
@@ -59,20 +59,10 @@ class MatchService(private val dao: Dao, private val queueService: QueueService)
     }
 
     fun provideResultFrames(matchId: Id<Match>, resultFrames: List<ResultFrame>) {
-        createEmptyMatchResultIfDoesNotExist(matchId)
-        dao.findAndModify(Match::class.java, Match::id eq matchId, pushEach(Match::result / MatchResult::resultFrames, resultFrames))
+        matchDao.provideResultFrames(matchId, resultFrames)
     }
 
     fun provideMatchWinner(matchId: Id<Match>, winner: Int) {
-        createEmptyMatchResultIfDoesNotExist(matchId)
-        val match = dao.findAndModify(
-                Match::class.java,
-                and(Match::id eq matchId, (Match::result / MatchResult::winner) eq (null as Int?)),
-                setValue(Match::result / MatchResult::winner, winner))
-        match ?: throw IllegalArgumentException("Match with id $matchId doesn't exist or has already winner")
-    }
-
-    private fun createEmptyMatchResultIfDoesNotExist(matchId: Id<Match>) {
-        dao.findAndModify(Match::class.java, and(Match::id eq matchId, Match::result eq (null as MatchResult?)), setValue(Match::result, MatchResult()))
+        matchDao.provideMatchWinner(matchId, winner)
     }
 }

@@ -1,6 +1,6 @@
 package com.codattle.core.serialization.deserializer
 
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.common.Id
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer

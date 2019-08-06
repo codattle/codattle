@@ -1,19 +1,15 @@
 package com.codattle.core.service
 
-import com.codattle.core.dao.Dao
-import com.codattle.core.model.Game
+import com.codattle.core.dao.common.DaoUtils
 import com.codattle.core.model.Match
 import com.codattle.core.model.Script
 import com.codattle.core.test.BaseTest
 import com.codattle.core.test.DatabasePopulator
 import com.codattle.core.test.QueueHelper
 import com.codattle.core.test.TestUtils
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestFactory
-import org.litote.kmongo.match
 import javax.inject.Inject
 
 class MatchServiceTest : BaseTest() {
@@ -22,13 +18,13 @@ class MatchServiceTest : BaseTest() {
     private lateinit var matchService: MatchService
 
     @Inject
-    private lateinit var dao: Dao
+    private lateinit var dao: DaoUtils
 
     @Test
     fun `get match if exists`() {
         val createdMatch = databasePopulator.createMatch()
 
-        val fetchedMatch = matchService.getMatch(createdMatch.id!!)
+        val fetchedMatch = matchService.getMatch(createdMatch.id)
 
         assertThat(fetchedMatch).isEqualTo(createdMatch)
     }
@@ -42,7 +38,7 @@ class MatchServiceTest : BaseTest() {
 
     @Test
     fun `get matches of existent game`() {
-        val gameId = databasePopulator.createGame().id!!
+        val gameId = databasePopulator.createGame().id
         val existentMatches = databasePopulator.createMatches(game = gameId)
 
         val fetchedMatches = matchService.getMatches(gameId)
@@ -61,7 +57,7 @@ class MatchServiceTest : BaseTest() {
     @Test
     fun `get result of existent match`() {
         val resultOfExistentMatch = DatabasePopulator.generateMatchResult(framesCount = 10, winner = 0)
-        val matchId = databasePopulator.createMatch(scriptsCount = 3, result = resultOfExistentMatch).id!!
+        val matchId = databasePopulator.createMatch(scriptsCount = 3, result = resultOfExistentMatch).id
 
         val fetchedMatchResult = matchService.getResultOfMatch(matchId)
 
@@ -78,11 +74,10 @@ class MatchServiceTest : BaseTest() {
 
     @Test
     fun `create match`() {
-        val gameId = databasePopulator.createGame().id!!
+        val gameId = databasePopulator.createGame().id
 
         val createdMatch = matchService.createMatch(name = "My match", gameId = gameId)
 
-        assertThat(createdMatch.id).isNotNull()
         assertThat(createdMatch.name).isEqualTo("My match")
         assertThat(createdMatch.game).isEqualTo(gameId)
         assertThat(createdMatch.scripts).isEqualTo(listOf<Script>())
@@ -92,11 +87,11 @@ class MatchServiceTest : BaseTest() {
     @Test
     fun `add script to match after joining to not full match`() {
         val match = databasePopulator.createMatch(scriptsCount = 0, result = null)
-        val scriptId = databasePopulator.createScript(game = match.game).id!!
+        val scriptId = databasePopulator.createScript(game = match.game).id
 
-        matchService.joinMatch(match.id!!, scriptId)
+        matchService.joinMatch(match.id, scriptId)
 
-        val matchAfterJoining = dao.get(match.id!!, Match::class.java)!!
+        val matchAfterJoining = dao.get(match.id, Match::class.java)!!
         assertThat(matchAfterJoining.scripts).isEqualTo(listOf(scriptId))
     }
 
@@ -105,17 +100,17 @@ class MatchServiceTest : BaseTest() {
         val match = databasePopulator.createMatch(scriptsCount = 0, result = null)
         val scripts = databasePopulator.createScripts(count = 2, game = match.game)
 
-        scripts.forEach { matchService.joinMatch(match.id!!, it.id!!) }
+        scripts.forEach { matchService.joinMatch(match.id, it.id) }
 
-        val matchAfterJoining = dao.get(match.id!!, Match::class.java)!!
-        assertThat(matchAfterJoining.scripts).isEqualTo(scripts.map { it.id!! })
+        val matchAfterJoining = dao.get(match.id, Match::class.java)!!
+        assertThat(matchAfterJoining.scripts).isEqualTo(scripts.map { it.id })
         assertThat(queueHelper.countMessages(QueueHelper.SIMULATION)).isEqualTo(1)
         assertThat(queueHelper.readMessage(QueueHelper.SIMULATION)).isEqualTo(match.id.toString().toByteArray())
     }
 
     @Test
     fun `throw exception if try to join nonexistent match`() {
-        val scriptId = databasePopulator.createScript().id!!
+        val scriptId = databasePopulator.createScript().id
 
         assertThatThrownBy { matchService.joinMatch(TestUtils.nonexistentMatchId, scriptId) }
                 .isInstanceOf(IllegalArgumentException::class.java)
@@ -124,8 +119,8 @@ class MatchServiceTest : BaseTest() {
 
     @Test
     fun `throw exception if try to join full match`() {
-        val scriptId = databasePopulator.createScript().id!!
-        val matchId = databasePopulator.createMatch(scriptsCount = 2, result = null).id!!
+        val scriptId = databasePopulator.createScript().id
+        val matchId = databasePopulator.createMatch(scriptsCount = 2, result = null).id
 
         assertThatThrownBy { matchService.joinMatch(matchId, scriptId) }
                 .isInstanceOf(IllegalArgumentException::class.java)

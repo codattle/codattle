@@ -6,41 +6,33 @@ import com.codattle.core.dao.common.Id
 import com.codattle.core.model.utils.ModelUtils
 import com.codattle.core.model.utils.ModelUtils.nonNull
 import java.time.Instant
+import java.time.ZonedDateTime
 
-data class Match(
-        override val id: Id<Match>,
+data class User(
+        override val id: Id<User>,
         override val creationDate: Instant,
         override val modificationDate: Instant,
-        val name: String,
-        val game: Id<Game>,
-        val scripts: List<Id<Script>>,
-        val result: MatchResult?
-) : DaoModel<Match> {
+        val username: String
+) : DaoModel<User> {
 
     data class Builder(
-            override var id: Id<Match>? = null,
+            override var id: Id<User>? = null,
             override var creationDate: Instant? = null,
             override var modificationDate: Instant? = null,
-            var name: String? = null,
-            var game: Id<Game>? = null,
-            var scripts: List<Id<Script>> = listOf(),
-            var result: MatchResult? = null
-    ) : DaoModelBuilder<Match> {
+            var username: String? = null
+    ) : DaoModelBuilder<User> {
 
-        override fun build(): Match {
-            return Match(
+        override fun build(): User {
+            return User(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
                     modificationDate = nonNull(modificationDate, "modificationDate"),
-                    name = nonNull(name, "name"),
-                    game = nonNull(game, "game"),
-                    scripts = scripts,
-                    result = result
+                    username = nonNull(username, "username")
             )
         }
 
-        override fun getModelClass(): Class<Match> {
-            return Match::class.java
+        override fun getModelClass(): Class<User> {
+            return User::class.java
         }
     }
 
@@ -49,10 +41,7 @@ data class Match(
                 id = id,
                 creationDate = creationDate,
                 modificationDate = modificationDate,
-                name = name,
-                game = game,
-                scripts = scripts,
-                result = result
+                username = username
         )
     }
 }
