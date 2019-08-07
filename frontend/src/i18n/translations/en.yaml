@@ -1,3 +1,6 @@
+common:
+  next: Next
+  previous: Previous
 gameWizard:
   name: Name
   createGame: Create game
@@ -5,3 +8,5 @@ gameWizard:
   errorWhileCreatingGame: Error while creating game :(
 scriptEditor:
   code: Code
+matchFrame:
+  errorWhileParsingFrame: Error while parsing frame :(
