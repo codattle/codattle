@@ -12,15 +12,24 @@ env:
     - PROJECT=codattle
     - CLUSTER=codattle-kubernetes
     - ZONE=europe-west2-a
+script:
+  - cd core && ./gradlew test jacocoTestReport
 before_deploy:
   - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
   - source /home/travis/google-cloud-sdk/path.bash.inc
   - gcloud --quiet version
   - gcloud --quiet components update
   - gcloud --quiet components update kubectl
+  - curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
+  - chmod +x codacy-coverage-reporter
 deploy:
-  provider: script
-  script: chmod +x deployment/gcr/build-containers.sh && deployment/gcr/build-containers.sh
-  skip_cleanup: true
-  on:
-    branch: master
+  - provider: script
+    script: chmod +x deployment/gcr/build-containers.sh && deployment/gcr/build-containers.sh
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: script
+    script: ./codacy-coverage-reporter report -l Java -r $TRAVIS_BUILD_DIR/core/build/reports/jacoco/test/jacocoTestReport.xml
+    skip_cleanup: true
+    on:
+      branch: master
