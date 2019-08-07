@@ -1,34 +1,39 @@
-package com.codattle.core.dao
+package com.codattle.core.dao.common
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.codattle.core.dao.Sequence
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
-import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
+import java.time.Clock
+import java.time.Instant
+import java.time.ZonedDateTime
 import javax.inject.Singleton
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.memberProperties
 
 @Singleton
-class Dao(
+class DaoUtils(
         private val mongoProvider: MongoProvider,
         private val sequence: Sequence
 ) {
 
     fun <T : DaoModel<T>> save(entity: T): T {
-        if (entity.id == null) {
+        return save(entity.toBuilder())
+    }
+
+    fun <T : DaoModel<T>> save(entity: DaoModelBuilder<T>): T {
+        fillAuditFields(entity)
+
+        return if (entity.id == null) {
             entity.id = Id(sequence.getNext(KMongoUtil.defaultCollectionName(entity.javaClass.kotlin)))
-            getCollection(entity.javaClass).insertOne(entity)
+            entity.build().apply { getCollection(entity.getModelClass()).insertOne(this) }
         } else {
-            getCollection(entity.javaClass).replaceOne(DaoModel<T>::id eq entity.id, entity)
+            entity.build().apply { getCollection(entity.getModelClass()).replaceOne(DaoModel<T>::id eq entity.id, this) }
         }
-        return entity
     }
 
     fun <T : DaoModel<T>> get(id: Id<T>, model: Class<T>): T? {
@@ -47,6 +52,10 @@ class Dao(
         }
     }
 
+    fun <T : DaoModel<T>> findAndModify(model: Class<T>, id: Id<T>, update: Bson): T? {
+        return findAndModify(model, DaoModel<T>::id eq id, update)
+    }
+
     fun <T : DaoModel<T>> findAndModify(model: Class<T>, filter: Bson, update: Bson): T? {
         val options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
         return getCollection(model).findOneAndUpdate(filter, update, options)
@@ -58,5 +67,14 @@ class Dao(
 
     fun <T : DaoModel<T>> getCollection(model: Class<T>): MongoCollection<T> {
         return mongoProvider.database.getCollection(KMongoUtil.defaultCollectionName(model.kotlin), model)
+    }
+
+    private fun fillAuditFields(entity: DaoModelBuilder<*>) {
+        val date = Instant.now()
+
+        if (entity.creationDate == null) {
+            entity.creationDate = date
+        }
+        entity.modificationDate = date
     }
 }

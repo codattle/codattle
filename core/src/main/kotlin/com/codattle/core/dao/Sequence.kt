@@ -1,5 +1,6 @@
 package com.codattle.core.dao
 
+import com.codattle.core.dao.common.MongoProvider
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument

@@ -1,6 +1,6 @@
 package com.codattle.core.serialization.serializer
 
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.common.Id
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.SerializerProvider

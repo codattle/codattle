@@ -1,24 +1,35 @@
 package com.codattle.core.service
 
-import com.codattle.core.dao.Dao
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.GameDao
+import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
+import com.codattle.core.model.Language
+import com.codattle.core.model.I18nText
 import javax.inject.Singleton
 
 @Singleton
-class GameService(private val dao: Dao) {
+class GameService(private val gameDao: GameDao) {
+
+    companion object {
+        // TODO: remove after implementing translatable descriptions
+        private val DEFAULT_DESCRIPTION_LANGUAGE = Language.ENGLISH
+    }
 
     fun getGame(gameId: Id<Game>): Game {
-        return dao.get(gameId, Game::class.java)
-                ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exist.")
+        return gameDao.getGame(gameId)
     }
 
     fun getGames(): List<Game> {
-        return dao.getMany(Game::class.java)
+        return gameDao.getGames()
     }
 
     fun createGame(name: String, description: String, code: String): Game {
-        val game = Game(name = name, description =  description, code = code)
-        return dao.save(game)
+        return gameDao.createGame(Game.Builder(
+                name = name,
+                description = I18nText(DEFAULT_DESCRIPTION_LANGUAGE, description),
+                code = code,
+                // TODO: pass real user after implementing users
+                author = Id("nonexistent_user")
+        ))
     }
 }

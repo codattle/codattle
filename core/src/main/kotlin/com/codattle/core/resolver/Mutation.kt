@@ -1,6 +1,6 @@
 package com.codattle.core.resolver
 
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.common.Id
 import com.codattle.core.dto.MatchWithScriptsDTO
 import com.codattle.core.model.Game
 import com.codattle.core.model.Match

@@ -1,6 +1,6 @@
 package com.codattle.core.scalar
 
-import com.codattle.core.dao.Id
+import com.codattle.core.dao.common.Id
 import graphql.language.IntValue
 import graphql.language.StringValue
 import graphql.schema.*
@@ -12,7 +12,7 @@ class IdScalar : GraphQLScalarType("ID", "Id", object : Coercing<Id<*>, String> 
             is Id<*> -> input
             is Int -> Id.unchecked(input.toString())
             is String -> parseId(input, ::CoercingParseValueException)
-            else -> throw CoercingParseValueException("Expected 'Int' or 'com.codattle.core.dao.Id' but was '${input!!.javaClass.name}'.")
+            else -> throw CoercingParseValueException("Expected 'Int' or 'com.codattle.core.dao.common.Id' but was '${input!!.javaClass.name}'.")
         }
     }
 
@@ -28,7 +28,7 @@ class IdScalar : GraphQLScalarType("ID", "Id", object : Coercing<Id<*>, String> 
         if (dataFetcherResult is Id<*>) {
             return dataFetcherResult.id.toString()
         } else {
-            throw CoercingSerializeException("Expected 'com.codattle.core.dao.Id' but was '${dataFetcherResult!!.javaClass.name}'.")
+            throw CoercingSerializeException("Expected 'com.codattle.core.dao.common.Id' but was '${dataFetcherResult!!.javaClass.name}'.")
         }
     }
 
