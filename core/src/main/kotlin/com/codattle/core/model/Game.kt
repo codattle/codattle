@@ -16,7 +16,7 @@ data class Game(
         val scriptTemplate: String,
         val rating: Map<Id<User>, GameOpinion>,
         val comments: Map<Id<User>, String>,
-        val logo: ImageId?,
+        val logo: Id<File>?,
         val author: Id<User>,
         val visibility: Visibility
 ) : DaoModel<Game> {
@@ -35,7 +35,7 @@ data class Game(
             val scriptTemplate: String = "",
             val rating: Map<Id<User>, GameOpinion> = mapOf(),
             val comments: Map<Id<User>, String> = mapOf(),
-            val logo: ImageId? = null,
+            val logo: Id<File>? = null,
             val author: Id<User>? = null,
             val visibility: Visibility = Visibility.PRIVATE
     ) : DaoModelBuilder<Game> {

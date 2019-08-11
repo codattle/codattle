@@ -35,7 +35,16 @@ module.exports = {
     port: process.env.PORT || 8000,
     historyApiFallback: true,
     proxy: {
+      '/storage': {
+        target: 'http://localhost:8081',
+        pathRewrite: {
+          '/storage' : ''
+        }
+      },
       '/graphql': {
+        target: 'http://localhost:8080'
+      },
+      '/api': {
         target: 'http://localhost:8080'
       }
     }

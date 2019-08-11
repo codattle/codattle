@@ -55,7 +55,7 @@ class MatchService(private val matchDao: MatchDao, private val queueService: Que
     }
 
     private fun startMatch(matchId: Id<Match>) {
-        queueService.sendMessage(SIMULATION_QUEUE, matchId.id.toByteArray())
+        queueService.sendMessage(SIMULATION_QUEUE, matchId.value.toByteArray())
     }
 
     fun provideResultFrames(matchId: Id<Match>, resultFrames: List<ResultFrame>) {

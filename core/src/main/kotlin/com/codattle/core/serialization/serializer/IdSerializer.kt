@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 class IdSerializer(clazz: Class<Id<*>>? = null) : StdSerializer<Id<*>>(clazz) {
 
     override fun serialize(value: Id<*>, generator: JsonGenerator, provider: SerializerProvider) {
-        generator.writeString(value.id)
+        generator.writeString(value.value)
     }
 
     override fun acceptJsonFormatVisitor(visitor: JsonFormatVisitorWrapper, typeHint: JavaType?) {

@@ -26,7 +26,7 @@ class IdScalar : GraphQLScalarType("ID", "Id", object : Coercing<Id<*>, String> 
 
     override fun serialize(dataFetcherResult: Any?): String {
         if (dataFetcherResult is Id<*>) {
-            return dataFetcherResult.id.toString()
+            return dataFetcherResult.value
         } else {
             throw CoercingSerializeException("Expected 'com.codattle.core.dao.common.Id' but was '${dataFetcherResult!!.javaClass.name}'.")
         }

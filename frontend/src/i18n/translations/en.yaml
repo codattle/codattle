@@ -1,11 +1,13 @@
 common:
   next: Next
   previous: Previous
+  error: Error
 gameWizard:
   name: Name
   createGame: Create game
   creating: Creating...
   errorWhileCreatingGame: Error while creating game :(
+  logo: "Logo"
 scriptEditor:
   code: Code
 matchFrame:

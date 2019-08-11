@@ -1,11 +1,13 @@
 common:
   next: Dalej
   previous: Wstecz
+  error: Błąd
 gameWizard:
   name: Nazwa
   createGame: Stwórz grę
   creating: Tworzenie...
   errorWhileCreatingGame: Błąd podczas tworzenia gry :(
+  logo: "Logo"
 scriptEditor:
   code: Kod
 matchFrame:

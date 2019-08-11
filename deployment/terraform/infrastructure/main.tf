@@ -11,6 +11,7 @@ variable "zone" {
 }
 
 provider "google" {
+  version = "~> 2.12.0"
   project = "${var.project}"
   region  = "${var.region}"
   zone    = "${var.zone}"
@@ -42,6 +43,18 @@ resource "google_container_cluster" "default" {
       "https://www.googleapis.com/auth/monitoring",
     ]
   }
+}
+
+resource "google_storage_bucket" "storage" {
+  name               = "codattle"
+  location           = "EU"
+  force_destroy      = true
+}
+
+resource "google_storage_default_object_access_control" "public_rule" {
+  bucket = "${google_storage_bucket.storage.name}"
+  role   = "READER"
+  entity = "allUsers"
 }
 
 output "cluster_endpoint" {

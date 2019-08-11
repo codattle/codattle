@@ -18,6 +18,10 @@ class Query(private val gameService: GameService,
             private val matchService: MatchService,
             private val scriptService: ScriptService) : GraphQLQueryResolver {
 
+    fun game(gameId: Id<Game>): Game {
+        return gameService.getGame(gameId)
+    }
+
     fun games(): List<Game> {
         return gameService.getGames()
     }
