@@ -15,6 +15,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
+  storage:
+    image: halverneus/static-file-server
+    ports:
+    - "8081:8080"
+    volumes:
+    - ./storage:/web
 volumes:
   rabbitmq_data: {}
   mongodb_data: {}

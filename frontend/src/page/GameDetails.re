@@ -1,16 +1,38 @@
-module GetMatchesQuery = [%graphql {|
-  query {
-    games {
+type game = {
+  id: string,
+  name: string,
+  logo: option(string),
+};
+
+module GetGameQuery = [%graphql {|
+  query($gameId: ID!) {
+    game(gameId: $gameId) {
       id
       name
+      logo
     }
   }
 |}];
 
 [@react.component]
-let make = (~gameId) =>
-  <div>
-    <span> {ReasonReact.string("Details of game with id: " ++ gameId)} </span>
-    <button onClick={_ => ReasonReactRouter.push("/games/" ++ gameId ++ "/new-match")}> {ReasonReact.string("New match")} </button>
-    <button onClick={_ => ReasonReactRouter.push("/games/" ++ gameId ++ "/matches")}> {ReasonReact.string("See matches")} </button>
-  </div>;
+let make = (~gameId) => {
+  let game =
+    Utils.useResource(GetGameQuery.make(~gameId, ()), [|gameId|], data =>
+      {id: data##game##id, name: data##game##name, logo: data##game##logo}
+    );
+
+  switch (game) {
+  | NotLoaded => <div />
+  | Loading => <span> {ReasonReact.string("Loading...")} </span>
+  | Loaded(game) =>
+    let logo = game.logo->Belt.Option.mapWithDefault(<> </>, logo => <img src={Environment.storageUrl ++ logo} width="64" height="64" />);
+
+    <div>
+      logo
+      <span> {ReasonReact.string("Details of game with id: " ++ game.id)} </span>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
+    </div>;
+  | Failure => <Translation id="common.error" />
+  };
+};

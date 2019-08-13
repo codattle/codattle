@@ -34,6 +34,8 @@ spec:
               path: /health
               port: 8080
           env:
+            - name: MICRONAUT_ENVIRONMENTS
+              value: prod
             - name: CODATTLE_MONGODB_HOST
               value: "codattle-mongodb"
             - name: CODATTLE_MONGODB_PORT
@@ -48,3 +50,10 @@ spec:
               value: "codattle-rabbitmq"
             - name: CODATTLE_QUEUE_PORT
               value: "5672"
+            - name: CODATTLE_STORAGE_GOOGLE_BUCKET_NAME
+              value: codattle
+            - name: CODATTLE_STORAGE_GOOGLE_CREDENTIALS
+              valueFrom:
+              secretKeyRef:
+                name: codattle-secrets
+                key: google-storage-credentials

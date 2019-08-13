@@ -3,6 +3,7 @@ type Game {
     name: String!
     description: String!
     code: String!
+    logo: ID
 }
 
 type Script {
@@ -40,7 +41,16 @@ input NewResultFrame {
     content: String!
 }
 
+type File {
+    id: ID!
+    name: String!
+    owner: ID!
+    contentType: ID!
+}
+
 type Query {
+    game(gameId: ID!): Game!
+
     games: [Game!]!
 
     match(matchId: ID!): MatchWithGame!
@@ -51,7 +61,7 @@ type Query {
 }
 
 type Mutation {
-    createGame(name: String!, description: String!, code: String!): Game!
+    createGame(name: String!, description: String!, code: String!, logo: ID): Game!
 
     createMatch(name: String!, gameId: ID!): Match!
 

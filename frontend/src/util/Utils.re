@@ -51,8 +51,6 @@ let useRefresh = () => {
   (string_of_int(version), refresh);
 };
 
-let ifSome = (action, item) => Belt.Option.mapWithDefault(item, (), action);
-
 let componentList = (mapper, items) => items |> List.map(mapper) |> Array.of_list |> ReasonReact.array;
 
 let withDataAttributes = (~data, element) => ReasonReact.cloneElement(element, ~props=Obj.magic(Js.Dict.fromList(data)), [||]);

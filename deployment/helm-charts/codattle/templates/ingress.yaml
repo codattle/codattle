@@ -26,3 +26,7 @@ spec:
             backend:
               serviceName: codattle-core
               servicePort: 80
+          - path: /api/*
+            backend:
+              serviceName: codattle-core
+              servicePort: 80

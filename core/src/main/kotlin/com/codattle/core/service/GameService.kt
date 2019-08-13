@@ -2,6 +2,7 @@ package com.codattle.core.service
 
 import com.codattle.core.dao.GameDao
 import com.codattle.core.dao.common.Id
+import com.codattle.core.model.File
 import com.codattle.core.model.Game
 import com.codattle.core.model.Language
 import com.codattle.core.model.I18nText
@@ -23,11 +24,12 @@ class GameService(private val gameDao: GameDao) {
         return gameDao.getGames()
     }
 
-    fun createGame(name: String, description: String, code: String): Game {
+    fun createGame(name: String, description: String, code: String, logo: Id<File>? = null): Game {
         return gameDao.createGame(Game.Builder(
                 name = name,
                 description = I18nText(DEFAULT_DESCRIPTION_LANGUAGE, description),
                 code = code,
+                logo = logo,
                 // TODO: pass real user after implementing users
                 author = Id("nonexistent_user")
         ))
