@@ -55,7 +55,7 @@ let componentList = (mapper, items) => items |> List.map(mapper) |> Array.of_lis
 
 let withDataAttributes = (~data, element) => ReasonReact.cloneElement(element, ~props=Obj.magic(Js.Dict.fromList(data)), [||]);
 
-let withDataCy = (~dataCy, element) =>
+let withDataCy = (dataCy, element) =>
   switch (dataCy) {
   | Some(dataCy) => withDataAttributes(~data=[("data-cy", dataCy)], element)
   | None => element

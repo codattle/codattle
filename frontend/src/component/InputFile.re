@@ -7,14 +7,12 @@ let make = (~label=?, ~onChange=?, ~dataCy=?) => {
 
   let labelElement = label->Belt.Option.mapWithDefault(<> </>, label => <Translation id=label />);
 
-  Utils.withDataCy(
-    ~dataCy,
-    <div>
-      labelElement
-      <input
-        type_="file"
-        onChange={event => (onChange, getFileFromEvent(event)) |> OptionUtils.ifSome2((onChange, file) => onChange(file))}
-      />
-    </div>,
-  );
+  <div>
+    labelElement
+    <input
+      type_="file"
+      onChange={event => (onChange, getFileFromEvent(event)) |> OptionUtils.ifSome2((onChange, file) => onChange(file))}
+    />
+  </div>
+  |> Utils.withDataCy(dataCy);
 };

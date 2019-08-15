@@ -66,7 +66,7 @@ let make = (~matchId) => {
     switch (mode) {
     | Editing =>
       <div>
-        <ScriptEditor onChange={script => setScript(_ => script)} />
+        <ScriptEditor value=script onChange={script => setScript(_ => script)} />
         <button onClick={_ => joinMatchWithNewScript(script, game.id, matchId)}> {ReasonReact.string("Join match")} </button>
       </div>
     | Joining => <div> {ReasonReact.string("Joining match...")} </div>

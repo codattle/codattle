@@ -56,7 +56,9 @@ let make = () => {
         <div className=section> <InputFile label="gameWizard.logo" onChange={file => setLogo(_ => Some(file))} dataCy="logo" /> </div>
         <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} dataCy="name" /> </div>
         <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
-        <div className={j|$section $scriptEditor|j}> <ScriptEditor onChange={script => setScript(_ => script)} dataCy="code" /> </div>
+        <div className={j|$section $scriptEditor|j}>
+          <ScriptEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
+        </div>
       </div>
     )
   | Creating => <div> <Translation id="gameWizard.creating" /> </div>
