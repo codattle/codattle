@@ -2,6 +2,7 @@ common:
   next: Dalej
   previous: Wstecz
   error: Błąd
+  add: Dodaj
 gameWizard:
   name: Nazwa
   createGame: Stwórz grę
@@ -12,3 +13,5 @@ scriptEditor:
   code: Kod
 matchFrame:
   errorWhileParsingFrame: Błąd podczas parsowania ramki :(
+spriteList:
+  addSprite: Dodaj sprite

@@ -41,6 +41,7 @@ dependencies {
     compile 'org.litote.kmongo:kmongo:3.10.2'
     compile 'com.graphql-java-kickstart:graphql-java-tools:5.5.1'
     compile 'com.google.cloud:google-cloud-storage:1.85.0'
+    compile 'com.github.cloudyrock.mongock:mongock-core:3.0.0.BETA'
     kapt "io.micronaut:micronaut-inject-java"
     kapt "io.micronaut:micronaut-validation"
     kaptTest "io.micronaut:micronaut-inject-java"

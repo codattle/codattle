@@ -3,15 +3,15 @@ package com.codattle.core.dao.common
 import com.codattle.core.dao.Sequence
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReturnDocument
 import org.bson.conversions.Bson
+import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
-import java.time.Clock
 import java.time.Instant
-import java.time.ZonedDateTime
 import javax.inject.Singleton
 import kotlin.reflect.KProperty
 

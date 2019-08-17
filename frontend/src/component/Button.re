@@ -5,11 +5,12 @@ let rootStyle =
 let labelStyle = Css.(style([color(textColor)]));
 
 [@react.component]
-let make = (~onClick=?, ~label=?, ~children=?, ~dataCy=?) =>
+let make = (~onClick=?, ~label=?, ~disabled=false, ~dataCy=?, ~children=?) =>
   Utils.withDataCy(
     ~dataCy,
     ReasonReact.element(
       MaterialUi.Button.make(
+        ~disabled,
         ~onClick=_ => onClick |> OptionUtils.ifSome(onClick => onClick()),
         ~variant=`Contained,
         ~classes=[Root(rootStyle), Label(labelStyle)],
