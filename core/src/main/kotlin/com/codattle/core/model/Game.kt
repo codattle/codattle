@@ -18,7 +18,8 @@ data class Game(
         val comments: Map<Id<User>, String>,
         val logo: Id<File>?,
         val author: Id<User>,
-        val visibility: Visibility
+        val visibility: Visibility,
+        val sprites: List<Sprite>
 ) : DaoModel<Game> {
 
     enum class Visibility {
@@ -37,7 +38,8 @@ data class Game(
             val comments: Map<Id<User>, String> = mapOf(),
             val logo: Id<File>? = null,
             val author: Id<User>? = null,
-            val visibility: Visibility = Visibility.PRIVATE
+            val visibility: Visibility = Visibility.PRIVATE,
+            val sprites: List<Sprite> = listOf()
     ) : DaoModelBuilder<Game> {
 
         override fun build(): Game {
@@ -53,7 +55,8 @@ data class Game(
                     comments = comments,
                     logo = logo,
                     author = nonNull(author, "author"),
-                    visibility = visibility
+                    visibility = visibility,
+                    sprites = sprites
             )
         }
 
@@ -75,7 +78,8 @@ data class Game(
                 comments = comments,
                 logo = logo,
                 author = author,
-                visibility = visibility
+                visibility = visibility,
+                sprites = sprites
         )
     }
 }
