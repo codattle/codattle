@@ -2,6 +2,7 @@ common:
   next: Next
   previous: Previous
   error: Error
+  add: Add
 gameWizard:
   name: Name
   createGame: Create game
@@ -12,3 +13,5 @@ scriptEditor:
   code: Code
 matchFrame:
   errorWhileParsingFrame: Error while parsing frame :(
+spriteList:
+  addSprite: Add sprite

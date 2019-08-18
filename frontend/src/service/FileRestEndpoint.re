@@ -1,4 +1,4 @@
-let sendImage = (file: File.t) =>
+let sendFile = (file: File.t) =>
   Fetch.fetchWithInit(
     "/api/v1/file",
     Fetch.RequestInit.make(

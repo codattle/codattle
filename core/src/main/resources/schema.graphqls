@@ -1,9 +1,15 @@
+type Sprite {
+    name: String!
+    image: ID!
+}
+
 type Game {
     id: ID!
     name: String!
     description: String!
     code: String!
     logo: ID
+    sprites: [Sprite!]!
 }
 
 type Script {
@@ -41,6 +47,11 @@ input NewResultFrame {
     content: String!
 }
 
+input NewSprite {
+    name: String!
+    image: ID!
+}
+
 type File {
     id: ID!
     name: String!
@@ -61,7 +72,9 @@ type Query {
 }
 
 type Mutation {
-    createGame(name: String!, description: String!, code: String!, logo: ID): Game!
+    createGame(name: String!, description: String!, code: String!, logo: ID, sprites: [NewSprite!]): Game!
+
+    addSpriteToGame(gameId: ID!, sprite: NewSprite!): Boolean!
 
     createMatch(name: String!, gameId: ID!): Match!
 

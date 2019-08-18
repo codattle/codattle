@@ -5,8 +5,8 @@ type mode =
 
 module CreateGameMutation = [%graphql
   {|
-  mutation($name: String!, $description: String!, $code: String!, $logo: ID) {
-    createGame(name: $name, description: $description, code: $code, logo: $logo) {
+  mutation($name: String!, $description: String!, $code: String!, $logo: ID, $sprites: [NewSprite!]) {
+    createGame(name: $name, description: $description, code: $code, logo: $logo, sprites: $sprites) {
       id
     }
   }
@@ -26,18 +26,29 @@ let make = () => {
   let (name, setName) = React.useState(() => "");
   let (script, setScript) = React.useState(() => "");
   let (logo: option(File.t), setLogo) = React.useState(() => None);
+  let (sprites, setSprites) = React.useState(() => []);
 
   let sendLogo = () => {
     logo->Belt.Option.mapWithDefault(Repromise.Rejectable.resolved(None), logo =>
-      FileRestEndpoint.sendImage(logo) |> Repromise.Rejectable.map(fileId => Some(fileId))
+      FileRestEndpoint.sendFile(logo) |> Repromise.Rejectable.map(fileId => Some(fileId))
     );
+  };
+
+  let sendSprite = ({name, file}: SpriteList.notUploadedSprite) => {
+    FileRestEndpoint.sendFile(file) |> Repromise.Rejectable.map(fileId => {"name": name, "image": fileId});
+  };
+
+  let sendSprites = () => {
+    Repromise.Rejectable.all(sprites |> List.map(sendSprite));
   };
 
   let createGame = () => {
     setMode(_ => Creating);
-    sendLogo()
-    |> Repromise.Rejectable.andThen(logoFileId =>
-         GraphqlService.executeQuery(CreateGameMutation.make(~name, ~description="", ~code=script, ~logo=?logoFileId, ()))
+    PromiseUtils.all2(sendLogo(), sendSprites())
+    |> Repromise.Rejectable.andThen(((logo, sprites)) =>
+         GraphqlService.executeQuery(
+           CreateGameMutation.make(~name, ~description="", ~code=script, ~logo?, ~sprites=sprites |> Array.of_list, ()),
+         )
          |> Repromise.Rejectable.catch(_error => Repromise.Rejectable.rejected(""))
        )
     |> Repromise.Rejectable.catch(_error => Repromise.resolved(None))
@@ -58,6 +69,9 @@ let make = () => {
         <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
         <div className={j|$section $scriptEditor|j}>
           <ScriptEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
+        </div>
+        <div className=section>
+          <SpriteList notUploadedSprites=sprites onNotUploadedSpritesChange={sprites => setSprites(_ => sprites)} />
         </div>
       </div>
     )

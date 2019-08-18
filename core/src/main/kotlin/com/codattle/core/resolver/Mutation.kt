@@ -3,7 +3,6 @@ package com.codattle.core.resolver
 import com.codattle.core.dao.common.Id
 import com.codattle.core.dto.MatchWithScriptsDTO
 import com.codattle.core.model.*
-import com.codattle.core.service.FileService
 import com.codattle.core.service.GameService
 import com.codattle.core.service.MatchService
 import com.codattle.core.service.ScriptService
@@ -15,8 +14,13 @@ class Mutation(private val gameService: GameService,
                private val matchService: MatchService,
                private val scriptService: ScriptService) : GraphQLMutationResolver {
 
-    fun createGame(name: String, description: String, code: String, logo: Id<File>?): Game {
-        return gameService.createGame(name, description, code, logo)
+    fun createGame(name: String, description: String, code: String, logo: Id<File>?, sprites: List<Sprite>?): Game {
+        return gameService.createGame(name, description, code, logo, sprites ?: listOf())
+    }
+
+    fun addSpriteToGame(gameId: Id<Game>, sprite: Sprite): Boolean {
+        gameService.addSprite(gameId, sprite)
+        return true
     }
 
     fun createMatch(name: String, gameId: Id<Game>): MatchWithScriptsDTO {
