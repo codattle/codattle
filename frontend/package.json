@@ -29,6 +29,7 @@
     "dotenv-webpack": "^1.7.0",
     "graphql_ppx": "^0.2.8",
     "react": "^16.8.6",
+    "react-ace": "^7.0.2",
     "react-dom": "^16.8.6",
     "react-intl": "^2.9.0",
     "reason-react": "^0.7.0"

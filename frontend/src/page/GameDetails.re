@@ -29,7 +29,7 @@ let make = (~gameId) => {
         id: data##game##id,
         name: data##game##name,
         logo: data##game##logo,
-        sprites: data##game##sprites |> Array.map(sprite => SpriteList.{name: sprite##name, fileId: sprite##image}) |> Array.to_list,
+        sprites: data##game##sprites |> Array.map(sprite => {name: sprite##name, SpriteList.fileId: sprite##image}) |> Array.to_list,
       }
     );
 
