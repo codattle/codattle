@@ -1,10 +1,17 @@
+type sprite = {
+  name: string,
+  fileId: string,
+};
+
+type game = {sprites: list(sprite)};
+
 type matchResult = {
   winner: option(int),
   frames: ArrayWithSelectedItem.t(string),
 };
 
 type match = {
-  id: string,
+  game,
   result: option(matchResult),
 };
 
@@ -13,7 +20,10 @@ module GetMatchQuery = [%graphql
   query($matchId: ID!) {
     match_: match(matchId: $matchId) {
       game {
-        id
+        sprites {
+          name
+          image
+        }
       }
       result {
         winner
@@ -37,7 +47,9 @@ let make = (~matchId) => {
   let (match, setMatch) =
     Utils.useEditableResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data =>
       {
-        id: data##match##game##id,
+        game: {
+          sprites: data##match##game##sprites |> Js.Array.map(sprite => {name: sprite##name, fileId: sprite##image}) |> Array.to_list,
+        },
         result:
           data##match##result->Belt.Option.map(result => {winner: result##winner, frames: result##resultFrames |> parseResultFrames}),
       }
@@ -55,8 +67,13 @@ let make = (~matchId) => {
             let winner =
               result.winner
               ->Belt.Option.mapWithDefault(<> </>, winner => <div> {ReasonReact.string("Winner: " ++ string_of_int(winner + 1))} </div>);
+            let context =
+              MatchFrame.{
+                fileIdBySpriteName:
+                  match.game.sprites |> List.map(sprite => (sprite.name, sprite.fileId)) |> Array.of_list |> Belt.Map.String.fromArray,
+              };
             let frame =
-              result.frames->ArrayWithSelectedItem.getSelected->Belt.Option.mapWithDefault(<> </>, frame => <MatchFrame frame />);
+              result.frames->ArrayWithSelectedItem.getSelected->Belt.Option.mapWithDefault(<> </>, frame => <MatchFrame frame context />);
             let nextFrameButton =
               ArrayWithSelectedItem.canNext(result.frames)
                 ? <Button

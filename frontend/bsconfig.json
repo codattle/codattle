@@ -20,7 +20,8 @@
     "bs-css",
     "@jsiebern/bs-material-ui",
     "bs-react-intl",
-    "@glennsl/bs-json"
+    "@glennsl/bs-json",
+    "rationale"
   ],
   "ppx-flags": [
     "graphql_ppx/ppx"

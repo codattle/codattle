@@ -1,3 +1,5 @@
+open Rationale.Option;
+
 type uploadedSprite = {
   name: string,
   fileId: string,
@@ -51,11 +53,11 @@ let make =
   let (dialogOpen, setDialogOpen) = React.useState(() => false);
 
   let addSprite = sprite => {
-    onNotUploadedSpriteAdded |> OptionUtils.executeIfSome(sprite);
-    onNotUploadedSpritesChange |> OptionUtils.executeIfSome(notUploadedSprites @ [sprite]);
+    onNotUploadedSpriteAdded |> OptionUtils.execIfSome(sprite);
+    onNotUploadedSpritesChange |> OptionUtils.execIfSome(notUploadedSprites @ [sprite]);
   };
   let handleDialogClose = sprite => {
-    sprite |> OptionUtils.ifSome(sprite => addSprite(sprite));
+    sprite |> iter(addSprite);
     setDialogOpen(_ => false);
   };
   let spriteNames =
