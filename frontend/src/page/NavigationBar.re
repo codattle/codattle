@@ -1,3 +1,5 @@
+open OptionUtils;
+
 [@react.component]
 let make = (~changeLocale=?) => {
   <div>
@@ -6,7 +8,7 @@ let make = (~changeLocale=?) => {
     <Link href="/new-game"> {ReasonReact.string("Create game")} </Link>
     <Link href="/games"> {ReasonReact.string("Games")} </Link>
     <Link href="/profile"> {ReasonReact.string("Profile")} </Link>
-    <Button onClick={() => changeLocale |> OptionUtils.ifSome(changeLocale=>changeLocale(Locale.en))}> {ReasonReact.string("EN")} </Button>
-    <Button onClick={() => changeLocale |> OptionUtils.ifSome(changeLocale=>changeLocale(Locale.pl))}> {ReasonReact.string("PL")} </Button>
+    <Button onClick={() => changeLocale |> execIfSome(Locale.en)}> {ReasonReact.string("EN")} </Button>
+    <Button onClick={() => changeLocale |> execIfSome(Locale.pl)}> {ReasonReact.string("PL")} </Button>
   </div>;
 };

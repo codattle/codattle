@@ -24,6 +24,7 @@ var firstPlayerChoice = parseChoice(runPlayerScript(0));
 var secondPlayerChoice = parseChoice(runPlayerScript(1));
 
 emitFrame({
+  mode: "text",
   output: firstPlayerChoice + " vs " + secondPlayerChoice
 });
 

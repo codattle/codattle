@@ -1,3 +1,5 @@
+open OptionUtils;
+
 module AceEditor = {
   [@bs.module "react-ace"] [@react.component]
   external make:
@@ -26,7 +28,7 @@ let make = (~value, ~onChange=?, ~dataCy=?) => {
   <div className=Styles.editorContainer>
     <AceEditor
       value
-      onChange={(value, _event) => onChange |> OptionUtils.ifSome(onChange => onChange(value))}
+      onChange={(value, _event) => onChange |> execIfSome(value)}
       mode="javascript"
       theme="tomorrow"
       className=Styles.editor

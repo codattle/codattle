@@ -1,5 +1,5 @@
-let ifSome = (action, item) => Belt.Option.mapWithDefault(item, (), action);
+open Rationale.Option;
 
-let ifSome2 = (action, (item1, item2)) => item1 |> ifSome(item1 => item2 |> ifSome(item2 => action(item1, item2)));
+let ifSome2 = (action, (item1, item2)) => item1 |> iter(item1 => item2 |> iter(item2 => action(item1, item2)));
 
-let executeIfSome = (argument, action) => action |> ifSome(action => action(argument));
+let execIfSome = (argument, action) => action |> iter(action => action(argument));
