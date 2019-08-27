@@ -24,7 +24,7 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
     }
 
     fun createGame(name: String = "Test game", description: String = "It's test game", code: String = "end();"): Game {
-        return daoUtils.save(Game.Builder(name = name, description = I18nText(Language.ENGLISH, description), code = code, author = createUser().id))
+        return daoUtils.save(Game.Builder(name = name, description = listOf(LanguageMap(Language.EN, description)), code = code, author = createUser().id))
     }
 
     fun createGames(count: Int = 3): List<Game> {

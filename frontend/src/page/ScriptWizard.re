@@ -1,4 +1,16 @@
-type game = {id: string};
+open Rationale.Option;
+open Rationale.Option.Infix;
+open Rationale.RList;
+
+type languageMap = {
+  language: Language.languageName,
+  content: string,
+};
+
+type game = {
+  id: string,
+  description: list(languageMap),
+};
 
 type mode =
   | Editing
@@ -10,7 +22,11 @@ module GetMatchQuery = [%graphql
   query($matchId: ID!) {
     match_: match(matchId: $matchId) {
       game {
-        id
+        id,
+        description {
+          language,
+          content
+        }
       }
     }
   }
@@ -35,12 +51,45 @@ module JoinMatchMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let standardPadding = 15 |> px;
+
+  let header = style([fontWeight(`bold)]);
+  let section = style([marginTop(standardPadding), marginBottom(standardPadding)]);
+  let noDescription = style([fontStyle(`italic)]);
+};
+
+let findWithLanguage = (languageName: Language.languageName, descriptions: list(languageMap)) => {
+  descriptions |> find(x => x.language === languageName);
+};
+
+let descriptionContentOrDefault = (languageName: Language.languageName, descriptions: list(languageMap)) => {
+  findWithLanguage(languageName, descriptions)
+  |? findWithLanguage(Language.defaultLanguage.name, descriptions)
+  |? head(descriptions)
+  |> fmap(languageMap => ReasonReact.string(languageMap.content))
+  |> default(<span className=Styles.noDescription> <Translation id="scriptWizard.noDescription" /> </span>);
+};
+
+let descriptionHeader = {
+  <span className=Styles.header> <Translation id="scriptWizard.description" /> </span>;
+};
+
 [@react.component]
-let make = (~matchId) => {
+let make = (~matchId: string) => {
+  let language = React.useContext(LanguageContext.context);
   let (script, setScript) = React.useState(() => "");
   let (mode, setMode) = React.useState(() => Editing);
 
-  let game = Utils.useResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data => {id: data##match##game##id});
+  let game =
+    Utils.useResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data =>
+      {
+        id: data##match##game##id,
+        description: data##match##game##description |> Array.map(x => {language: x##language, content: x##content}) |> Array.to_list,
+      }
+    );
 
   let joinMatchWithNewScript = (script: string, gameId: string, matchId: string) => {
     setMode(_ => Joining);
@@ -61,18 +110,22 @@ let make = (~matchId) => {
 
   switch (game) {
   | NotLoaded => <div />
-  | Loading => <div> {ReasonReact.string("Loading game...")} </div>
+  | Loading => <div> <Translation id="scriptWizard.loadingGame" /> </div>
   | Loaded(game) =>
     switch (mode) {
     | Editing =>
-      <div>
-        <ScriptEditor value=script onChange={script => setScript(_ => script)} />
-        <button onClick={_ => joinMatchWithNewScript(script, game.id, matchId)}> {ReasonReact.string("Join match")} </button>
-      </div>
-    | Joining => <div> {ReasonReact.string("Joining match...")} </div>
+      Styles.(
+        <div className=section>
+          <div className=section>
+            <ExpansionPanel header=descriptionHeader content={descriptionContentOrDefault(language.name, game.description)} />
+          </div>
+          <div className=section> <ScriptEditor value=script onChange={script => setScript(_ => script)} /> </div>
+          <Button onClick={_ => joinMatchWithNewScript(script, game.id, matchId)}> <Translation id="scriptWizard.joinMatch" /> </Button>
+        </div>
+      )
+    | Joining => <div> <Translation id="scriptWizard.joiningMatch" /> </div>
     | Failure => <div> {ReasonReact.string("Error while joining game :(")} </div>
     }
-
   | Failure => <div> {ReasonReact.string("Error while loading game :(")} </div>
   };
 };

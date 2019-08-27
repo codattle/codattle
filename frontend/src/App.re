@@ -1,7 +1,7 @@
 [@react.component]
 let make = () => {
   let url = ReasonReactRouter.useUrl();
-  let (locale, setLocale) = React.useState(() => Locale.en);
+  let (language, setLanguage) = React.useState(() => Language.defaultLanguage);
 
   let page =
     switch (url.path) {
@@ -18,11 +18,20 @@ let make = () => {
     | _ => <NotFoundPage />
     };
 
-  ReasonReact.element(
-    ReactIntl.IntlProvider.make(
-      ~locale="en",
-      ~messages=locale.translations,
-      <div> <NavigationBar changeLocale={locale => setLocale(_ => locale)} /> page </div>,
-    ),
+  React.createElement(
+    LanguageContext.provider,
+    {
+      "value": language,
+      "children":
+        ReasonReact.element(
+          {
+            ReactIntl.IntlProvider.make(
+              ~locale=language.locale,
+              ~messages=language.translations,
+              <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>,
+            );
+          },
+        ),
+    },
   );
 };

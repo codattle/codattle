@@ -5,3 +5,5 @@ terraform.tfstate.backup
 playbook.retry
 node_modules/
 .vscode/
+.idea/
+*.log

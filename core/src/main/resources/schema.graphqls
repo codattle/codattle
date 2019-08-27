@@ -1,3 +1,13 @@
+enum Language {
+    PL
+    EN
+}
+
+type LanguageMap {
+    language: Language!
+    content: String!
+}
+
 type Sprite {
     name: String!
     image: ID!
@@ -6,7 +16,7 @@ type Sprite {
 type Game {
     id: ID!
     name: String!
-    description: String!
+    description: [LanguageMap!]!
     code: String!
     logo: ID
     sprites: [Sprite!]!
