@@ -10,7 +10,7 @@ class GameService(private val gameDao: GameDao) {
 
     companion object {
         // TODO: remove after implementing translatable descriptions
-        private val DEFAULT_DESCRIPTION_LANGUAGE = Language.ENGLISH
+        private val DEFAULT_DESCRIPTION_LANGUAGE = Language.EN
     }
 
     fun getGame(gameId: Id<Game>): Game {
@@ -24,7 +24,7 @@ class GameService(private val gameDao: GameDao) {
     fun createGame(name: String, description: String, code: String, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {
         return gameDao.createGame(Game.Builder(
                 name = name,
-                description = I18nText(DEFAULT_DESCRIPTION_LANGUAGE, description),
+                description = listOf(LanguageMap(DEFAULT_DESCRIPTION_LANGUAGE, description)),
                 code = code,
                 logo = logo,
                 // TODO: pass real user after implementing users

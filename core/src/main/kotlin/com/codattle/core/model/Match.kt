@@ -3,7 +3,6 @@ package com.codattle.core.model
 import com.codattle.core.dao.common.DaoModel
 import com.codattle.core.dao.common.DaoModelBuilder
 import com.codattle.core.dao.common.Id
-import com.codattle.core.model.utils.ModelUtils
 import com.codattle.core.model.utils.ModelUtils.nonNull
 import java.time.Instant
 
