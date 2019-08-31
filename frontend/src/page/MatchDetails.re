@@ -22,7 +22,9 @@ module GetMatchQuery = [%graphql
       game {
         sprites {
           name
-          image
+          image {
+            id
+          }
         }
       }
       result {
@@ -48,7 +50,7 @@ let make = (~matchId) => {
     Utils.useEditableResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data =>
       {
         game: {
-          sprites: data##match##game##sprites |> Js.Array.map(sprite => {name: sprite##name, fileId: sprite##image}) |> Array.to_list,
+          sprites: data##match##game##sprites |> Js.Array.map(sprite => {name: sprite##name, fileId: sprite##image##id}) |> Array.to_list,
         },
         result:
           data##match##result->Belt.Option.map(result => {winner: result##winner, frames: result##resultFrames |> parseResultFrames}),

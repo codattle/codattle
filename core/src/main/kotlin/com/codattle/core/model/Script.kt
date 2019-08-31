@@ -9,7 +9,6 @@ import java.time.Instant
 data class Script(
         override val id: Id<Script>,
         override val creationDate: Instant,
-        override val modificationDate: Instant,
         val game: Id<Game>,
         val code: String,
         val author: Id<User>,
@@ -23,7 +22,6 @@ data class Script(
     data class Builder(
             override var id: Id<Script>? = null,
             override var creationDate: Instant? = null,
-            override var modificationDate: Instant? = null,
             var game: Id<Game>? = null,
             var code: String? = null,
             var author: Id<User>? = null,
@@ -34,16 +32,11 @@ data class Script(
             return Script(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
-                    modificationDate = nonNull(modificationDate, "modificationDate"),
                     game = nonNull(game, "game"),
                     code = nonNull(code, "code"),
                     author = nonNull(author, "author"),
                     visibility = visibility
             )
-        }
-
-        override fun getModelClass(): Class<Script> {
-            return Script::class.java
         }
     }
 
@@ -51,7 +44,6 @@ data class Script(
         return Builder(
                 id = id,
                 creationDate = creationDate,
-                modificationDate = modificationDate,
                 game = game,
                 code = code,
                 author = author,

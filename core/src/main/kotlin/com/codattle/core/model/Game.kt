@@ -9,13 +9,10 @@ import java.time.Instant
 data class Game(
         override val id: Id<Game>,
         override val creationDate: Instant,
-        override val modificationDate: Instant,
         val name: String,
-        val description: List<LanguageMap>,
+        val description: I18nText,
         val code: String,
         val scriptTemplate: String,
-        val rating: Map<Id<User>, GameOpinion>,
-        val comments: Map<Id<User>, String>,
         val logo: Id<File>?,
         val author: Id<User>,
         val visibility: Visibility,
@@ -29,13 +26,10 @@ data class Game(
     data class Builder(
             override var id: Id<Game>? = null,
             override var creationDate: Instant? = null,
-            override var modificationDate: Instant? = null,
             val name: String? = null,
-            val description: List<LanguageMap> = listOf(),
+            val description: I18nText = I18nText(),
             val code: String? = null,
             val scriptTemplate: String = "",
-            val rating: Map<Id<User>, GameOpinion> = mapOf(),
-            val comments: Map<Id<User>, String> = mapOf(),
             val logo: Id<File>? = null,
             val author: Id<User>? = null,
             val visibility: Visibility = Visibility.PRIVATE,
@@ -46,22 +40,15 @@ data class Game(
             return Game(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
-                    modificationDate = nonNull(modificationDate, "modificationDate"),
                     name = nonNull(name, "name"),
                     description = description,
                     code = nonNull(code, "code"),
                     scriptTemplate = scriptTemplate,
-                    rating = rating,
-                    comments = comments,
                     logo = logo,
                     author = nonNull(author, "author"),
                     visibility = visibility,
                     sprites = sprites
             )
-        }
-
-        override fun getModelClass(): Class<Game> {
-            return Game::class.java
         }
     }
 
@@ -69,13 +56,10 @@ data class Game(
         return Builder(
                 id = id,
                 creationDate = creationDate,
-                modificationDate = modificationDate,
                 name = name,
                 description = description,
                 code = code,
                 scriptTemplate = scriptTemplate,
-                rating = rating,
-                comments = comments,
                 logo = logo,
                 author = author,
                 visibility = visibility,

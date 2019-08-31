@@ -11,14 +11,17 @@ import java.time.ZonedDateTime
 data class User(
         override val id: Id<User>,
         override val creationDate: Instant,
-        override val modificationDate: Instant,
         val username: String
 ) : DaoModel<User> {
+
+    companion object {
+        // TODO: delete after implementing authentication be Keycloak
+        val DEFAULT_USER = Id<User>("DEFAULT_USER")
+    }
 
     data class Builder(
             override var id: Id<User>? = null,
             override var creationDate: Instant? = null,
-            override var modificationDate: Instant? = null,
             var username: String? = null
     ) : DaoModelBuilder<User> {
 
@@ -26,13 +29,8 @@ data class User(
             return User(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
-                    modificationDate = nonNull(modificationDate, "modificationDate"),
                     username = nonNull(username, "username")
             )
-        }
-
-        override fun getModelClass(): Class<User> {
-            return User::class.java
         }
     }
 
@@ -40,7 +38,6 @@ data class User(
         return Builder(
                 id = id,
                 creationDate = creationDate,
-                modificationDate = modificationDate,
                 username = username
         )
     }

@@ -4,6 +4,8 @@ import com.codattle.core.dao.common.DaoUtils
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
 import com.codattle.core.model.Sprite
+import com.codattle.core.model.User
+import com.mongodb.client.model.Updates
 import org.litote.kmongo.push
 import javax.inject.Singleton
 
@@ -11,15 +13,15 @@ import javax.inject.Singleton
 class GameDao(private val daoUtils: DaoUtils) {
 
     fun getGame(gameId: Id<Game>): Game {
-        return daoUtils.get(gameId, Game::class.java)
+        return daoUtils.get(gameId)
                 ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exist.")
     }
 
     fun getGames(): List<Game> {
-        return daoUtils.getMany(Game::class.java)
+        return daoUtils.getMany()
     }
 
-    fun createGame(game: Game.Builder): Game {
+    fun saveGame(game: Game.Builder): Game {
         return daoUtils.save(game)
     }
 

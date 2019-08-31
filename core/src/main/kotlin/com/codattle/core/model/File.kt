@@ -10,7 +10,6 @@ import java.time.Instant
 data class File(
         override val id: Id<File>,
         override val creationDate: Instant,
-        override val modificationDate: Instant,
         val name: String,
         val owner: Id<User>,
         val contentType: MediaType
@@ -19,7 +18,6 @@ data class File(
     data class Builder(
             override var id: Id<File>? = null,
             override var creationDate: Instant? = null,
-            override var modificationDate: Instant? = null,
             var name: String? = null,
             var owner: Id<User>? = null,
             val contentType: MediaType? = null
@@ -29,15 +27,10 @@ data class File(
             return File(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
-                    modificationDate = nonNull(modificationDate, "modificationDate"),
                     name = nonNull(name, "name"),
                     owner = nonNull(owner, "owner"),
                     contentType = nonNull(contentType, "contentType")
             )
-        }
-
-        override fun getModelClass(): Class<File> {
-            return File::class.java
         }
     }
 
@@ -45,7 +38,6 @@ data class File(
         return Builder(
                 id = id,
                 creationDate = creationDate,
-                modificationDate = modificationDate,
                 name = name,
                 owner = owner,
                 contentType = contentType

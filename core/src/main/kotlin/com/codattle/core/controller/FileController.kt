@@ -1,5 +1,6 @@
 package com.codattle.core.controller
 
+import com.codattle.core.model.User
 import com.codattle.core.service.FileService
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Consumes
@@ -16,7 +17,7 @@ class FileController(private val fileService: FileService) {
     @Produces(MediaType.APPLICATION_JSON)
     fun sendImage(file: CompletedFileUpload): Map<String, Any> {
         val contentType = file.contentType.orElseThrow { IllegalArgumentException("No content type") }
-        val image = fileService.addImage(file.name, contentType, file.inputStream)
+        val image = fileService.addImage(file.name, contentType, file.inputStream, User.DEFAULT_USER)
         return mapOf("id" to image.id.value)
     }
 }

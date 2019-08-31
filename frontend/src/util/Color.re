@@ -1,5 +1,4 @@
 open Rationale.Function;
-open Rationale.Option;
 
 type t;
 

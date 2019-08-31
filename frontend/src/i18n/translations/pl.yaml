@@ -21,3 +21,6 @@ matchFrame:
   errorWhileParsingFrame: Błąd podczas parsowania ramki :(
 spriteList:
   addSprite: Dodaj sprite
+ratingForm:
+  send: Wyślij ocenę
+  send: Edytuj ocenę

@@ -1,7 +1,6 @@
 package com.codattle.core.service
 
 import com.codattle.core.dao.common.DaoUtils
-import com.codattle.core.model.Match
 import com.codattle.core.model.Script
 import com.codattle.core.test.BaseTest
 import com.codattle.core.test.DatabasePopulator
@@ -41,7 +40,7 @@ class MatchServiceTest : BaseTest() {
         val gameId = databasePopulator.createGame().id
         val existentMatches = databasePopulator.createMatches(game = gameId)
 
-        val fetchedMatches = matchService.getMatches(gameId)
+        val fetchedMatches = matchService.getMatchesOfGame(gameId)
 
         assertThat(fetchedMatches).isEqualTo(existentMatches)
     }
@@ -49,7 +48,7 @@ class MatchServiceTest : BaseTest() {
 
     @Test
     fun `get matches of nonexistent game`() {
-        val fetchedMatches = matchService.getMatches(TestUtils.nonexistentGameId)
+        val fetchedMatches = matchService.getMatchesOfGame(TestUtils.nonexistentGameId)
 
         assertThat(fetchedMatches).isEmpty()
     }
@@ -91,7 +90,7 @@ class MatchServiceTest : BaseTest() {
 
         matchService.joinMatch(match.id, scriptId)
 
-        val matchAfterJoining = dao.get(match.id, Match::class.java)!!
+        val matchAfterJoining = dao.get(match.id)!!
         assertThat(matchAfterJoining.scripts).isEqualTo(listOf(scriptId))
     }
 
@@ -102,7 +101,7 @@ class MatchServiceTest : BaseTest() {
 
         scripts.forEach { matchService.joinMatch(match.id, it.id) }
 
-        val matchAfterJoining = dao.get(match.id, Match::class.java)!!
+        val matchAfterJoining = dao.get(match.id)!!
         assertThat(matchAfterJoining.scripts).isEqualTo(scripts.map { it.id })
         assertThat(queueHelper.countMessages(QueueHelper.SIMULATION)).isEqualTo(1)
         assertThat(queueHelper.readMessage(QueueHelper.SIMULATION)).isEqualTo(match.id.toString().toByteArray())

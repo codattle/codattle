@@ -1,7 +1,7 @@
 package com.codattle.core.service
 
+import com.codattle.core.model.I18nText
 import com.codattle.core.model.Language
-import com.codattle.core.model.LanguageMap
 import com.codattle.core.test.BaseTest
 import com.codattle.core.test.TestUtils
 import org.assertj.core.api.Assertions.assertThat
@@ -41,12 +41,15 @@ class GameServiceTest : BaseTest() {
 
     @Test
     fun `create game`() {
-        val createdGame = gameService.createGame(name = "The Best Game", description = "It's the best game", code = "end(0);")
-
-
+        val createdGame = gameService.createGame(
+                name = "The Best Game",
+                description = "It's the best game",
+                code = "end(0);",
+                author = TestUtils.nonexistentUserId)
 
         assertThat(createdGame.name).isEqualTo("The Best Game")
-        assertThat(createdGame.description).isEqualTo(listOf(LanguageMap(Language.EN, "It's the best game")))
+        assertThat(createdGame.description).isEqualTo(I18nText.single(Language.EN, "It's the best game"))
         assertThat(createdGame.code).isEqualTo("end(0);")
+        assertThat(createdGame.author).isEqualTo(TestUtils.nonexistentUserId)
     }
 }

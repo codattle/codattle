@@ -1,11 +1,10 @@
 package com.codattle.core.service
 
 import com.codattle.core.dao.ScriptDao
-import com.codattle.core.dao.common.DaoUtils
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
 import com.codattle.core.model.Script
-import org.litote.kmongo.`in`
+import com.codattle.core.model.User
 import javax.inject.Singleton
 
 @Singleton
@@ -19,12 +18,11 @@ class ScriptService(private val scriptDao: ScriptDao) {
         return scriptDao.getScripts(ids)
     }
 
-    fun createScript(gameId: Id<Game>, code: String): Script {
-        return scriptDao.createScript(Script.Builder(
+    fun createScript(gameId: Id<Game>, code: String, author: Id<User>): Script {
+        return scriptDao.saveScript(Script.Builder(
                 game = gameId,
                 code = code,
-                // TODO: pass real user after implementing users
-                author = Id("nonexistent_user")
+                author = author
         ))
     }
 }
