@@ -4,6 +4,7 @@ import com.codattle.core.dao.common.DaoUtils
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
 import com.codattle.core.model.Script
+import com.codattle.core.model.ScriptBuilder
 import org.litote.kmongo.`in`
 import javax.inject.Singleton
 
@@ -18,7 +19,7 @@ class ScriptDao(private val daoUtils: DaoUtils) {
         return if (ids.isEmpty()) emptyList() else daoUtils.getMany(Script::id.`in`(ids))
     }
 
-    fun saveScript(script: Script.Builder): Script {
+    fun saveScript(script: ScriptBuilder): Script {
         return daoUtils.save(script)
     }
 }

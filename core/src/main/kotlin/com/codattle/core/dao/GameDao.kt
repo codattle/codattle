@@ -3,6 +3,7 @@ package com.codattle.core.dao
 import com.codattle.core.dao.common.DaoUtils
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
+import com.codattle.core.model.GameBuilder
 import com.codattle.core.model.Sprite
 import com.codattle.core.model.User
 import com.mongodb.client.model.Updates
@@ -21,7 +22,7 @@ class GameDao(private val daoUtils: DaoUtils) {
         return daoUtils.getMany()
     }
 
-    fun saveGame(game: Game.Builder): Game {
+    fun saveGame(game: GameBuilder): Game {
         return daoUtils.save(game)
     }
 

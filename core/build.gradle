@@ -8,13 +8,15 @@ plugins {
     id "jacoco"
 }
 
-version "0.0.1-SNAPSHOT"
-group "com.codattle"
+allprojects {
+    version "0.0.1-SNAPSHOT"
+    group "com.codattle"
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "https://jcenter.bintray.com" }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://jcenter.bintray.com" }
+    }
 }
 
 dependencyManagement {
@@ -42,6 +44,8 @@ dependencies {
     compile 'com.graphql-java-kickstart:graphql-java-tools:5.5.1'
     compile 'com.google.cloud:google-cloud-storage:1.85.0'
     compile 'com.github.cloudyrock.mongock:mongock-core:3.0.0.BETA'
+    compileOnly project("annotation-processor")
+    kapt project("annotation-processor")
     kapt "io.micronaut:micronaut-inject-java"
     kapt "io.micronaut:micronaut-validation"
     kaptTest "io.micronaut:micronaut-inject-java"

@@ -1,11 +1,13 @@
 package com.codattle.core.model
 
+import com.codattle.annotation.processing.annotation.GenerateDaoModelBuilder
 import com.codattle.core.dao.common.DaoModel
 import com.codattle.core.dao.common.DaoModelBuilder
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.utils.ModelUtils.nonNull
 import java.time.Instant
 
+@GenerateDaoModelBuilder
 data class Script(
         override val id: Id<Script>,
         override val creationDate: Instant,
@@ -19,36 +21,14 @@ data class Script(
         PUBLIC, PRIVATE
     }
 
-    data class Builder(
-            override var id: Id<Script>? = null,
-            override var creationDate: Instant? = null,
-            var game: Id<Game>? = null,
-            var code: String? = null,
-            var author: Id<User>? = null,
-            var visibility: Visibility = Visibility.PRIVATE
-    ) : DaoModelBuilder<Script> {
-
-        override fun build(): Script {
-            return Script(
-                    id = nonNull(id, "id"),
-                    creationDate = nonNull(creationDate, "creationDate"),
-                    game = nonNull(game, "game"),
-                    code = nonNull(code, "code"),
-                    author = nonNull(author, "author"),
-                    visibility = visibility
-            )
+    companion object {
+        fun builder(): ScriptBuilder {
+            return ScriptBuilder.withoutDefault(visibility = Visibility.PRIVATE)
         }
     }
 
-    override fun toBuilder(): Builder {
-        return Builder(
-                id = id,
-                creationDate = creationDate,
-                game = game,
-                code = code,
-                author = author,
-                visibility = visibility
-        )
+    override fun toBuilder(): ScriptBuilder {
+        return ScriptBuilder.fromModel(this)
     }
 }
 

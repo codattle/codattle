@@ -31,7 +31,7 @@ class MatchService(private val matchDao: MatchDao, private val queueService: Que
     }
 
     fun createMatch(name: String, gameId: Id<Game>): Match {
-        return matchDao.saveMatch(Match.Builder(name = name, game = gameId))
+        return matchDao.saveMatch(Match.builder().name(name).game(gameId))
     }
 
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {

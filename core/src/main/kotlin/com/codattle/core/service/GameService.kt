@@ -23,14 +23,14 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
     }
 
     fun createGame(name: String, description: String, code: String, author: Id<User>, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {
-        return gameDao.saveGame(Game.Builder(
-                name = name,
-                description = I18nText.single(DEFAULT_DESCRIPTION_LANGUAGE, description),
-                code = code,
-                logo = logo,
-                author = author,
-                sprites = sprites
-        ))
+        return gameDao.saveGame(Game.builder()
+                .name(name)
+                .description(I18nText.single(DEFAULT_DESCRIPTION_LANGUAGE, description))
+                .code(code)
+                .logo(logo)
+                .author(author)
+                .sprites(sprites)
+        )
     }
 
     fun addSprite(gameId: Id<Game>, sprite: Sprite) {
@@ -38,11 +38,11 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
     }
 
     fun rateGame(gameId: Id<Game>, userId: Id<User>, ratingValue: RatingValue, description: String?): Rating {
-        return ratingDao.insertOrReplaceRating(Rating.Builder(
-                author = userId,
-                game = gameId,
-                value = ratingValue,
-                description = description
-        ))
+        return ratingDao.insertOrReplaceRating(Rating.builder()
+                .author(userId)
+                .game(gameId)
+                .value(ratingValue)
+                .description(description)
+        )
     }
 }

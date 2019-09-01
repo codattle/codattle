@@ -19,10 +19,10 @@ class ScriptService(private val scriptDao: ScriptDao) {
     }
 
     fun createScript(gameId: Id<Game>, code: String, author: Id<User>): Script {
-        return scriptDao.saveScript(Script.Builder(
-                game = gameId,
-                code = code,
-                author = author
-        ))
+        return scriptDao.saveScript(Script.builder()
+                .game(gameId)
+                .code(code)
+                .author(author)
+        )
     }
 }
