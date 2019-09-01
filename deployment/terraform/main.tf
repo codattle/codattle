@@ -1,8 +1,8 @@
 data "google_client_config" "current" {}
 
 provider "helm" {
+  version = "~> 0.10.2"
   kubernetes {
-    version                = "~> 0.10.2"
     host                   = module.infrastructure.cluster_endpoint
     token                  = data.google_client_config.current.access_token
     client_certificate     = base64decode(module.infrastructure.cluster_client_certificate)
