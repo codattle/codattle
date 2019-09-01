@@ -1,8 +1,8 @@
 package com.codattle.core.config
 
-import com.codattle.core.resolver.Mutation
-import com.codattle.core.resolver.Query
 import com.codattle.core.scalar.IdScalar
+import com.codattle.core.scalar.RatingValueScalar
+import com.coxautodev.graphql.tools.GraphQLResolver
 import com.coxautodev.graphql.tools.SchemaParser
 import graphql.GraphQL
 import io.micronaut.context.annotation.Bean
@@ -14,12 +14,12 @@ class GraphQLFactory {
 
     @Bean
     @Singleton
-    fun graphQL(query: Query, mutation: Mutation): GraphQL {
+    fun graphQL(resolvers: List<GraphQLResolver<*>>): GraphQL {
 
         val graphQLSchema = SchemaParser.newParser()
                 .file("schema.graphqls")
-                .resolvers(query, mutation)
-                .scalars(IdScalar())
+                .resolvers(resolvers)
+                .scalars(IdScalar(), RatingValueScalar())
                 .build()
                 .makeExecutableSchema()
 

@@ -11,15 +11,14 @@ import javax.inject.Singleton
 class ScriptDao(private val daoUtils: DaoUtils) {
 
     fun getScripts(): List<Script> {
-        return daoUtils.getMany(Script::class.java)
+        return daoUtils.getMany()
     }
 
     fun getScripts(ids: List<Id<Script>>): List<Script> {
-        return daoUtils.getMany(Script::class.java, Script::id.`in`(ids))
+        return if (ids.isEmpty()) emptyList() else daoUtils.getMany(Script::id.`in`(ids))
     }
 
-    fun createScript(script: Script.Builder): Script {
+    fun saveScript(script: Script.Builder): Script {
         return daoUtils.save(script)
     }
-
 }

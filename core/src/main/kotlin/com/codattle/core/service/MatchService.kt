@@ -3,7 +3,6 @@ package com.codattle.core.service
 import com.codattle.core.dao.MatchDao
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
-import org.litote.kmongo.*
 import java.lang.IllegalStateException
 import javax.inject.Singleton
 
@@ -23,8 +22,8 @@ class MatchService(private val matchDao: MatchDao, private val queueService: Que
         return matchDao.getMatch(matchId)
     }
 
-    fun getMatches(gameId: Id<Game>): List<Match> {
-        return matchDao.getMatches(gameId)
+    fun getMatchesOfGame(gameId: Id<Game>): List<Match> {
+        return matchDao.getMatchesOfGame(gameId)
     }
 
     fun getResultOfMatch(matchId: Id<Match>): MatchResult? {
@@ -32,7 +31,7 @@ class MatchService(private val matchDao: MatchDao, private val queueService: Que
     }
 
     fun createMatch(name: String, gameId: Id<Game>): Match {
-        return matchDao.createMatch(Match.Builder(name = name, game = gameId))
+        return matchDao.saveMatch(Match.Builder(name = name, game = gameId))
     }
 
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {

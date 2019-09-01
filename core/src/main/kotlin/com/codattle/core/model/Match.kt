@@ -9,7 +9,6 @@ import java.time.Instant
 data class Match(
         override val id: Id<Match>,
         override val creationDate: Instant,
-        override val modificationDate: Instant,
         val name: String,
         val game: Id<Game>,
         val scripts: List<Id<Script>>,
@@ -19,7 +18,6 @@ data class Match(
     data class Builder(
             override var id: Id<Match>? = null,
             override var creationDate: Instant? = null,
-            override var modificationDate: Instant? = null,
             var name: String? = null,
             var game: Id<Game>? = null,
             var scripts: List<Id<Script>> = listOf(),
@@ -30,16 +28,11 @@ data class Match(
             return Match(
                     id = nonNull(id, "id"),
                     creationDate = nonNull(creationDate, "creationDate"),
-                    modificationDate = nonNull(modificationDate, "modificationDate"),
                     name = nonNull(name, "name"),
                     game = nonNull(game, "game"),
                     scripts = scripts,
                     result = result
             )
-        }
-
-        override fun getModelClass(): Class<Match> {
-            return Match::class.java
         }
     }
 
@@ -47,7 +40,6 @@ data class Match(
         return Builder(
                 id = id,
                 creationDate = creationDate,
-                modificationDate = modificationDate,
                 name = name,
                 game = game,
                 scripts = scripts,

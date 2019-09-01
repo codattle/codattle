@@ -10,12 +10,12 @@ import javax.inject.Singleton
 class MatchDao(private val daoUtils: DaoUtils) {
 
     fun getMatch(matchId: Id<Match>): Match {
-        return daoUtils.get(matchId, Match::class.java)
+        return daoUtils.get(matchId)
                 ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
     }
 
-    fun getMatches(gameId: Id<Game>): List<Match> {
-        return daoUtils.getMany(Match::class.java, Match::game eq gameId)
+    fun getMatchesOfGame(gameId: Id<Game>): List<Match> {
+        return daoUtils.getMany(Match::game eq gameId)
     }
 
     fun getResultOfMatch(matchId: Id<Match>): MatchResult? {
@@ -23,7 +23,7 @@ class MatchDao(private val daoUtils: DaoUtils) {
                 ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
     }
 
-    fun createMatch(match: Match.Builder): Match {
+    fun saveMatch(match: Match.Builder): Match {
         return daoUtils.save(match)
     }
 

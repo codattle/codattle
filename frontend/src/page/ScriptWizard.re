@@ -2,14 +2,14 @@ open Rationale.Option;
 open Rationale.Option.Infix;
 open Rationale.RList;
 
-type languageMap = {
+type translatedText = {
   language: Language.languageName,
   content: string,
 };
 
 type game = {
   id: string,
-  description: list(languageMap),
+  description: list(translatedText),
 };
 
 type mode =
@@ -61,15 +61,15 @@ module Styles = {
   let noDescription = style([fontStyle(`italic)]);
 };
 
-let findWithLanguage = (languageName: Language.languageName, descriptions: list(languageMap)) => {
+let findWithLanguage = (languageName: Language.languageName, descriptions: list(translatedText)) => {
   descriptions |> find(x => x.language === languageName);
 };
 
-let descriptionContentOrDefault = (languageName: Language.languageName, descriptions: list(languageMap)) => {
+let descriptionContentOrDefault = (languageName: Language.languageName, descriptions: list(translatedText)) => {
   findWithLanguage(languageName, descriptions)
   |? findWithLanguage(Language.defaultLanguage.name, descriptions)
   |? head(descriptions)
-  |> fmap(languageMap => ReasonReact.string(languageMap.content))
+  |> fmap(translatedText => ReasonReact.string(translatedText.content))
   |> default(<span className=Styles.noDescription> <Translation id="scriptWizard.noDescription" /> </span>);
 };
 

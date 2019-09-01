@@ -1,25 +1,41 @@
+scalar RatingValue
+
 enum Language {
     PL
     EN
 }
 
-type LanguageMap {
+type User {
+    id: ID!
+    username: String!
+}
+
+type Rating {
+    id: ID!
+    author: User!
+    game: Game!
+    value: RatingValue!
+    description: String
+}
+
+type TranslatedText {
     language: Language!
     content: String!
 }
 
 type Sprite {
     name: String!
-    image: ID!
+    image: File!
 }
 
 type Game {
     id: ID!
     name: String!
-    description: [LanguageMap!]!
+    description: [TranslatedText!]!
     code: String!
-    logo: ID
+    logo: File
     sprites: [Sprite!]!
+    ratings: [Rating!]!
 }
 
 type Script {
@@ -41,15 +57,16 @@ type Match {
     id: ID!
     name: String!
     scripts: [Script!]!
-    result: Result
-}
-
-type MatchWithGame {
-    id: ID!
-    name: String!
-    scripts: [Script!]!
+    scriptsCount: Int!
     result: Result
     game: Game!
+}
+
+type File {
+    id: ID!
+    name: String!
+    owner: User!
+    contentType: String!
 }
 
 input NewResultFrame {
@@ -62,19 +79,12 @@ input NewSprite {
     image: ID!
 }
 
-type File {
-    id: ID!
-    name: String!
-    owner: ID!
-    contentType: ID!
-}
-
 type Query {
     game(gameId: ID!): Game!
 
     games: [Game!]!
 
-    match(matchId: ID!): MatchWithGame!
+    match(matchId: ID!): Match!
 
     matches(gameId: ID!): [Match!]!
 
@@ -85,6 +95,8 @@ type Mutation {
     createGame(name: String!, description: String!, code: String!, logo: ID, sprites: [NewSprite!]): Game!
 
     addSpriteToGame(gameId: ID!, sprite: NewSprite!): Boolean!
+
+    rateGame(gameId: ID!, rating: RatingValue!, description: String): Rating!
 
     createMatch(name: String!, gameId: ID!): Match!
 

@@ -3,14 +3,15 @@ package com.codattle.core.dao.common
 import com.codattle.core.dao.Sequence
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
-import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.ReturnDocument
 import org.bson.conversions.Bson
-import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
+import java.lang.IllegalArgumentException
 import java.time.Instant
 import javax.inject.Singleton
 import kotlin.reflect.KProperty
@@ -22,18 +23,41 @@ class DaoUtils(
 ) {
 
     fun <T : DaoModel<T>> save(entity: T): T {
-        return save(entity.toBuilder())
+        return save(entity.toBuilder(), entity.javaClass)
     }
 
-    fun <T : DaoModel<T>> save(entity: DaoModelBuilder<T>): T {
+    inline fun <reified T : DaoModel<T>> save(entity: DaoModelBuilder<T>): T {
+        return save(entity, T::class.java)
+    }
+
+    fun <T : DaoModel<T>> save(entity: DaoModelBuilder<T>, model: Class<T>): T {
         fillAuditFields(entity)
 
         return if (entity.id == null) {
-            entity.id = Id(sequence.getNext(KMongoUtil.defaultCollectionName(entity.javaClass.kotlin)))
-            entity.build().apply { getCollection(entity.getModelClass()).insertOne(this) }
+            entity.id = Id(sequence.getNext(getCollectionName(model)))
+            entity.build().apply { getCollection(model).insertOne(this) }
         } else {
-            entity.build().apply { getCollection(entity.getModelClass()).replaceOne(DaoModel<T>::id eq entity.id, this) }
+            entity.build().apply { getCollection(model).replaceOne(DaoModel<T>::id eq entity.id, this) }
         }
+    }
+
+    inline fun <reified T : DaoModel<T>> insertOrReplace(entity: DaoModelBuilder<T>, filter: Bson): T {
+        return insertOrReplace(entity, T::class.java, filter)
+    }
+
+    fun <T : DaoModel<T>> insertOrReplace(entity: DaoModelBuilder<T>, model: Class<T>, filter: Bson): T {
+        if (entity.id != null) {
+            throw IllegalArgumentException("Only new entity can be inserted")
+        }
+
+        entity.id = Id(sequence.getNext(getCollectionName(model)))
+        fillAuditFields(entity)
+
+        return entity.build().apply { getCollection(model).replaceOne(filter, this, ReplaceOptions().upsert(true)) }
+    }
+
+    inline fun <reified T : DaoModel<T>> get(id: Id<T>): T? {
+        return get(id, T::class.java)
     }
 
     fun <T : DaoModel<T>> get(id: Id<T>, model: Class<T>): T? {
@@ -42,6 +66,14 @@ class DaoUtils(
 
     inline fun <T : DaoModel<T>, reified F> getWithFields(id: Id<T>, model: Class<T>, projection: KProperty<F>): F? {
         return getCollection(model).projection(projection, DaoModel<T>::id eq id).first()
+    }
+
+    inline fun <reified T : DaoModel<T>> getMany(filter: Bson? = null): List<T> {
+        return if (filter == null) {
+            getCollection(T::class.java).find().toList()
+        } else {
+            getCollection(T::class.java).find(filter).toList()
+        }
     }
 
     fun <T : DaoModel<T>> getMany(model: Class<T>, filter: Bson? = null): List<T> {
@@ -66,15 +98,16 @@ class DaoUtils(
     }
 
     fun <T : DaoModel<T>> getCollection(model: Class<T>): MongoCollection<T> {
-        return mongoProvider.database.getCollection(KMongoUtil.defaultCollectionName(model.kotlin), model)
+        return mongoProvider.database.getCollection(getCollectionName(model), model)
+    }
+
+    private fun <T : DaoModel<T>> getCollectionName(model: Class<T>): String {
+        return KMongoUtil.defaultCollectionName(model.kotlin)
     }
 
     private fun fillAuditFields(entity: DaoModelBuilder<*>) {
-        val date = Instant.now()
-
         if (entity.creationDate == null) {
-            entity.creationDate = date
+            entity.creationDate = Instant.now()
         }
-        entity.modificationDate = date
     }
 }

@@ -1,12 +1,13 @@
 package com.codattle.core.service
 
 import com.codattle.core.dao.GameDao
+import com.codattle.core.dao.RatingDao
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
 import javax.inject.Singleton
 
 @Singleton
-class GameService(private val gameDao: GameDao) {
+class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao) {
 
     companion object {
         // TODO: remove after implementing translatable descriptions
@@ -21,19 +22,27 @@ class GameService(private val gameDao: GameDao) {
         return gameDao.getGames()
     }
 
-    fun createGame(name: String, description: String, code: String, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {
-        return gameDao.createGame(Game.Builder(
+    fun createGame(name: String, description: String, code: String, author: Id<User>, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {
+        return gameDao.saveGame(Game.Builder(
                 name = name,
-                description = listOf(LanguageMap(DEFAULT_DESCRIPTION_LANGUAGE, description)),
+                description = I18nText.single(DEFAULT_DESCRIPTION_LANGUAGE, description),
                 code = code,
                 logo = logo,
-                // TODO: pass real user after implementing users
-                author = Id("nonexistent_user"),
+                author = author,
                 sprites = sprites
         ))
     }
 
     fun addSprite(gameId: Id<Game>, sprite: Sprite) {
         gameDao.addSprite(gameId, sprite)
+    }
+
+    fun rateGame(gameId: Id<Game>, userId: Id<User>, ratingValue: RatingValue, description: String?): Rating {
+        return ratingDao.insertOrReplaceRating(Rating.Builder(
+                author = userId,
+                game = gameId,
+                value = ratingValue,
+                description = description
+        ))
     }
 }

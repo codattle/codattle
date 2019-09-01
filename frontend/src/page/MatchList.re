@@ -11,9 +11,7 @@ module GetMatchesQuery = [%graphql
     matches(gameId: $gameId) {
       id
       name
-      scripts {
-        id
-      }
+      scriptsCount
       result {
         winner
       }
@@ -34,7 +32,7 @@ let make = (~gameId) => {
            {
              id: match##id,
              name: match##name,
-             scriptsCount: Js.Array.length(match##scripts),
+             scriptsCount: match##scriptsCount,
              winner: Belt.Option.mapWithDefault(match##result, None, result => result##winner),
            }
          )

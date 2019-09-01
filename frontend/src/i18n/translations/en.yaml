@@ -21,3 +21,6 @@ matchFrame:
   errorWhileParsingFrame: Error while parsing frame :(
 spriteList:
   addSprite: Add sprite
+ratingForm:
+  send: Send rating
+  edit: Edit rating
