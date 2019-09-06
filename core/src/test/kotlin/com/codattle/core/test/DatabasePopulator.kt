@@ -24,7 +24,7 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
     }
 
     fun createGame(name: String = "Test game", description: String = "It's test game", code: String = "end();"): Game {
-        return daoUtils.save(Game.Builder(name = name, description = I18nText.single(Language.EN, description), code = code, author = createUser().id))
+        return daoUtils.save(Game.builder().name(name).description(I18nText.single(Language.EN, description)).code(code).author(createUser().id))
     }
 
     fun createGames(count: Int = 3): List<Game> {
@@ -32,7 +32,7 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
     }
 
     fun createScript(code: String = "answer(0);", game: Id<Game> = createGame().id): Script {
-        return daoUtils.save(Script.Builder(code = code, game = game, author = createUser().id))
+        return daoUtils.save(Script.builder().code(code).game(game).author(createUser().id))
     }
 
     fun createScripts(count: Int = 3, game: Id<Game> = createGame().id): List<Script> {
@@ -46,7 +46,7 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
             result: MatchResult? = generateMatchResult(framesCount = 5, winner = 0)
     ): Match {
         val scripts = (1..scriptsCount).map { createScript(game = game).id }
-        return daoUtils.save(Match.Builder(name = name, game = game, scripts = scripts, result = result))
+        return daoUtils.save(Match.builder().name(name).game(game).scripts(scripts).result(result))
     }
 
     fun createMatches(count: Int = 3, game: Id<Game> = createGame().id): List<Match> {
@@ -54,6 +54,6 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
     }
 
     fun createUser(): User {
-        return daoUtils.save(User.Builder(username = UUID.randomUUID().toString()))
+        return daoUtils.save(User.builder().username(UUID.randomUUID().toString()))
     }
 }

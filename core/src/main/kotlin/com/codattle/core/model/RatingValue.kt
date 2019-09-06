@@ -8,8 +8,6 @@ data class RatingValue(val value: Int) {
     }
 
     init {
-        if (value < MIN_VALUE || value > MAX_VALUE) {
-            throw IllegalArgumentException("Rating value must be between $MIN_VALUE nad $MAX_VALUE")
-        }
+        require(!(value < MIN_VALUE || value > MAX_VALUE)) { "Rating value must be between $MIN_VALUE nad $MAX_VALUE" }
     }
 }

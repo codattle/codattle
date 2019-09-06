@@ -23,7 +23,7 @@ class MatchDao(private val daoUtils: DaoUtils) {
                 ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
     }
 
-    fun saveMatch(match: Match.Builder): Match {
+    fun saveMatch(match: MatchBuilder): Match {
         return daoUtils.save(match)
     }
 
