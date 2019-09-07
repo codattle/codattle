@@ -3,22 +3,15 @@ import { List, Map } from 'immutable';
 import { isNumber } from 'util';
 import { VM } from 'vm2';
 
-const maxCyclesCount = 100;
-
 export const executeSimulation = async (matchId: string) => {
   const match = await fetchMatch(matchId);
 
   let frameOrder = 0;
 
-  const gameVM = new GameVM(match.game, List(match.scripts));
+  const onEmitFrame = (frame: string) => provideResultFrames(matchId, List([{ order: frameOrder++, content: frame }]));
 
-  while (!gameVM.isGameEnded() && gameVM.getExecutedCyclesCount() < maxCyclesCount) {
-    const cycleResult = gameVM.executeCycle();
-
-    const newFrames = cycleResult.frames.map((frame: any) => ({ order: frameOrder++, content: frame }));
-
-    await provideResultFrames(matchId, newFrames);
-  }
+  const gameVM = new GameVM(match.game, List(match.scripts), onEmitFrame);
+  gameVM.run();
 
   const winner = gameVM.getWinner();
   if (isNumber(winner)) {
@@ -45,12 +38,9 @@ interface ResultFrame {
 }
 
 interface GameSandbox {
-  loadState: () => any;
-  saveState: (state: any) => any;
   emitFrame: (frame: any) => any;
   end: (newWinderIndex: any) => void;
   runPlayerScript: (playerIndx: any, gameState: any) => any;
-  getCycle: () => number;
 }
 
 interface PlayerSandbox {
@@ -61,22 +51,21 @@ interface PlayerSandbox {
 }
 
 class GameVM {
-  public readonly maxCycles = 100;
-  public readonly gameCycleTimeout = 10000;
+  public readonly gameTimeout = 10000;
   public readonly playerAnswerTimeout = 1000;
   public readonly gameSandbox: GameSandbox;
 
-  private gameState: any = null;
   private playerStates: Map<number, any> = Map();
-  private frames: List<any> = List();
   private winner: number | null | undefined = undefined;
-  private cycle: number = 0;
 
-  constructor(private game: Game, private scripts: List<Script>) {
+  constructor(private game: Game, private scripts: List<Script>, onEmitFrame: (frame: string) => void) {
     this.gameSandbox = {
-      loadState: () => this.gameState,
-      saveState: (state: any) => (this.gameState = state),
-      emitFrame: (frame: any) => (this.frames = this.frames.push(frame)),
+      emitFrame: (frame: any) => {
+        const frameAsJson = this.convertToJson(frame);
+        if (frameAsJson !== null) {
+          onEmitFrame(frameAsJson);
+        }
+      },
       end: (newWinner: any) => {
         this.validatePlayerIndex(newWinner);
         this.winner = newWinner;
@@ -85,33 +74,23 @@ class GameVM {
         this.validatePlayerIndex(playerIndex);
         return this.runPlayerScript(playerIndex, gameState);
       },
-      getCycle: () => this.cycle,
     };
   }
 
-  public executeCycle(): { frames: List<any> } {
+  public run(): void {
     if (this.isGameEnded()) {
-      throw new Error('Cannot execute cycle on ended game');
+      throw new Error('Cannot run game twice');
     }
 
     const vm = new VM({
-      timeout: this.gameCycleTimeout,
-      sandbox: this.gameSandbox
+      timeout: this.gameTimeout,
+      sandbox: this.gameSandbox,
     });
     this.runVM(vm, this.game.code);
 
-    const result = {
-      frames: this.frames.map(frame => JSON.stringify(frame)),
-    };
-
-    this.cycle++;
-    this.frames = List();
-
-    return result;
-  }
-
-  public getExecutedCyclesCount(): number {
-    return this.cycle;
+    if (this.winner === undefined) {
+      this.winner = null;
+    }
   }
 
   public isGameEnded(): boolean {
@@ -131,7 +110,7 @@ class GameVM {
   private runPlayerScript(playerIndex: number, gameState: any): any {
     let answer: any;
 
-    const playerSandbox : PlayerSandbox = {
+    const playerSandbox: PlayerSandbox = {
       answer: (playerAnswer: any) => (answer = playerAnswer),
       loadState: () => this.playerStates.get(playerIndex),
       saveState: (state: any) => (this.playerStates = this.playerStates.set(playerIndex, state)),
@@ -140,7 +119,7 @@ class GameVM {
 
     const vm = new VM({
       timeout: this.playerAnswerTimeout,
-      sandbox: playerSandbox
+      sandbox: playerSandbox,
     });
 
     const script = this.scripts.get(playerIndex) as Script;
@@ -153,7 +132,16 @@ class GameVM {
     try {
       vm.run(script);
     } catch (err) {
-      console.error('Error occurred while running vm script: ' + err);
+      console.log('Error occurred while running vm script: ' + err);
+    }
+  }
+
+  private convertToJson(object: any): string | null {
+    try {
+      return JSON.stringify(object);
+    } catch (err) {
+      console.log('Error occurred while converting object to JSON: ' + err);
+      return null;
     }
   }
 }
@@ -185,7 +173,7 @@ const provideResultFrames = async (matchId: string, resultFrames: List<ResultFra
   const data = await request(process.env.GRAPHQL_URL as string, mutation, { matchId, resultFrames });
 
   return data.provideResultFrames as boolean;
-}
+};
 
 const provideMatchWinner = async (matchId: string, winner: number): Promise<boolean> => {
   const mutation = `
@@ -196,4 +184,4 @@ const provideMatchWinner = async (matchId: string, winner: number): Promise<bool
   const data = await request(process.env.GRAPHQL_URL as string, mutation, { matchId, winner });
 
   return data.provideMatchWinner as boolean;
-} 
+};

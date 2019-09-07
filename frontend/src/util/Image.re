@@ -4,8 +4,10 @@ type t;
 [@bs.set] external setOnload: (t, unit => unit) => unit = "onload";
 [@bs.set] external setSrc: (t, string) => unit = "src";
 
-let loadFromUrl = (url, onLoad) => {
+let loadFromUrl = url => {
+  let (promise, resolve) = Repromise.make();
   let image = create();
-  image->setOnload(() => onLoad(image));
+  image->setOnload(() => resolve(image));
   image->setSrc(url);
+  promise
 };
