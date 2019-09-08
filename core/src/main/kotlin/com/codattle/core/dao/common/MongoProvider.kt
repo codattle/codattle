@@ -1,7 +1,9 @@
 package com.codattle.core.dao.common
 
 import com.codattle.core.serialization.deserializer.IdDeserializer
+import com.codattle.core.serialization.deserializer.MediaTypeDeserializer
 import com.codattle.core.serialization.serializer.IdSerializer
+import com.codattle.core.serialization.serializer.MediaTypeSerializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.mongodb.MongoClient
 import com.mongodb.MongoCredential
@@ -9,6 +11,7 @@ import com.mongodb.ServerAddress
 import com.mongodb.client.MongoDatabase
 import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Value
+import io.micronaut.http.MediaType
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
 import javax.annotation.PreDestroy
@@ -35,7 +38,9 @@ class MongoProvider(
 
         val module = SimpleModule()
                 .addSerializer(Id::class.java, IdSerializer())
+                .addSerializer(MediaType::class.java, MediaTypeSerializer())
                 .addDeserializer(Id::class.java, IdDeserializer())
+                .addDeserializer(MediaType::class.java, MediaTypeDeserializer())
         KMongoConfiguration.registerBsonModule(module)
 
         client = KMongo.createClient(address, listOf(credentials))
