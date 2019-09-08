@@ -19,7 +19,7 @@ let make = () => {
     };
 
   React.createElement(
-    LanguageContext.provider,
+    Language.Context.provider,
     {
       "value": language,
       "children":

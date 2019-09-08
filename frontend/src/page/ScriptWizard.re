@@ -79,7 +79,7 @@ let descriptionHeader = {
 
 [@react.component]
 let make = (~matchId: string) => {
-  let language = React.useContext(LanguageContext.context);
+  let language = Language.useLanguage();
   let (script, setScript) = React.useState(() => "");
   let (mode, setMode) = React.useState(() => Editing);
 

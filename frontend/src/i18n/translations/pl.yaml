@@ -24,3 +24,8 @@ spriteList:
 ratingForm:
   send: Wyślij ocenę
   send: Edytuj ocenę
+navigationBar:
+  dashboard: Panel
+  createGame: Stwórz grę
+  games: Gry
+  profile: Profil
