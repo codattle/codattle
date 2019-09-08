@@ -24,3 +24,8 @@ spriteList:
 ratingForm:
   send: Send rating
   edit: Edit rating
+navigationBar:
+  dashboard: Dashboard
+  createGame: Create game
+  games: Games
+  profile: Profile

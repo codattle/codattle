@@ -13,3 +13,10 @@ let en = {name: `EN, locale: "en", translations: enTranslations};
 let pl = {name: `PL, locale: "en", translations: plTranslations};
 
 let defaultLanguage = en;
+
+module Context = {
+  let context = React.createContext(defaultLanguage);
+  let provider = React.Context.provider(context);
+};
+
+let useLanguage = () => React.useContext(Context.context);
