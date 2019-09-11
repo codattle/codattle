@@ -34,6 +34,7 @@
     "graphql_ppx": "^0.2.8",
     "normalize.css": "^8.0.1",
     "rationale": "^0.1.10",
+    "re-debouncer": "^2.0.0",
     "react": "^16.8.6",
     "react-ace": "^7.0.2",
     "react-dom": "^16.8.6",

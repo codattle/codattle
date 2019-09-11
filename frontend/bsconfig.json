@@ -22,7 +22,8 @@
     "bs-react-intl",
     "@glennsl/bs-json",
     "rationale",
-    "reason-react-update"
+    "reason-react-update",
+    "re-debouncer"
   ],
   "ppx-flags": [
     "graphql_ppx/ppx"

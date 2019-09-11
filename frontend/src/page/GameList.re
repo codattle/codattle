@@ -3,9 +3,9 @@ type game = {
   name: string,
 };
 
-module GetGamesQuery = [%graphql {|
-  query {
-    games {
+module SearchGamesQuery = [%graphql {|
+  query($name: String) {
+    games: searchGames(name: $name) {
       id
       name
     }
@@ -14,31 +14,12 @@ module GetGamesQuery = [%graphql {|
 
 [@react.component]
 let make = () => {
-  let (version, refresh) = Utils.useRefresh();
+  open SearchList;
 
-  let games =
-    Utils.useResource(GetGamesQuery.make(), [|version|], data =>
-      data##games |> Array.to_list |> List.map(game => {id: game##id, name: game##name})
-    );
+  let search = ({name}: filters) => SearchGamesQuery.make(~name, ());
+  let queryMapper = data => data##games |> Array.to_list |> List.map((game) => ({id: game##id, name: game##name}: game));
+  let displayMapper = ({id, name}: game) => {id, name};
+  let onItemClick = ({id}: game) => ReasonReactRouter.push("/games/" ++ id);
 
-  <div>
-    {switch (games) {
-     | NotLoaded => <div />
-     | Loading => <span> {ReasonReact.string("Loading...")} </span>
-     | Loaded(games) =>
-       let gameList =
-         if (List.length(games) == 0) {
-           <span> {ReasonReact.string("No games")} </span>;
-         } else {
-           <ul>
-             {games
-              |> Utils.componentList(game =>
-                   <li onClick={_ => ReasonReactRouter.push("/games/" ++ game.id)} key={game.id}> {ReasonReact.string(game.name)} </li>
-                 )}
-           </ul>;
-         };
-       <div> <button onClick={_ => refresh()}> {ReasonReact.string("Refresh")} </button> gameList </div>;
-     | Failure => <span> {ReasonReact.string("Error")} </span>
-     }}
-  </div>;
+  <SearchList search queryMapper displayMapper onItemClick />;
 };

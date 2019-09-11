@@ -4,6 +4,23 @@ type resource('a) =
   | Loaded('a)
   | Failure;
 
+let useEffectWithInit = (initialize, effect, cancel, shouldRefresh) => {
+  let (initialized, setInitialized) = React.useState(() => false);
+
+  React.useEffect1(
+    () => {
+      if (initialized) {
+        effect();
+      } else {
+        initialize();
+        setInitialized(_ => true);
+      };
+      cancel;
+    },
+    shouldRefresh,
+  );
+};
+
 let loadResource = (query, setter, mapper) => {
   setter(_ => Loading);
   GraphqlService.executeQuery(query)
@@ -40,6 +57,24 @@ let useEditableResource = (query, shouldRefresh, mapper) => {
 
 let useResource = (query, shouldRefresh, mapper) => {
   let (resource, _) = useEditableResource(query, shouldRefresh, mapper);
+  resource;
+};
+
+let useResourceWithDebounce = (query, shouldRefresh, wait, mapper) => {
+  let (resource, setResource) = React.useState(() => NotLoaded);
+  let (loadResourceDebouncer, _) =
+    React.useState(() => Debouncer.makeCancelable(~wait, ((query, setResource, mapper)) => loadResource(query, setResource, mapper)));
+
+  useEffectWithInit(
+    () => loadResourceDebouncer.invoke((query, setResource, mapper)),
+    () => loadResourceDebouncer.schedule((query, setResource, mapper)),
+    // TODO: this cancels only scheduled invocation of request, sent request won't be cancelled,
+    // request should be unsubscribed using AbortController
+    // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
+    Some(loadResourceDebouncer.cancel),
+    shouldRefresh,
+  );
+
   resource;
 };
 

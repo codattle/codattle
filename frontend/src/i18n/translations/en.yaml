@@ -29,3 +29,8 @@ navigationBar:
   createGame: Create game
   games: Games
   profile: Profile
+searchList:
+  name: Name
+  searching: Searching...
+  nothingFound: Nothing found
+  error: Error occurred during search
