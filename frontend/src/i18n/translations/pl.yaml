@@ -29,3 +29,8 @@ navigationBar:
   createGame: Stwórz grę
   games: Gry
   profile: Profil
+searchList:
+  name: Nazwa
+  searching: Szukanie...
+  nothingFound: Nic nie znaleziono
+  error: Wystąpił błąd w trakcie wyszukiwania

@@ -84,6 +84,8 @@ type Query {
 
     games: [Game!]!
 
+    searchGames(name: String): [Game!]!
+
     match(matchId: ID!): Match!
 
     matches(gameId: ID!): [Match!]!

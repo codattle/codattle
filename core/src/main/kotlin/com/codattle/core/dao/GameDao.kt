@@ -7,7 +7,9 @@ import com.codattle.core.model.GameBuilder
 import com.codattle.core.model.Sprite
 import com.codattle.core.model.User
 import com.mongodb.client.model.Updates
+import org.bson.conversions.Bson
 import org.litote.kmongo.push
+import org.litote.kmongo.regex
 import javax.inject.Singleton
 
 @Singleton
@@ -18,8 +20,8 @@ class GameDao(private val daoUtils: DaoUtils) {
                 ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exist.")
     }
 
-    fun getGames(): List<Game> {
-        return daoUtils.getMany()
+    fun getGames(filter: Bson? = null): List<Game> {
+        return daoUtils.getMany(filter)
     }
 
     fun saveGame(game: GameBuilder): Game {

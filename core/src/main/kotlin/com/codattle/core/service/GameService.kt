@@ -4,6 +4,7 @@ import com.codattle.core.dao.GameDao
 import com.codattle.core.dao.RatingDao
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
+import org.litote.kmongo.regex
 import javax.inject.Singleton
 
 @Singleton
@@ -20,6 +21,11 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
 
     fun getGames(): List<Game> {
         return gameDao.getGames()
+    }
+
+    fun searchGames(name: String?): List<Game> {
+        val filter = name?.let { Game::name regex ("^" + Regex.escape(it)) }
+        return gameDao.getGames(filter)
     }
 
     fun createGame(name: String, description: String, code: String, author: Id<User>, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {

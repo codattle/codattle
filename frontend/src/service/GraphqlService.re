@@ -1,4 +1,11 @@
-let executeQuery = grapqhQuery =>
+type query('a) = {
+  .
+  "parse": Js.Json.t => 'a,
+  "query": string,
+  "variables": Js.Json.t,
+};
+
+let executeQuery = (grapqhQuery: query('a)) =>
   Fetch.fetchWithInit(
     Environment.graphqlUrl,
     Fetch.RequestInit.make(

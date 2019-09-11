@@ -24,6 +24,10 @@ class Query(private val gameService: GameService,
         return gameService.getGames()
     }
 
+    fun searchGames(name: String?): List<Game> {
+        return gameService.searchGames(name)
+    }
+
     fun match(matchId: Id<Match>): Match {
         return matchService.getMatch(matchId)
     }
