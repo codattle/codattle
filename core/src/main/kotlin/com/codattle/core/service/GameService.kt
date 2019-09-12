@@ -23,7 +23,7 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
         return gameDao.getGames()
     }
 
-    fun searchGames(name: String?): List<Game> {
+    fun searchGames(name: String? = null): List<Game> {
         val filter = name?.let { Game::name regex ("^" + Regex.escape(it)) }
         return gameDao.getGames(filter)
     }

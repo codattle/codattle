@@ -33,7 +33,7 @@ class MatchDao(private val daoUtils: DaoUtils) {
 
     fun provideResultFrames(matchId: Id<Match>, resultFrames: List<ResultFrame>) {
         createEmptyMatchResultIfDoesNotExist(matchId)
-        daoUtils.findAndModify(Match::class.java, matchId, pushEach(Match::result / MatchResult::resultFrames, resultFrames))
+        daoUtils.findAndModify(matchId, pushEach(Match::result / MatchResult::resultFrames, resultFrames))
     }
 
     fun provideMatchWinner(matchId: Id<Match>, winner: Int) {

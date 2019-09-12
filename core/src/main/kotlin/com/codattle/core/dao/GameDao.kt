@@ -29,6 +29,6 @@ class GameDao(private val daoUtils: DaoUtils) {
     }
 
     fun addSprite(gameId: Id<Game>, sprite: Sprite) {
-        daoUtils.findAndModify(Game::class.java, gameId, push(Game::sprites, sprite))
+        daoUtils.findAndModify(gameId, push(Game::sprites, sprite))
     }
 }
