@@ -3,6 +3,7 @@ common:
   previous: Wstecz
   error: Błąd
   add: Dodaj
+  loading: Ładowanie...
 gameWizard:
   name: Nazwa
   createGame: Stwórz grę
@@ -34,3 +35,12 @@ searchList:
   searching: Szukanie...
   nothingFound: Nic nie znaleziono
   error: Wystąpił błąd w trakcie wyszukiwania
+gameDetails:
+  myScripts: Moje skrypty
+myScripts:
+  noScripts: Nie masz żadnych skryptów do tej gry
+scriptDetails:
+  update: Aktualizuj
+  notification:
+    updateSuccessfully: Zaktualizowano pomyślnie
+    errorDuringUpdate: Błąd podczas aktualizacji

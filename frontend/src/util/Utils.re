@@ -88,6 +88,8 @@ let useRefresh = () => {
 
 let componentList = (mapper, items) => items |> List.map(mapper) |> Array.of_list |> ReasonReact.array;
 
+let componentListWithIndex = (mapper, items) => items |> List.mapi(mapper) |> Array.of_list |> ReasonReact.array;
+
 let withDataAttributes = (~data, element) => ReasonReact.cloneElement(element, ~props=Obj.magic(Js.Dict.fromList(data)), [||]);
 
 let withDataCy = (dataCy, element) =>

@@ -90,7 +90,9 @@ type Query {
 
     matches(gameId: ID!): [Match!]!
 
-    scripts: [Script!]!
+    script(scriptId: ID!): Script!
+
+    scripts(gameId: ID, authorId: ID): [Script!]!
 }
 
 type Mutation {
@@ -103,6 +105,8 @@ type Mutation {
     createMatch(name: String!, gameId: ID!): Match!
 
     sendScript(gameId: ID!, code: String!): Script!
+
+    updateScriptCode(scriptId: ID!, code: String!): Boolean!
 
     joinMatch(matchId: ID!, scriptId: ID!): Boolean!
 

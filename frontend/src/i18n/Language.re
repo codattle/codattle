@@ -14,9 +14,11 @@ let pl = {name: `PL, locale: "en", translations: plTranslations};
 
 let defaultLanguage = en;
 
-module Context = {
-  let context = React.createContext(defaultLanguage);
-  let provider = React.Context.provider(context);
+let context = React.createContext(defaultLanguage);
+
+module Provider = {
+  let makeProps = (~value: t, ~children: 'a, ()) => {"value": value, "children": children};
+  let make = React.Context.provider(context);
 };
 
-let useLanguage = () => React.useContext(Context.context);
+let useLanguage = () => React.useContext(context);

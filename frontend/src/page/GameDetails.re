@@ -62,9 +62,6 @@ let mapRating = rating => {
   description: rating##description,
 };
 
-// TODO: remove after implementing authorization with Keycloak
-let username = "test";
-
 [@react.component]
 let make = (~gameId) => {
   let (game, setGame) =
@@ -94,7 +91,7 @@ let make = (~gameId) => {
            }
          );
     };
-    let existsCurrentUserRating = game.ratings |> any(rating => rating.author === username);
+    let existsCurrentUserRating = game.ratings |> any(rating => rating.author === ProfileService.username);
     let logo = game.logo->Belt.Option.mapWithDefault(<> </>, logo => <img src={Environment.storageUrl ++ logo} width="64" height="64" />);
     let ratings =
       game.ratings
@@ -103,13 +100,16 @@ let make = (~gameId) => {
            let ratingValue = <Rating initialValue={rating.ratingValue} readOnly=true />;
            let description =
              rating.description |> fmap(description => <span> {ReasonReact.string(description)} </span>) |> default(<> </>);
-           <div> author ratingValue description </div>;
+           <div key=rating.author> author ratingValue description </div>;
          });
     <div>
       logo
       <span> {ReasonReact.string("Details of game with id: " ++ game.id)} </span>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")}>
+        <Translation id="gameDetails.myScripts" />
+      </button>
       ratings
       <SpriteList uploadedSprites={game.sprites} canAdd=false />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />

@@ -34,6 +34,11 @@ class Mutation(private val gameService: GameService,
         return scriptService.createScript(gameId, content, User.DEFAULT_USER)
     }
 
+    fun updateScriptCode(scriptId: Id<Script>, code: String): Boolean {
+        scriptService.updateScriptCode(scriptId, code)
+        return true
+    }
+
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>): Boolean {
         matchService.joinMatch(matchId, scriptId)
         return true

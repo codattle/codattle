@@ -1,14 +1,10 @@
-open Rationale.Option;
+open Rationale.RList;
 
 module Styles = {
   open Css;
 
   let tabs = style([marginLeft(10 |> px), marginRight(10 |> px)]);
 };
-
-type state = {tab: option(string)};
-
-type action = {tab: option(string)};
 
 type navigation = {
   name: string,
@@ -17,35 +13,24 @@ type navigation = {
 
 [@react.component]
 let make = (~changeLanguage=?) => {
-  let (state, send) =
-    ReactUpdate.useReducer({tab: None}, ({tab}, _) =>
-      ReactUpdate.UpdateWithSideEffects(
-        {tab: tab},
-        _ => {
-          tab |> default("/") |> ReasonReactRouter.push;
-          None;
-        },
-      )
-    );
+  let url = ReasonReactRouterUtils.useUrlPath();
   let language = Language.useLanguage();
 
-  let navigation =
-    [
-      {name: "navigationBar.dashboard", href: "/dashboard"},
-      {name: "navigationBar.createGame", href: "/new-game"},
-      {name: "navigationBar.games", href: "/games"},
-      {name: "navigationBar.profile", href: "/profile"},
-    ]
-    |> List.map(({name, href}) => {name: language.translations->Js.Dict.get(name) |> default(name), href});
+  let navigation = [
+    {name: "navigationBar.dashboard", href: "/dashboard"},
+    {name: "navigationBar.createGame", href: "/new-game"},
+    {name: "navigationBar.games", href: "/games"},
+    {name: "navigationBar.profile", href: "/profile"},
+  ];
 
   <AppBar position=`Static>
     <Toolbar>
-      <Button onClick={() => send({tab: None})} variant=`Text> {ReasonReact.string("Codattle")} </Button>
+      <Button onClick={() => ReasonReactRouter.push("/")} variant=`Text> {ReasonReact.string("Codattle")} </Button>
       <Tabs
-        value={state.tab |> map(href => Tabs.selected(href)) |> default(Tabs.unselected)}
-        onChange={(_, href) => send({tab: Some(href)})}
+        value={navigation |> containsWith(({href}) => href === url) ? Tabs.selected(url) : Tabs.unselected}
+        onChange={(_, href) => ReasonReactRouter.push(href)}
         className=Styles.tabs>
-        {navigation |> Utils.componentList(({name, href}) => <Tab value=href label=name />)}
+        {navigation |> Utils.componentList(({name, href}) => <Tab value=href label={<Translation id=name />} />)}
       </Tabs>
       <Select
         value=language

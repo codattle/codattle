@@ -3,6 +3,7 @@ common:
   previous: Previous
   error: Error
   add: Add
+  loading: Loading...
 gameWizard:
   name: Name
   createGame: Create game
@@ -34,3 +35,12 @@ searchList:
   searching: Searching...
   nothingFound: Nothing found
   error: Error occurred during search
+gameDetails:
+  myScripts: My scripts
+myScripts:
+  noScripts: You have not any scripts for this game
+scriptDetails:
+  update: Update
+  notification:
+    updateSuccessfully: Updated successfully
+    errorDuringUpdate: Error during update 

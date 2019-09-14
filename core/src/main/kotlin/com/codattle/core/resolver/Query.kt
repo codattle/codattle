@@ -1,10 +1,7 @@
 package com.codattle.core.resolver
 
 import com.codattle.core.dao.common.Id
-import com.codattle.core.model.Game
-import com.codattle.core.model.Match
-import com.codattle.core.model.MatchResult
-import com.codattle.core.model.Script
+import com.codattle.core.model.*
 import com.codattle.core.service.GameService
 import com.codattle.core.service.MatchService
 import com.codattle.core.service.ScriptService
@@ -36,8 +33,12 @@ class Query(private val gameService: GameService,
         return matchService.getMatchesOfGame(gameId)
     }
 
-    fun scripts(): List<Script> {
-        return scriptService.getScripts()
+    fun script(scriptId: Id<Script>): Script {
+        return scriptService.getScript(scriptId)
+    }
+
+    fun scripts(gameId: Id<Game>, authorId: Id<User>?): List<Script> {
+        return scriptService.getScripts(gameId, authorId)
     }
 
     fun result(matchId: Id<Match>): MatchResult? {
