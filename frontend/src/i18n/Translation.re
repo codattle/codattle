@@ -1,4 +1,4 @@
 [@react.component]
-let make = (~id) => {
-  ReasonReact.element(ReactIntl.FormattedMessage.make(~id, ~defaultMessage="", [||]));
+let make = (~id, ~className=?) => {
+  <span ?className> {ReasonReact.element(ReactIntl.FormattedMessage.make(~id, ~defaultMessage="", [||]))} </span>;
 };

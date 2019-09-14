@@ -34,8 +34,10 @@ let make = (~changeLanguage=?) => {
       </Tabs>
       <Select
         value=language
-        items=[(Language.en, ReasonReact.string("EN")), (Language.pl, ReasonReact.string("PL"))]
+        items=[Language.en, Language.pl]
+        itemMapper={({name}) => React.string(name |> Language.languageNameToJs)}
         onChange={language => changeLanguage |> OptionUtils.execIfSome(language)}
+        variant=`Negative
       />
     </Toolbar>
   </AppBar>;

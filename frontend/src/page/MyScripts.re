@@ -21,21 +21,18 @@ let make = (~gameId) => {
       data##scripts |> Array.to_list |> List.map(script => {id: script##id, code: script##code})
     );
 
-  <div>
-    {switch (scripts) {
-     | NotLoaded => <> </>
-     | Loading => <Translation id="common.loading" />
-     | Loaded([]) => <Translation id="myScripts.noScripts" />
-     | Loaded(scripts) =>
-       <ul>
-         {scripts
-          |> Utils.componentListWithIndex((index, script) =>
-               <li key={script.id} onClick={_ => ReasonReactRouter.push("/games/scripts/" ++ script.id)}>
-                 {ReasonReact.string("#" ++ string_of_int(index + 1))}
-               </li>
-             )}
-       </ul>
-     | Failure => <Translation id="common.error" />
-     }}
-  </div>;
+  scripts->Utils.displayResource(scripts =>
+    switch (scripts) {
+    | [] => <Translation id="myScripts.noScripts" />
+    | scripts =>
+      <ul>
+        {scripts
+         |> Utils.componentListWithIndex((index, script) =>
+              <li key={script.id} onClick={_ => ReasonReactRouter.push("/games/scripts/" ++ script.id)}>
+                {ReasonReact.string("#" ++ string_of_int(index + 1))}
+              </li>
+            )}
+      </ul>
+    }
+  );
 };

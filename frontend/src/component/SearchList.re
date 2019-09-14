@@ -41,19 +41,14 @@ let make =
   <div>
     <TextField label="searchList.name" onChange={name => setFilters(_ => {name: name})} />
     <div className=Styles.itemsContainer>
-      {switch (items) {
-       | NotLoaded => <> </>
-       | Loading => <Translation id="searchList.searching" />
-       | Loaded(items) =>
-         items
-         |> Utils.componentList(item => {
-              let {id, name} = displayMapper(item);
-              <div key=id className=Styles.item onClick={_ => onItemClick |> OptionUtils.execIfSome(item)}>
-                <span className=Styles.itemTitle> {ReasonReact.string(name)} </span>
-              </div>;
-            })
-       | Failure => <Translation id="searchList.error" />
-       }}
+      {items->Utils.displayResource(
+         Utils.componentList(item => {
+           let {id, name} = displayMapper(item);
+           <div key=id className=Styles.item onClick={_ => onItemClick |> OptionUtils.execIfSome(item)}>
+             <span className=Styles.itemTitle> {ReasonReact.string(name)} </span>
+           </div>;
+         }),
+       )}
     </div>
   </div>;
 };

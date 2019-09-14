@@ -30,24 +30,18 @@ let make = (~scriptId) => {
       GraphqlService.executeQuery(UpdateScriptCodeMutation.make(~scriptId, ~code=script.code, ()))
       |> Repromise.wait(result =>
            switch (result) {
-           | Some(_) => showNotification("scriptDetails.notification.updateSuccessfully", `Success)
-           | None => showNotification("scriptDetails.notification.errorDuringUpdate", `Error)
+           | Some(_) => showNotification("common.notification.updateSuccessfully", `Success)
+           | None => showNotification("common.notification.errorDuringUpdate", `Error)
            }
          )
     | _ => ()
     };
   };
 
-  <div>
-    {switch (script) {
-     | NotLoaded => <> </>
-     | Loading => <Translation id="common.loading" />
-     | Loaded({code}) =>
-       <div>
-         <ScriptEditor value=code onChange={code => setScript(_ => {code: code})} />
-         <Button label="scriptDetails.update" onClick=updateScriptCode />
-       </div>
-     | Failure => <Translation id="common.error" />
-     }}
-  </div>;
+  script->Utils.displayResource(({code}) =>
+    <div>
+      <ScriptEditor value=code onChange={code => setScript(_ => {code: code})} />
+      <Button label="scriptDetails.update" onClick=updateScriptCode />
+    </div>
+  );
 };

@@ -4,6 +4,9 @@ common:
   error: Błąd
   add: Dodaj
   loading: Ładowanie...
+  notification:
+    updateSuccessfully: Zaktualizowano pomyślnie
+    errorDuringUpdate: Błąd podczas aktualizacji
 gameWizard:
   name: Nazwa
   createGame: Stwórz grę
@@ -13,9 +16,9 @@ gameWizard:
 scriptWizard:
   noDescription: Brak opisu...
   description: Opis
-  loadingGame: Ładowanie gry...
   joinMatch: Dołącz do gry
   joiningMatch: Dołączanie do gry...
+  newScript: Nowy skrypt
 scriptEditor:
   code: Kod
 matchFrame:
@@ -24,7 +27,7 @@ spriteList:
   addSprite: Dodaj sprite
 ratingForm:
   send: Wyślij ocenę
-  send: Edytuj ocenę
+  edit: Edytuj ocenę
 navigationBar:
   dashboard: Panel
   createGame: Stwórz grę
@@ -32,15 +35,10 @@ navigationBar:
   profile: Profil
 searchList:
   name: Nazwa
-  searching: Szukanie...
   nothingFound: Nic nie znaleziono
-  error: Wystąpił błąd w trakcie wyszukiwania
 gameDetails:
   myScripts: Moje skrypty
 myScripts:
   noScripts: Nie masz żadnych skryptów do tej gry
 scriptDetails:
   update: Aktualizuj
-  notification:
-    updateSuccessfully: Zaktualizowano pomyślnie
-    errorDuringUpdate: Błąd podczas aktualizacji

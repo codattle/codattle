@@ -1,6 +1,7 @@
 [@bs.module] external enTranslations: Js.Dict.t(string) = "./translations/en.yaml";
 [@bs.module] external plTranslations: Js.Dict.t(string) = "./translations/pl.yaml";
 
+[@bs.deriving jsConverter]
 type languageName = [ | `EN | `PL];
 
 type t = {
