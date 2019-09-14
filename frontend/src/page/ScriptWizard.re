@@ -1,5 +1,4 @@
 open Rationale.Option;
-open Rationale.Function;
 
 type script = {
   id: option(string),
@@ -79,9 +78,6 @@ let useGame = (~matchId) =>
     }
   );
 
-let sendNewScript = (~gameId, ~code) =>
-  GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code, ())) |> Repromise.map(fmap(result => result##sendScript##id));
-
 [@react.component]
 let make = (~matchId: string) => {
   let (state, setState) =
@@ -109,22 +105,19 @@ let make = (~matchId: string) => {
                                                     },
                                                     selectedScript: None,
                                                   }));
-      let joinMatch = (script: script) => {
+      let joinMatch = (script: script): unit => {
         setState(_ => Joining);
-        let scriptId =
-          switch (script) {
-          | {id: Some(scriptId)} => Repromise.resolved(Some(scriptId))
-          | {code} => sendNewScript(~gameId=game.id, ~code)
-          };
-        scriptId
-        |> Repromise.andThen(
-             fmap(scriptId => GraphqlService.executeQuery(JoinMatchMutation.make(~matchId, ~scriptId, ())))
-             ||> default(Repromise.resolved(None)),
+        script.id
+        |> Rationale.Option.map(PromiseUtils.resolved)
+        |> Rationale.Option.default(
+             GraphqlService.executeQuery(SendScriptMutation.make(~gameId=game.id, ~code=script.code, ()))
+             |> Repromise.mapOk(result => result##sendScript##id),
            )
+        |> Repromise.andThenOk(scriptId => GraphqlService.executeQuery(JoinMatchMutation.make(~matchId, ~scriptId, ())))
         |> Repromise.wait(result =>
              switch (result) {
-             | Some(_) => ReasonReactRouter.push("/games/matches/" ++ matchId)
-             | None => setState(_ => Failure)
+             | Belt.Result.Ok(_) => ReasonReactRouter.push("/games/matches/" ++ matchId)
+             | Error(_) => setState(_ => Failure)
              }
            );
       };

@@ -1,3 +1,6 @@
+open Rationale.Option;
+open Rationale.Function.Infix;
+
 type mode =
   | Editing
   | Creating
@@ -28,34 +31,26 @@ let make = () => {
   let (logo: option(File.t), setLogo) = React.useState(() => None);
   let (sprites, setSprites) = React.useState(() => []);
 
-  let sendLogo = () => {
-    logo->Belt.Option.mapWithDefault(Repromise.Rejectable.resolved(None), logo =>
-      FileRestEndpoint.sendFile(logo) |> Repromise.Rejectable.map(fileId => Some(fileId))
-    );
-  };
+  let sendLogo = (): PromiseUtils.t(option(string)) =>
+    logo |> map(FileRestEndpoint.sendFile ||> Repromise.mapOk(some)) |> default(PromiseUtils.resolved(None));
 
-  let sendSprite = ({name, file}: SpriteList.notUploadedSprite) => {
-    FileRestEndpoint.sendFile(file) |> Repromise.Rejectable.map(fileId => {"name": name, "image": fileId});
-  };
+  let sendSprite = ({name, file}: SpriteList.notUploadedSprite): PromiseUtils.t(Js.t({..})) =>
+    FileRestEndpoint.sendFile(file) |> Repromise.mapOk(fileId => {"name": name, "image": fileId});
 
-  let sendSprites = () => {
-    Repromise.Rejectable.all(sprites |> List.map(sendSprite));
-  };
+  let sendSprites = (): PromiseUtils.t(list(Js.t({..}))) => sprites |> List.map(sendSprite) |> PromiseUtils.all;
 
   let createGame = () => {
     setMode(_ => Creating);
     PromiseUtils.all2(sendLogo(), sendSprites())
-    |> Repromise.Rejectable.andThen(((logo, sprites)) =>
+    |> Repromise.andThenOk(((logo, sprites)) =>
          GraphqlService.executeQuery(
            CreateGameMutation.make(~name, ~description="", ~code=script, ~logo?, ~sprites=sprites |> Array.of_list, ()),
          )
-         |> Repromise.Rejectable.catch(_error => Repromise.Rejectable.rejected(""))
        )
-    |> Repromise.Rejectable.catch(_error => Repromise.resolved(None))
     |> Repromise.wait(result =>
          switch (result) {
-         | Some(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)
-         | None => setMode(_ => Failure)
+         | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)
+         | Error(_) => setMode(_ => Failure)
          }
        );
   };

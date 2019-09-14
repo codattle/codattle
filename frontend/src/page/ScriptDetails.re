@@ -30,8 +30,8 @@ let make = (~scriptId) => {
       GraphqlService.executeQuery(UpdateScriptCodeMutation.make(~scriptId, ~code=script.code, ()))
       |> Repromise.wait(result =>
            switch (result) {
-           | Some(_) => showNotification("common.notification.updateSuccessfully", `Success)
-           | None => showNotification("common.notification.errorDuringUpdate", `Error)
+           | Belt.Result.Ok(_) => showNotification("common.notification.updateSuccessfully", `Success)
+           | Error(_) => showNotification("common.notification.errorDuringUpdate", `Error)
            }
          )
     | _ => ()

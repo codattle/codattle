@@ -78,13 +78,13 @@ let make = (~gameId) => {
   game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
-      |> Repromise.Rejectable.wait(response =>
+      |> Repromise.wait(response =>
            switch (response) {
-           | Some(response) =>
+           | Belt.Result.Ok(response) =>
              let rating = response##rateGame |> mapRating;
              let isSameAuthor = (firstRating, secondRating) => firstRating.author === secondRating.author;
              setGame(game => {...game, ratings: game.ratings |> unionWith(isSameAuthor, [rating])});
-           | None => ()
+           | Error(_) => ()
            }
          );
     };

@@ -1,23 +1,36 @@
-let all2 = (promise1, promise2) => {
-  let (promise, resolve, reject) = Repromise.Rejectable.make();
+open Rationale.Function.Infix;
 
-  let result1 = ref(None);
-  let result2 = ref(None);
+type t('a) = Repromise.t(Belt.Result.t('a, unit));
 
-  let handlePromise = (promise, promiseResult) => {
-    promise
-    |> Repromise.Rejectable.catch(error => {
-         reject(error);
-         Repromise.Rejectable.rejected();
-       })
-    |> Repromise.Rejectable.wait(result => {
-         promiseResult := Some(result);
-         (result1^, result2^) |> OptionUtils.ifSome2((result1, result2) => resolve((result1, result2)));
-       });
-  };
+[@bs.scope "Promise"] [@bs.val] external jsAll: 'a => 'b = "all";
 
-  handlePromise(promise1, result1);
-  handlePromise(promise2, result2);
+let resolved = (value: 'a): t('a) => value |> Rationale.Result.return |> Repromise.resolved;
 
-  promise;
-};
+let fromJsPromise = (promise: Js.Promise.t('a)): t('a) =>
+  promise
+  |> Repromise.Rejectable.fromJsPromise
+  |> Repromise.Rejectable.map(result => Belt.Result.Ok(result))
+  |> Repromise.Rejectable.catch(_ => Repromise.resolved(Belt.Result.Error()));
+
+let toJsPromise = (promise: t('a)): Js.Promise.t('a) =>
+  promise
+  |> Repromise.Rejectable.relax
+  |> Repromise.Rejectable.andThen(
+       Rationale.Option.ofResult
+       ||> Rationale.Option.map(Repromise.Rejectable.resolved)
+       ||> OptionUtils.default(() => Repromise.Rejectable.rejected()),
+     )
+  |> Repromise.Rejectable.toJsPromise;
+
+let fromRejectable = (promise: Repromise.Rejectable.t('a, _)): t('a) => promise |> Repromise.Rejectable.toJsPromise |> fromJsPromise;
+
+let toRejectable = (promise: t('a)): Repromise.Rejectable.t('a, _) => promise |> toJsPromise |> Repromise.Rejectable.fromJsPromise;
+
+let flatMapOk =
+    (map: 'a => Belt.Result.t('b, unit), promise: Repromise.t(Belt.Result.t('a, unit))): Repromise.t(Belt.Result.t('b, unit)) =>
+  promise |> Repromise.mapOk(map) |> Repromise.map(Rationale.Result.join);
+
+let all = (promises: list(t('a))): t(list('a)) => promises |> List.map(toRejectable) |> Repromise.Rejectable.all |> fromRejectable;
+
+let all2 = (promise1: t('a), promise2: t('b)): t(('a, 'b)) =>
+  jsAll((promise1 |> toJsPromise, promise2 |> toJsPromise)) |> fromJsPromise;
