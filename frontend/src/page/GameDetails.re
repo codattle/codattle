@@ -56,6 +56,14 @@ module RateGameMutation = [%graphql
 |}
 ];
 
+module RemoveSpriteFromGameMutation = [%graphql
+  {|
+  mutation($gameId: ID!, $spriteName: String) {
+    removeSpriteFromGame(gameId: $gameId, spriteName: $spriteName)
+  }
+|}
+];
+
 let mapRating = rating => {
   author: rating##author##username,
   ratingValue: rating##value |> Json.Decode.int,
@@ -77,6 +85,25 @@ let make = (~gameId) => {
         ratings: data##game##ratings |> Array.map(mapRating) |> Array.to_list,
       }
     );
+
+  let removeSprite = (gameId: string, spriteToRemove: SpriteList.uploadedSprite) => {
+    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName=spriteToRemove.name, ()))
+    |> Repromise.Rejectable.wait(response =>
+         switch (response) {
+         | Some(_) =>
+           setGame(game =>
+             {
+               id: game.id,
+               name: game.name,
+               logo: game.logo,
+               sprites: game.sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== spriteToRemove.name),
+               ratings: game.ratings,
+             }
+           )
+         | _ => ()
+         }
+       );
+  };
 
   switch (game) {
   | NotLoaded => <div />
@@ -111,7 +138,11 @@ let make = (~gameId) => {
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
       ratings
-      <SpriteList uploadedSprites={game.sprites} canAdd=false />
+      <SpriteList
+        uploadedSprites={game.sprites}
+        onUploadedSpriteRemove={spriteToRemove => removeSprite(game.id, spriteToRemove)}
+        canAdd=false
+      />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
     </div>;
   | Failure => <Translation id="common.error" />

@@ -51,9 +51,10 @@ module AddSpriteDialog = {
 let make =
     (
       ~uploadedSprites: list(uploadedSprite)=[],
-      ~notUploadedSprites=[],
+      ~notUploadedSprites: list(notUploadedSprite)=[],
       ~onNotUploadedSpritesChange=?,
       ~onNotUploadedSpriteAdded=?,
+      ~onUploadedSpriteRemove=?,
       ~canAdd=true,
     ) => {
   let (dialogOpen, setDialogOpen) = React.useState(() => false);
@@ -75,43 +76,45 @@ let make =
     @ (notUploadedSprites |> List.map((sprite: notUploadedSprite) => sprite.name));
   };
 
-  let removeSprite = (allSprites: list(notUploadedSprite), spriteToRemoveName: string) => {
-    let spritesWithOutRemoved = allSprites |> List.filter(sprite => sprite.name !== spriteToRemoveName);
-    onNotUploadedSpritesChange |> OptionUtils.execIfSome(spritesWithOutRemoved);
+  let removeNotUploaded = (allSprites: list(notUploadedSprite), spriteToRemoveName: string) => {
+    let spriteToRemove = allSprites |> List.filter((sprite: notUploadedSprite) => sprite.name !== spriteToRemoveName);
+    onNotUploadedSpritesChange |> OptionUtils.execIfSome(spriteToRemove);
+  };
+
+  let removeUploaded = (allSprites: list(uploadedSprite), spriteToRemoveName: string) => {
+    let spriteToRemove = allSprites |> List.find((sprite: uploadedSprite) => sprite.name === spriteToRemoveName);
+    onUploadedSpriteRemove |> OptionUtils.execIfSome(spriteToRemove);
   };
 
   let spriteElements =
-    <table>
-      <tbody>
-        {
-          let width = "50";
-          let height = "50";
-          (
-            uploadedSprites
-            |> List.map(({name, fileId}) =>
-                 <div key=name>
-                   <span> {ReasonReact.string(name)} </span>
-                   <img src={Environment.storageUrl ++ fileId} width height />
-                 </div>
-               )
-            //  <Button label="remove" onClick={() => removeSprite(sprites, name)} />
-          )
-          @ (
-            notUploadedSprites
-            |> List.map(({name, file}) =>
-                 <tr key=name>
-                   <td> <ImagePreview image=file width height /> </td>
-                   <td> <span> {ReasonReact.string(name)} </span> </td>
-                   <td> <Button label="remove" onClick={() => removeSprite(notUploadedSprites, name)} /> </td>
-                 </tr>
-               )
-          )
-          |> Array.of_list
-          |> React.array;
-        }
-      </tbody>
-    </table>;
-  // <thead> <tr> <th> {ReasonReact.string("Sprite")} </th> <th> {ReasonReact.string("Nazwa")} </th> <th /> </tr> </thead>
+    <div>
+      {
+        let width = "50";
+        let height = "50";
+        (
+          uploadedSprites
+          |> List.map(({name, fileId}) =>
+               <div key=name>
+                 <span> {ReasonReact.string(name)} </span>
+                 <Button label="remove" onClick={() => removeUploaded(uploadedSprites, name)} />
+                 <img src={Environment.storageUrl ++ fileId} width height />
+               </div>
+             )
+        )
+        @ (
+          notUploadedSprites
+          |> List.map(({name, file}) =>
+               <div key=name>
+                 <ImagePreview image=file width height />
+                 <div> {ReasonReact.string(name)} </div>
+                 <Button label="remove" onClick={() => removeNotUploaded(notUploadedSprites, name)} />
+               </div>
+             )
+        )
+        |> Array.of_list
+        |> React.array;
+      }
+    </div>;
   <div>
     {canAdd ? <Button label="spriteList.addSprite" onClick={() => setDialogOpen(_ => true)} /> : <> </>}
     {isAnySprite ? <div className=Styles.section> spriteElements </div> : <> </>}
