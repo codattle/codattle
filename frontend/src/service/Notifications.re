@@ -18,7 +18,7 @@ open Binding;
 [@bs.deriving jsConverter]
 type appearance = [ | [@bs.as "success"] `Success | [@bs.as "info"] `Info | [@bs.as "warning"] `Warning | [@bs.as "error"] `Error];
 
-type notifications = {showNotification: (string, appearance) => unit};
+type t = {showNotification: (string, appearance) => unit};
 
 let useNotifications = () => {
   let toasts = useToasts();

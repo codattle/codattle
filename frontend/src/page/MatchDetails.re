@@ -57,10 +57,7 @@ let make = (~matchId) => {
       }
     );
 
-  switch (match) {
-  | NotLoaded => <div />
-  | Loading => <div> {ReasonReact.string("Loading...")} </div>
-  | Loaded(match) =>
+  match->Utils.displayResource(match => {
     let result =
       match.result
       ->Belt.Option.mapWithDefault(
@@ -105,6 +102,5 @@ let make = (~matchId) => {
         {ReasonReact.string("New script")}
       </button>
     </div>;
-  | Failure => <div> {ReasonReact.string("Failure while loading match :(")} </div>
-  };
+  });
 };

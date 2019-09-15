@@ -75,10 +75,7 @@ let make = (~gameId) => {
       }
     );
 
-  switch (game) {
-  | NotLoaded => <div />
-  | Loading => <span> {ReasonReact.string("Loading...")} </span>
-  | Loaded(game) =>
+  game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
       |> Repromise.Rejectable.wait(response =>
@@ -100,7 +97,7 @@ let make = (~gameId) => {
            let ratingValue = <Rating initialValue={rating.ratingValue} readOnly=true />;
            let description =
              rating.description |> fmap(description => <span> {ReasonReact.string(description)} </span>) |> default(<> </>);
-           <div key=rating.author> author ratingValue description </div>;
+           <div key={rating.author}> author ratingValue description </div>;
          });
     <div>
       logo
@@ -114,6 +111,5 @@ let make = (~gameId) => {
       <SpriteList uploadedSprites={game.sprites} canAdd=false />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
     </div>;
-  | Failure => <Translation id="common.error" />
-  };
+  });
 };

@@ -97,3 +97,11 @@ let withDataCy = (dataCy, element) =>
   | Some(dataCy) => withDataAttributes(~data=[("data-cy", dataCy)], element)
   | None => element
   };
+
+let displayResource = (resource, displayLoadedResource) =>
+  switch (resource) {
+  | NotLoaded => <div />
+  | Loading => <div> <Translation id="common.loading" /> </div>
+  | Loaded(loadedResource) => displayLoadedResource(loadedResource)
+  | Failure => <div> <Translation id="common.error" /> </div>
+  };

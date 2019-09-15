@@ -1,13 +1,16 @@
+open Rationale.Option;
+
+type variant = {color: Css.color};
+
 module Styles = {
-  open Style.Color;
   open Css;
 
-  let icon = style([SVG.fill(textColor) |> important]);
-  let select =
+  let icon = variant => style([SVG.fill(variant.color) |> important]);
+  let select = variant =>
     style([
-      color(textColor) |> important,
-      before([borderColor(textColor) |> important]),
-      after([borderColor(textColor) |> important]),
+      color(variant.color) |> important,
+      before([borderColor(variant.color) |> important]),
+      after([borderColor(variant.color) |> important]),
     ]);
 };
 
@@ -37,11 +40,18 @@ module MaterialSelect = {
 };
 
 [@react.component]
-let make = (~value: 'value, ~items: list(('value, React.element)), ~onChange: option('value => unit)=?) =>
+let make = (~value: 'value, ~items: list('value), ~itemMapper: 'value => React.element, ~onChange: 'value => unit, ~variant=?) => {
+  let variant =
+    switch (variant |> default(`Default)) {
+    | `Default => {color: Css.black}
+    | `Negative => {color: Css.white}
+    };
+
   <MaterialSelect
     value
-    onChange={(event, _) => onChange |> OptionUtils.execIfSome(ReactEvent.Form.target(event)##value)}
-    className=Styles.select
-    classes={MaterialSelect.classes(~icon=Styles.icon, ())}>
-    {items |> Utils.componentList(((value, content)) => <MenuItem value> content </MenuItem>)}
+    onChange={(event, _) => onChange(ReactEvent.Form.target(event)##value)}
+    className={Styles.select(variant)}
+    classes={MaterialSelect.classes(~icon=Styles.icon(variant), ())}>
+    {items |> Utils.componentList(value => <MenuItem value> {itemMapper(value)} </MenuItem>)}
   </MaterialSelect>;
+};

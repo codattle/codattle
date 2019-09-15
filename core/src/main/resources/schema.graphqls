@@ -36,6 +36,7 @@ type Game {
     logo: File
     sprites: [Sprite!]!
     ratings: [Rating!]!
+    scripts(authorId: ID): [Script!]!
 }
 
 type Script {

@@ -1,31 +1,41 @@
 open Rationale.Option;
-open Rationale.Option.Infix;
-open Rationale.RList;
+open Rationale.Function;
 
-type translatedText = {
-  language: Language.languageName,
-  content: string,
+type script = {
+  id: option(string),
+  name: React.element,
+  code: string,
 };
 
 type game = {
   id: string,
-  description: list(translatedText),
+  description: I18nText.t,
+  scripts: list(script),
 };
 
-type mode =
-  | Editing
+type selectingScript = {
+  newScript: script,
+  selectedScript: option(script),
+};
+
+type state =
+  | SelectingScript(selectingScript)
   | Joining
   | Failure;
 
 module GetMatchQuery = [%graphql
   {|
-  query($matchId: ID!) {
+  query($matchId: ID!, $userId: ID!) {
     match_: match(matchId: $matchId) {
       game {
-        id,
+        id
         description {
-          language,
+          language
           content
+        }
+        scripts(authorId: $userId) {
+          id
+          code
         }
       }
     }
@@ -54,78 +64,83 @@ module JoinMatchMutation = [%graphql
 module Styles = {
   open Css;
 
-  let standardPadding = 15 |> px;
-
-  let header = style([fontWeight(`bold)]);
-  let section = style([marginTop(standardPadding), marginBottom(standardPadding)]);
-  let noDescription = style([fontStyle(`italic)]);
+  let section = style([marginTop(15 |> px), marginBottom(15 |> px)]);
 };
 
-let findWithLanguage = (languageName: Language.languageName, descriptions: list(translatedText)) => {
-  descriptions |> find(x => x.language === languageName);
-};
+let useGame = (~matchId) =>
+  Utils.useResource(GetMatchQuery.make(~matchId, ~userId=ProfileService.userId, ()), [|matchId, ProfileService.userId|], data =>
+    {
+      id: data##match##game##id,
+      description: data##match##game##description |> I18nText.fromJs,
+      scripts:
+        data##match##game##scripts
+        |> Array.mapi((index, script) => {id: Some(script##id), name: React.string("#" ++ string_of_int(index)), code: script##code})
+        |> Array.to_list,
+    }
+  );
 
-let descriptionContentOrDefault = (languageName: Language.languageName, descriptions: list(translatedText)) => {
-  findWithLanguage(languageName, descriptions)
-  |? findWithLanguage(Language.defaultLanguage.name, descriptions)
-  |? head(descriptions)
-  |> fmap(translatedText => ReasonReact.string(translatedText.content))
-  |> default(<span className=Styles.noDescription> <Translation id="scriptWizard.noDescription" /> </span>);
-};
-
-let descriptionHeader = {
-  <span className=Styles.header> <Translation id="scriptWizard.description" /> </span>;
-};
+let sendNewScript = (~gameId, ~code) =>
+  GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code, ())) |> Repromise.map(fmap(result => result##sendScript##id));
 
 [@react.component]
 let make = (~matchId: string) => {
-  let language = Language.useLanguage();
-  let (script, setScript) = React.useState(() => "");
-  let (mode, setMode) = React.useState(() => Editing);
-
-  let game =
-    Utils.useResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data =>
-      {
-        id: data##match##game##id,
-        description: data##match##game##description |> Array.map(x => {language: x##language, content: x##content}) |> Array.to_list,
-      }
+  let (state, setState) =
+    React.useState(() =>
+      SelectingScript({
+        newScript: {
+          id: None,
+          name: <Translation id="scriptWizard.newScript" />,
+          code: "",
+        },
+        selectedScript: None,
+      })
     );
+  let game = useGame(~matchId);
 
-  let joinMatchWithNewScript = (script: string, gameId: string, matchId: string) => {
-    setMode(_ => Joining);
-    GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code=script, ()))
-    |> Repromise.map(result => result->Belt.Option.map(result => result##sendScript))
-    |> Repromise.andThen(createdScript =>
-         createdScript->Belt.Option.mapWithDefault(Repromise.resolved(None), createdScript =>
-           GraphqlService.executeQuery(JoinMatchMutation.make(~matchId, ~scriptId=createdScript##id, ()))
-         )
-       )
-    |> Repromise.wait(result =>
-         switch (result) {
-         | Some(_) => ReasonReactRouter.push("/games/matches/" ++ matchId)
-         | None => setMode(_ => Failure)
-         }
-       );
-  };
+  game->Utils.displayResource(game =>
+    switch (state) {
+    | SelectingScript({newScript, selectedScript}) =>
+      let script = selectedScript |> default(newScript);
+      let selectExistentScript = selectedScript => setState(_ => SelectingScript({newScript, selectedScript: Some(selectedScript)}));
+      let selectNewScript = code => setState(_ => SelectingScript({
+                                                    newScript: {
+                                                      ...newScript,
+                                                      code,
+                                                    },
+                                                    selectedScript: None,
+                                                  }));
+      let joinMatch = (script: script) => {
+        setState(_ => Joining);
+        let scriptId =
+          switch (script) {
+          | {id: Some(scriptId)} => Repromise.resolved(Some(scriptId))
+          | {code} => sendNewScript(~gameId=game.id, ~code)
+          };
+        scriptId
+        |> Repromise.andThen(
+             fmap(scriptId => GraphqlService.executeQuery(JoinMatchMutation.make(~matchId, ~scriptId, ())))
+             ||> default(Repromise.resolved(None)),
+           )
+        |> Repromise.wait(result =>
+             switch (result) {
+             | Some(_) => ReasonReactRouter.push("/games/matches/" ++ matchId)
+             | None => setState(_ => Failure)
+             }
+           );
+      };
 
-  switch (game) {
-  | NotLoaded => <div />
-  | Loading => <div> <Translation id="scriptWizard.loadingGame" /> </div>
-  | Loaded(game) =>
-    switch (mode) {
-    | Editing =>
       Styles.(
         <div className=section>
+          <div className=section> <GameDescription description={game.description} /> </div>
           <div className=section>
-            <ExpansionPanel header=descriptionHeader content={descriptionContentOrDefault(language.name, game.description)} />
+            <Select value=script items=[newScript, ...game.scripts] itemMapper={script => script.name} onChange=selectExistentScript />
           </div>
-          <div className=section> <ScriptEditor value=script onChange={script => setScript(_ => script)} /> </div>
-          <Button onClick={_ => joinMatchWithNewScript(script, game.id, matchId)}> <Translation id="scriptWizard.joinMatch" /> </Button>
+          <div className=section> <ScriptEditor value={script.code} onChange=selectNewScript /> </div>
+          <Button label="scriptWizard.joinMatch" onClick={_ => joinMatch(script)} />
         </div>
-      )
+      );
     | Joining => <div> <Translation id="scriptWizard.joiningMatch" /> </div>
-    | Failure => <div> {ReasonReact.string("Error while joining game :(")} </div>
+    | Failure => <div> <Translation id="common.error" /> </div>
     }
-  | Failure => <div> {ReasonReact.string("Error while loading game :(")} </div>
-  };
+  );
 };
