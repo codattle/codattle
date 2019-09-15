@@ -1,17 +1,16 @@
 package com.codattle.core.service
 
+import com.codattle.core.dao.GameDao
 import com.codattle.core.dao.MatchDao
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
-import java.lang.IllegalStateException
 import javax.inject.Singleton
 
 @Singleton
-class MatchService(private val matchDao: MatchDao, private val queueService: QueueService) {
+class MatchService(private val matchDao: MatchDao, private val gameDao: GameDao, private val queueService: QueueService) {
 
     companion object {
         private const val SIMULATION_QUEUE = "simulation"
-        private const val SCRIPTS_PER_MATCH = 2 // TODO: later we can support games for one or more than two players
     }
 
     init {
@@ -36,21 +35,20 @@ class MatchService(private val matchDao: MatchDao, private val queueService: Que
 
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {
         var match = getMatch(matchId)
+        val game = gameDao.getGame(match.game)
 
-        if (!canJoinMatch(match)) {
-            throw IllegalArgumentException("Cannot join to match with id $matchId")
-        }
+        require(canJoinMatch(match, game)) { "Cannot join to match with id $matchId" }
 
         match = matchDao.addScriptIfScriptsCountEquals(matchId, scriptId, match.scripts.size)
                 ?: throw IllegalStateException("Scripts count have changed while joining. Probably race occurred.")
 
-        if (match.scripts.size == SCRIPTS_PER_MATCH) {
+        if (match.scripts.size == game.maxAllowedPlayerCount) {
             startMatch(matchId)
         }
     }
 
-    private fun canJoinMatch(match: Match): Boolean {
-        return match.scripts.size < SCRIPTS_PER_MATCH
+    private fun canJoinMatch(match: Match, game: Game): Boolean {
+        return match.scripts.size < game.maxAllowedPlayerCount
     }
 
     private fun startMatch(matchId: Id<Match>) {

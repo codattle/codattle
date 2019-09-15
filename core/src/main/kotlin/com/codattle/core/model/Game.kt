@@ -16,7 +16,8 @@ data class Game(
         val logo: Id<File>?,
         val author: Id<User>,
         val visibility: Visibility,
-        val sprites: List<Sprite>
+        val sprites: List<Sprite>,
+        val allowedPlayerCounts: Set<Int>
 ) : DaoModel<Game> {
 
     companion object {
@@ -30,6 +31,10 @@ data class Game(
         }
     }
 
+    init {
+        require(allowedPlayerCounts.isNotEmpty()) { "At least one allowed player count required" }
+    }
+
     enum class Visibility {
         PUBLIC, PRIVATE
     }
@@ -37,4 +42,7 @@ data class Game(
     override fun toBuilder(): GameBuilder {
         return GameBuilder.fromModel(this)
     }
+
+    val maxAllowedPlayerCount: Int
+        get() = allowedPlayerCounts.max()!!
 }

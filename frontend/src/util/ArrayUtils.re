@@ -1,0 +1,1 @@
+let mapToList = (map: 'a => 'b, array: array('a)): list('b) => array |> Array.map(map) |> Array.to_list;

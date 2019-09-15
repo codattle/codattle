@@ -25,6 +25,8 @@ let executeQuery = (grapqhQuery: query('a)): PromiseUtils.t('a) =>
   |> PromiseUtils.flatMapOk(
        Js.Json.decodeObject
        ||> Rationale.Option.flatMap(Js.Dict.get(_, "data"))
+       ||> Rationale.Option.flatMap(Js.Json.decodeObject)
+       ||> Rationale.Option.map(Js.Json.object_)
        ||> Rationale.Option.map(grapqhQuery##parse)
        ||> Rationale.Result.ofOption(),
      );

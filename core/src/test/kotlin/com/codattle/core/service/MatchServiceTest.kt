@@ -85,7 +85,8 @@ class MatchServiceTest : BaseTest() {
 
     @Test
     fun `add script to match after joining to not full match`() {
-        val match = databasePopulator.createMatch(scriptsCount = 0, result = null)
+        val game = databasePopulator.createGame(allowedPlayerCounts = setOf(2))
+        val match = databasePopulator.createMatch(game = game.id, scriptsCount = 0, result = null)
         val scriptId = databasePopulator.createScript(game = match.game).id
 
         matchService.joinMatch(match.id, scriptId)
@@ -95,9 +96,10 @@ class MatchServiceTest : BaseTest() {
     }
 
     @Test
-    fun `send message to queue after joining twice to empty match`() {
-        val match = databasePopulator.createMatch(scriptsCount = 0, result = null)
-        val scripts = databasePopulator.createScripts(count = 2, game = match.game)
+    fun `start match if match is full`() {
+        val game = databasePopulator.createGame(allowedPlayerCounts = setOf(1, 3))
+        val match = databasePopulator.createMatch(game = game.id, scriptsCount = 0, result = null)
+        val scripts = databasePopulator.createScripts(count = 3, game = match.game)
 
         scripts.forEach { matchService.joinMatch(match.id, it.id) }
 
@@ -119,7 +121,8 @@ class MatchServiceTest : BaseTest() {
     @Test
     fun `throw exception if try to join full match`() {
         val scriptId = databasePopulator.createScript().id
-        val matchId = databasePopulator.createMatch(scriptsCount = 2, result = null).id
+        val game = databasePopulator.createGame(allowedPlayerCounts = setOf(2))
+        val matchId = databasePopulator.createMatch(game = game.id, scriptsCount = 2, result = null).id
 
         assertThatThrownBy { matchService.joinMatch(matchId, scriptId) }
                 .isInstanceOf(IllegalArgumentException::class.java)

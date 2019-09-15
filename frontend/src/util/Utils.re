@@ -105,3 +105,8 @@ let displayResource = (resource, displayLoadedResource) =>
   | Loaded(loadedResource) => displayLoadedResource(loadedResource)
   | Failure => <div> <Translation id="common.error" /> </div>
   };
+
+let intOfString = (string: string): option(int) => switch (int_of_string(string)) {
+  | int => Some(int)
+  | exception Failure(_) => None
+}
