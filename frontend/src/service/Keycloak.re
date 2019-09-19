@@ -18,7 +18,7 @@ type initConfig = {onLoad: string};
 [@bs.obj] external makeInitParam: (~onLoad: string, unit) => initParam = "";
 
 let initConfig = initConfig(~onLoad="login-required");
-let keycloakConfig = config(~url="http://localhost:8081/auth", ~realm="Keycloak", ~clientId="keycloak-client");
+let keycloakConfig = config(~url="http://localhost:8090/auth", ~realm="Keycloak", ~clientId="keycloak-client");
 let keycloak = keycloakConfig |> keycloak;
 
 module Authorization = {
