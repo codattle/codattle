@@ -33,6 +33,12 @@ class MatchService(private val matchDao: MatchDao, private val gameDao: GameDao,
         return matchDao.saveMatch(Match.builder().name(name).game(gameId))
     }
 
+    fun createInstantMatch(gameId: Id<Game>, scripts: List<Id<Script>>): Match {
+        val game = gameDao.getGame(gameId)
+
+        return matchDao.saveMatch(Match.builder().name(name).game(gameId))
+    }
+
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {
         var match = getMatch(matchId)
         val game = gameDao.getGame(match.game)

@@ -68,6 +68,10 @@ class DaoUtils(
         return getCollection(model).projection(projection, DaoModel<T>::id eq id).first()
     }
 
+    inline fun <reified T : DaoModel<T>> exists(id: Id<T>): T? {
+        return getCollection(T::class.java).
+    }
+
     inline fun <reified T : DaoModel<T>> getMany(filter: Bson? = null): List<T> {
         return if (filter == null) {
             getCollection(T::class.java).find().toList()

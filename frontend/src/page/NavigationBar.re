@@ -1,4 +1,5 @@
 open Rationale.RList;
+open OptionUtils.Infix;
 
 module Styles = {
   open Css;
@@ -15,6 +16,7 @@ type navigation = {
 let make = (~changeLanguage=?) => {
   let url = ReasonReactRouterUtils.useUrlPath();
   let language = Language.useLanguage();
+  let languages = [Language.en, Language.pl] |> Selector.Optional.fromListWithSelected(Rationale.Util.identical(language));
 
   let navigation = [
     {name: "navigationBar.dashboard", href: "/dashboard"},
@@ -33,10 +35,9 @@ let make = (~changeLanguage=?) => {
         {navigation |> Utils.componentList(({name, href}) => <Tab value=href label={<Translation id=name />} />)}
       </Tabs>
       <Select
-        value=language
-        items=[Language.en, Language.pl]
-        itemMapper={({name}) => React.string(name |> Language.languageNameToJs)}
-        onChange={language => changeLanguage |> OptionUtils.execIfSome(language)}
+        value=languages
+        nameMapper={({name}) => React.string(name |> Language.languageNameToJs)}
+        onChange={({selected}) => selected |?> changeLanguage}
         variant=`Negative
       />
     </Toolbar>

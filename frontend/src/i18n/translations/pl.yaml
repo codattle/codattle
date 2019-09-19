@@ -20,8 +20,6 @@ scriptWizard:
   joinMatch: Dołącz do gry
   joiningMatch: Dołączanie do gry...
   newScript: Nowy skrypt
-scriptEditor:
-  code: Kod
 matchFrame:
   errorWhileParsingFrame: Błąd podczas parsowania ramki :(
 spriteList:
@@ -39,7 +37,11 @@ searchList:
   nothingFound: Nic nie znaleziono
 gameDetails:
   myScripts: Moje skrypty
+  scriptTesting: Testowanie skrytptów
 myScripts:
   noScripts: Nie masz żadnych skryptów do tej gry
 scriptDetails:
   update: Aktualizuj
+scriptTesting:
+  save: Zapisz
+  newScript: Nowy skrypt

@@ -19,6 +19,7 @@ let make = () => {
     | ["games", gameId, "new-match"] => <MatchWizard gameId />
     | ["games", gameId, "matches"] => <MatchList gameId />
     | ["games", gameId, "my-scripts"] => <MyScripts gameId />
+    | ["games", gameId, "script-testing"] => <ScriptTesting gameId />
     | ["games", "matches", matchId] => <MatchDetails matchId />
     | ["games", "matches", matchId, "new-script"] => <ScriptWizard matchId />
     | ["games", "scripts", scriptId] => <ScriptDetails scriptId />
@@ -28,7 +29,10 @@ let make = () => {
   <Language.Provider value=language>
     <ReactIntlProvider locale={language.locale} messages={language.translations}>
       <Notifications.Provider>
-        <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>
+        <div>
+          <NavigationBar changeLanguage={language => language |> Rationale.Option.iter(language => setLanguage(_ => language))} />
+          page
+        </div>
       </Notifications.Provider>
     </ReactIntlProvider>
   </Language.Provider>;

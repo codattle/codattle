@@ -82,7 +82,7 @@ let make = () => {
         </div>
         <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
         <div className={j|$section $scriptEditor|j}>
-          <ScriptEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
+          <CodeEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
         </div>
         <div className=section>
           <SpriteList notUploadedSprites=sprites onNotUploadedSpritesChange={sprites => setSprites(_ => sprites)} />

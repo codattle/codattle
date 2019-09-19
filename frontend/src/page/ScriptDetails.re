@@ -40,7 +40,7 @@ let make = (~scriptId) => {
 
   script->Utils.displayResource(({code}) =>
     <div>
-      <ScriptEditor value=code onChange={code => setScript(_ => {code: code})} />
+      <CodeEditor value=code onChange={code => setScript(_ => {code: code})} />
       <Button label="scriptDetails.update" onClick=updateScriptCode />
     </div>
   );

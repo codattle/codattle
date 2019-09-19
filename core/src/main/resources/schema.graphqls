@@ -116,6 +116,8 @@ type Mutation {
 
     createMatch(name: String!, gameId: ID!): Match!
 
+    createInstantMatch(gameId: ID!, scripts: [ID!]!): Match!
+
     sendScript(gameId: ID!, code: String!): Script!
 
     updateScriptCode(scriptId: ID!, code: String!): Boolean!

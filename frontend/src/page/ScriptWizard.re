@@ -1,26 +1,20 @@
-open Rationale.Option;
-
-type script = {
-  id: option(string),
-  name: React.element,
-  code: string,
-};
+open Rationale.Option.Infix;
 
 type game = {
   id: string,
   description: I18nText.t,
-  scripts: list(script),
 };
 
-type selectingScript = {
-  newScript: script,
-  selectedScript: option(script),
-};
-
-type state =
-  | SelectingScript(selectingScript)
+type mode =
+  | SelectingScript
   | Joining
   | Failure;
+
+type state = {
+  mode,
+  game,
+  scriptSelector: ScriptSelector.t,
+};
 
 module GetMatchQuery = [%graphql
   {|
@@ -60,78 +54,52 @@ module JoinMatchMutation = [%graphql
 |}
 ];
 
-module Styles = {
-  open Css;
-
-  let section = style([marginTop(15 |> px), marginBottom(15 |> px)]);
-};
-
-let useGame = (~matchId) =>
-  Utils.useResource(GetMatchQuery.make(~matchId, ~userId=ProfileService.userId, ()), [|matchId, ProfileService.userId|], data =>
-    {
-      id: data##match##game##id,
-      description: data##match##game##description |> I18nText.fromJs,
-      scripts:
-        data##match##game##scripts
-        |> Array.mapi((index, script) => {id: Some(script##id), name: React.string("#" ++ string_of_int(index)), code: script##code})
-        |> Array.to_list,
-    }
-  );
-
 [@react.component]
 let make = (~matchId: string) => {
   let (state, setState) =
-    React.useState(() =>
-      SelectingScript({
-        newScript: {
-          id: None,
-          name: <Translation id="scriptWizard.newScript" />,
-          code: "",
+    Utils.useEditableResource(GetMatchQuery.make(~matchId, ~userId=ProfileService.userId, ()), [|matchId, ProfileService.userId|], data =>
+      {
+        mode: SelectingScript,
+        game: {
+          id: data##match##game##id,
+          description: data##match##game##description |> I18nText.fromJs,
         },
-        selectedScript: None,
-      })
+        scriptSelector: {
+          newScriptCode: "",
+          scripts:
+            data##match##game##scripts
+            |> ArrayUtils.mapToList((script) => ({id: script##id, code: script##code}: ScriptSelector.script))
+            |> Selector.Optional.fromList,
+        },
+      }
     );
-  let game = useGame(~matchId);
 
-  game->Utils.displayResource(game =>
-    switch (state) {
-    | SelectingScript({newScript, selectedScript}) =>
-      let script = selectedScript |> default(newScript);
-      let selectExistentScript = selectedScript => setState(_ => SelectingScript({newScript, selectedScript: Some(selectedScript)}));
-      let selectNewScript = code => setState(_ => SelectingScript({
-                                                    newScript: {
-                                                      ...newScript,
-                                                      code,
-                                                    },
-                                                    selectedScript: None,
-                                                  }));
-      let joinMatch = (script: script): unit => {
-        setState(_ => Joining);
-        script.id
-        |> Rationale.Option.map(PromiseUtils.resolved)
-        |> Rationale.Option.default(
-             GraphqlService.executeQuery(SendScriptMutation.make(~gameId=game.id, ~code=script.code, ()))
-             |> Repromise.mapOk(result => result##sendScript##id),
-           )
+  state->Utils.displayResource(({mode, game, scriptSelector}) =>
+    switch (mode) {
+    | SelectingScript =>
+      let sendScript = () =>
+        GraphqlService.executeQuery(SendScriptMutation.make(~gameId=game.id, ~code=scriptSelector.newScriptCode, ()))
+        |> Repromise.mapOk(result => result##sendScript##id);
+      let joinMatch = () => {
+        setState(state => {...state, mode: Joining});
+        scriptSelector.scripts.selected
+        <$> (({id}) => id)
+        <$> PromiseUtils.resolved
+        |> OptionUtils.default(sendScript)
         |> Repromise.andThenOk(scriptId => GraphqlService.executeQuery(JoinMatchMutation.make(~matchId, ~scriptId, ())))
         |> Repromise.wait(result =>
              switch (result) {
              | Belt.Result.Ok(_) => ReasonReactRouter.push("/games/matches/" ++ matchId)
-             | Error(_) => setState(_ => Failure)
+             | Error(_) => setState(state => {...state, mode: Failure})
              }
            );
       };
 
-      Styles.(
-        <div className=section>
-          <div className=section> <GameDescription description={game.description} /> </div>
-          <div className=section>
-            <Select value=script items=[newScript, ...game.scripts] itemMapper={script => script.name} onChange=selectExistentScript />
-          </div>
-          <div className=section> <ScriptEditor value={script.code} onChange=selectNewScript /> </div>
-          <Button label="scriptWizard.joinMatch" onClick={_ => joinMatch(script)} />
-        </div>
-      );
+      <div>
+        <GameDescription description={game.description} />
+        <ScriptSelector value=scriptSelector onChange={scriptSelector => setState(state => {...state, scriptSelector})} />
+        <Button label="scriptWizard.joinMatch" onClick=joinMatch />
+      </div>;
     | Joining => <div> <Translation id="scriptWizard.joiningMatch" /> </div>
     | Failure => <div> <Translation id="common.error" /> </div>
     }

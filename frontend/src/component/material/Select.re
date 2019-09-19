@@ -1,5 +1,6 @@
-open Rationale.Option;
+open OptionUtils.Infix;
 
+type variantType = [ | `Default | `Negative];
 type variant = {color: Css.color};
 
 module Styles = {
@@ -40,18 +41,26 @@ module MaterialSelect = {
 };
 
 [@react.component]
-let make = (~value: 'value, ~items: list('value), ~itemMapper: 'value => React.element, ~onChange: 'value => unit, ~variant=?) => {
+let make =
+    (
+      ~value: Selector.Optional.t('a),
+      ~nameMapper: 'a => React.element,
+      ~onChange: Selector.Optional.t('a) => unit,
+      ~variant: option(variantType)=?,
+    ) => {
   let variant =
-    switch (variant |> default(`Default)) {
+    switch (variant ||? `Default) {
     | `Default => {color: Css.black}
     | `Negative => {color: Css.white}
     };
 
   <MaterialSelect
-    value
-    onChange={(event, _) => onChange(ReactEvent.Form.target(event)##value)}
+    value={value.selected ||? Obj.magic("")}
+    onChange={(event, _) =>
+      onChange(value |> Selector.Optional.select(Rationale.Util.identical(ReactEvent.Form.target(event)##value)))
+    }
     className={Styles.select(variant)}
     classes={MaterialSelect.classes(~icon=Styles.icon(variant), ())}>
-    {items |> Utils.componentList(value => <MenuItem value> {itemMapper(value)} </MenuItem>)}
+    {value |> Selector.Optional.all |> Utils.componentList(value => <MenuItem value> {nameMapper(value)} </MenuItem>)}
   </MaterialSelect>;
 };
