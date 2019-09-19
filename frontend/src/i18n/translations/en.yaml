@@ -6,13 +6,14 @@ common:
   loading: Loading...
   notification:
     updateSuccessfully: Updated successfully
-    errorDuringUpdate: Error during update 
+    errorDuringUpdate: Error during update
 gameWizard:
   name: Name
   createGame: Create game
   creating: Creating...
   errorWhileCreatingGame: Error while creating game :(
-  logo: "Logo"
+  logo: Logo
+  playerCount: Player count
 scriptWizard:
   noDescription: No description...
   description: Description
@@ -41,4 +42,4 @@ gameDetails:
 myScripts:
   noScripts: You have not any scripts for this game
 scriptDetails:
-  update: Update    
+  update: Update

@@ -26,8 +26,8 @@ let loadResource = (query, setter, mapper) => {
   GraphqlService.executeQuery(query)
   |> Repromise.wait(result =>
        switch (result) {
-       | Some(data) => setter(_ => Loaded(mapper(data)))
-       | None => setter(_ => Failure)
+       | Belt.Result.Ok(data) => setter(_ => Loaded(mapper(data)))
+       | Error(_) => setter(_ => Failure)
        }
      );
 };
@@ -105,3 +105,8 @@ let displayResource = (resource, displayLoadedResource) =>
   | Loaded(loadedResource) => displayLoadedResource(loadedResource)
   | Failure => <div> <Translation id="common.error" /> </div>
   };
+
+let intOfString = (string: string): option(int) => switch (int_of_string(string)) {
+  | int => Some(int)
+  | exception Failure(_) => None
+}

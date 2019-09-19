@@ -1572,6 +1572,46 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "allowedPlayerCounts",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "maxAllowedPlayerCount",
+              "description": "",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -1685,72 +1725,12 @@
               "description": "",
               "args": [
                 {
-                  "name": "code",
+                  "name": "game",
                   "description": "",
                   "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "name",
-                  "description": "",
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "logo",
-                  "description": "",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
+                    "kind": "INPUT_OBJECT",
+                    "name": "NewGame",
                     "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "description",
-                  "description": "",
-                  "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "sprites",
-                  "description": "",
-                  "type": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "INPUT_OBJECT",
-                        "name": "NewSprite",
-                        "ofType": null
-                      }
-                    }
                   },
                   "defaultValue": null
                 }
@@ -2215,6 +2195,109 @@
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "NewGame",
+          "description": "",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "name",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "description",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "code",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "logo",
+              "description": "",
+              "type": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "sprites",
+              "description": "",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "NewSprite",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "allowedPlayerCounts",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },

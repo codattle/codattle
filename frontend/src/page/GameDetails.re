@@ -1,5 +1,5 @@
-open Rationale.Option;
-open Rationale.RList;
+open Rationale.Option.Infix;
+open OptionUtils.Infix;
 
 type rating = {
   author: string,
@@ -69,34 +69,33 @@ let make = (~gameId) => {
       {
         id: data##game##id,
         name: data##game##name,
-        logo: data##game##logo |> fmap(logo => logo##id),
-        sprites: data##game##sprites |> Array.map(sprite => {name: sprite##name, SpriteList.fileId: sprite##image##id}) |> Array.to_list,
-        ratings: data##game##ratings |> Array.map(mapRating) |> Array.to_list,
+        logo: data##game##logo <$> (logo => logo##id),
+        sprites: data##game##sprites |> ArrayUtils.mapToList(sprite => {name: sprite##name, SpriteList.fileId: sprite##image##id}),
+        ratings: data##game##ratings |> ArrayUtils.mapToList(mapRating),
       }
     );
 
   game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
-      |> Repromise.Rejectable.wait(response =>
+      |> Repromise.wait(response =>
            switch (response) {
-           | Some(response) =>
+           | Belt.Result.Ok(response) =>
              let rating = response##rateGame |> mapRating;
              let isSameAuthor = (firstRating, secondRating) => firstRating.author === secondRating.author;
-             setGame(game => {...game, ratings: game.ratings |> unionWith(isSameAuthor, [rating])});
-           | None => ()
+             setGame(game => {...game, ratings: game.ratings |> Rationale.RList.unionWith(isSameAuthor, [rating])});
+           | Error(_) => ()
            }
          );
     };
-    let existsCurrentUserRating = game.ratings |> any(rating => rating.author === ProfileService.username);
+    let existsCurrentUserRating = game.ratings |> Rationale.RList.any(rating => rating.author === ProfileService.username);
     let logo = game.logo->Belt.Option.mapWithDefault(<> </>, logo => <img src={Environment.storageUrl ++ logo} width="64" height="64" />);
     let ratings =
       game.ratings
       |> Utils.componentList(rating => {
            let author = <span> {ReasonReact.string(rating.author)} </span>;
            let ratingValue = <Rating initialValue={rating.ratingValue} readOnly=true />;
-           let description =
-             rating.description |> fmap(description => <span> {ReasonReact.string(description)} </span>) |> default(<> </>);
+           let description = rating.description <$> ReasonReact.string ||? <> </>;
            <div key={rating.author}> author ratingValue description </div>;
          });
     <div>

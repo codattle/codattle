@@ -13,6 +13,7 @@ gameWizard:
   creating: Tworzenie...
   errorWhileCreatingGame: Błąd podczas tworzenia gry :(
   logo: "Logo"
+  playerCount: Liczba graczy
 scriptWizard:
   noDescription: Brak opisu...
   description: Opis

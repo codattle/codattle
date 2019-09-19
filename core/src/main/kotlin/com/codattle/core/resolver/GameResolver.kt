@@ -30,4 +30,8 @@ class GameResolver(
     fun scripts(game: Game, authorId: Id<User>?): List<Script> {
         return scriptService.getScripts(game.id, authorId)
     }
+
+    fun maxAllowedPlayerCount(game: Game): Int {
+        return game.maxAllowedPlayerCount
+    }
 }

@@ -1,17 +1,19 @@
+open Rationale.Function.Infix;
+open Rationale.Option.Infix;
+open OptionUtils.Infix;
+
 type mode =
   | Editing
   | Creating
   | Failure;
 
-module CreateGameMutation = [%graphql
-  {|
-  mutation($name: String!, $description: String!, $code: String!, $logo: ID, $sprites: [NewSprite!]) {
-    createGame(name: $name, description: $description, code: $code, logo: $logo, sprites: $sprites) {
+module CreateGameMutation = [%graphql {|
+  mutation($game: NewGame) {
+    createGame(game: $game) {
       id
     }
   }
-|}
-];
+|}];
 
 module Styles = {
   open Css;
@@ -20,42 +22,47 @@ module Styles = {
   let scriptEditor = style([width(300 |> px), height(500 |> px)]);
 };
 
+let defaultPlayerCount = 2;
+
 [@react.component]
 let make = () => {
   let (mode, setMode) = React.useState(() => Editing);
   let (name, setName) = React.useState(() => "");
   let (script, setScript) = React.useState(() => "");
+  let (playerCount, setPlayerCount) = React.useState(() => defaultPlayerCount);
   let (logo: option(File.t), setLogo) = React.useState(() => None);
   let (sprites, setSprites) = React.useState(() => []);
 
-  let sendLogo = () => {
-    logo->Belt.Option.mapWithDefault(Repromise.Rejectable.resolved(None), logo =>
-      FileRestEndpoint.sendFile(logo) |> Repromise.Rejectable.map(fileId => Some(fileId))
-    );
-  };
+  let sendLogo = (): PromiseUtils.t(option(string)) =>
+    logo <$> (FileRestEndpoint.sendFile ||> Repromise.mapOk(x => Some(x))) ||? PromiseUtils.resolved(None);
 
-  let sendSprite = ({name, file}: SpriteList.notUploadedSprite) => {
-    FileRestEndpoint.sendFile(file) |> Repromise.Rejectable.map(fileId => {"name": name, "image": fileId});
-  };
+  let sendSprite = ({name, file}: SpriteList.notUploadedSprite): PromiseUtils.t(Js.t({..})) =>
+    FileRestEndpoint.sendFile(file) |> Repromise.mapOk(fileId => {"name": name, "image": fileId});
 
-  let sendSprites = () => {
-    Repromise.Rejectable.all(sprites |> List.map(sendSprite));
-  };
+  let sendSprites = (): PromiseUtils.t(list(Js.t({..}))) => sprites |> List.map(sendSprite) |> PromiseUtils.all;
 
   let createGame = () => {
     setMode(_ => Creating);
     PromiseUtils.all2(sendLogo(), sendSprites())
-    |> Repromise.Rejectable.andThen(((logo, sprites)) =>
+    |> Repromise.andThenOk(((logo, sprites)) =>
          GraphqlService.executeQuery(
-           CreateGameMutation.make(~name, ~description="", ~code=script, ~logo?, ~sprites=sprites |> Array.of_list, ()),
+           CreateGameMutation.make(
+             ~game={
+               "name": name,
+               "description": "",
+               "code": script,
+               "logo": logo,
+               "sprites": Some(sprites |> Array.of_list),
+               "allowedPlayerCounts": [|playerCount|],
+             },
+             (),
+           ),
          )
-         |> Repromise.Rejectable.catch(_error => Repromise.Rejectable.rejected(""))
        )
-    |> Repromise.Rejectable.catch(_error => Repromise.resolved(None))
     |> Repromise.wait(result =>
          switch (result) {
-         | Some(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)
-         | None => setMode(_ => Failure)
+         | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)
+         | Error(_) => setMode(_ => Failure)
          }
        );
   };
@@ -66,6 +73,13 @@ let make = () => {
       <div>
         <div className=section> <InputFile label="gameWizard.logo" onChange={file => setLogo(_ => Some(file))} dataCy="logo" /> </div>
         <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} dataCy="name" /> </div>
+        <div className=section>
+          <NumberField
+            label="gameWizard.playerCount"
+            value=playerCount
+            onChange={playerCount => setPlayerCount(_ => playerCount ||? defaultPlayerCount)}
+          />
+        </div>
         <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
         <div className={j|$section $scriptEditor|j}>
           <ScriptEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />

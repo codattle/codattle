@@ -21,10 +21,20 @@ class DatabasePopulator(private val daoUtils: DaoUtils) {
         daoUtils.getCollection(Game::class.java).deleteMany(Document())
         daoUtils.getCollection(Match::class.java).deleteMany(Document())
         daoUtils.getCollection(Script::class.java).deleteMany(Document())
+        daoUtils.getCollection(User::class.java).deleteMany(Document())
     }
 
-    fun createGame(name: String = "Test game", description: String = "It's test game", code: String = "end();"): Game {
-        return daoUtils.save(Game.builder().name(name).description(I18nText.single(Language.EN, description)).code(code).author(createUser().id))
+    fun createGame(
+            name: String = "Test game",
+            description: String = "It's test game",
+            code: String = "end();",
+            allowedPlayerCounts: Set<Int> = setOf(2)): Game {
+        return daoUtils.save(Game.builder()
+                .name(name)
+                .description(I18nText.single(Language.EN, description))
+                .code(code)
+                .author(createUser().id)
+                .allowedPlayerCounts(allowedPlayerCounts))
     }
 
     fun createGames(count: Int = 3): List<Game> {
