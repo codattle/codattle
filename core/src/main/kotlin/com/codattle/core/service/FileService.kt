@@ -32,4 +32,10 @@ class FileService(private val storageService: StorageService, private val fileDa
             throw exception
         }
     }
+
+    fun deleteFile(fileId: Id<File>) : Boolean {
+        storageService.delete(fileId.value)
+        return true
+    }
+
 }

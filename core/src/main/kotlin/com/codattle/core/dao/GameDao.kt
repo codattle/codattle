@@ -7,6 +7,9 @@ import com.codattle.core.model.GameBuilder
 import com.codattle.core.model.Sprite
 import com.codattle.core.model.User
 import com.mongodb.client.model.Updates
+import org.bson.conversions.Bson
+import org.litote.kmongo.eq
+import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.push
 import javax.inject.Singleton
 
@@ -27,6 +30,15 @@ class GameDao(private val daoUtils: DaoUtils) {
     }
 
     fun addSprite(gameId: Id<Game>, sprite: Sprite) {
-        daoUtils.findAndModify(Game::class.java, gameId, push(Game::sprites, sprite))
+        modifyGame(gameId, push(Game::sprites, sprite))
     }
+
+    fun removeSprite(gameId: Id<Game>, spriteName: String) {
+        modifyGame(gameId, pullByFilter(Game::sprites, Sprite::name eq spriteName));
+    }
+
+    private fun modifyGame(gameId: Id<Game>, updater: Bson): Game? {
+        return daoUtils.findAndModify(Game::class.java, gameId, updater);
+    }
+
 }

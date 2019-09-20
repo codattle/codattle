@@ -852,7 +852,7 @@
               "defaultValue": null
             },
             {
-              "name": "image",
+              "name": "fileId",
               "description": "",
               "type": {
                 "kind": "NON_NULL",
@@ -1709,12 +1709,16 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "spriteName",
+                  "name": "sprite",
                   "description": "",
                   "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "NewSprite",
+                      "ofType": null
+                    }
                   },
                   "defaultValue": null
                 }

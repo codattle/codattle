@@ -7,7 +7,7 @@ import com.codattle.core.model.*
 import javax.inject.Singleton
 
 @Singleton
-class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao) {
+class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao, private val fileService: FileService) {
 
     companion object {
         // TODO: remove after implementing translatable descriptions
@@ -33,8 +33,13 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
         )
     }
 
-    fun addSprite(gameId: Id<Game>, sprite: Sprite) {
+    fun addSprite(gameId: Id<Game>, sprite: Sprite)  {
         gameDao.addSprite(gameId, sprite)
+    }
+
+    fun removeSprite(gameId: Id<Game>, sprite: Sprite) {
+        gameDao.removeSprite(gameId, sprite.name)
+        fileService.deleteFile(sprite.image)
     }
 
     fun rateGame(gameId: Id<Game>, userId: Id<User>, ratingValue: RatingValue, description: String?): Rating {

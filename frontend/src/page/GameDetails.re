@@ -58,8 +58,8 @@ module RateGameMutation = [%graphql
 
 module RemoveSpriteFromGameMutation = [%graphql
   {|
-  mutation($gameId: ID!, $spriteName: String) {
-    removeSpriteFromGame(gameId: $gameId, spriteName: $spriteName)
+  mutation($gameId: ID!, $sprite: NewSprite!) {
+    removeSpriteFromGame(gameId: $gameId, sprite: $sprite)
   }
 |}
 ];
@@ -86,8 +86,8 @@ let make = (~gameId) => {
       }
     );
 
-  let removeSprite = (gameId: string, spriteToRemove: SpriteList.uploadedSprite) => {
-    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName=spriteToRemove.name, ()))
+  let removeSprite = (gameId: string, sprite: SpriteList.uploadedSprite) => {
+    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~sprite={"name": sprite.name, "fileId": sprite.fileId}, ()))
     |> Repromise.Rejectable.wait(response =>
          switch (response) {
          | Some(_) =>
@@ -96,7 +96,7 @@ let make = (~gameId) => {
                id: game.id,
                name: game.name,
                logo: game.logo,
-               sprites: game.sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== spriteToRemove.name),
+               sprites: game.sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== sprite.name),
                ratings: game.ratings,
              }
            )
