@@ -96,7 +96,7 @@ let make =
           |> List.map(({name, fileId}) =>
                <div key=name>
                  <span> {ReasonReact.string(name)} </span>
-                 <Button label="remove" onClick={() => removeUploaded(uploadedSprites, name)} />
+                 <Button label="common.remove" onClick={() => removeUploaded(uploadedSprites, name)} />
                  <img src={Environment.storageUrl ++ fileId} width height />
                </div>
              )
@@ -107,7 +107,7 @@ let make =
                <div key=name>
                  <ImagePreview image=file width height />
                  <div> {ReasonReact.string(name)} </div>
-                 <Button label="remove" onClick={() => removeNotUploaded(notUploadedSprites, name)} />
+                 <Button label="common.remove" onClick={() => removeNotUploaded(notUploadedSprites, name)} />
                </div>
              )
         )
