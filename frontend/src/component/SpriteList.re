@@ -77,13 +77,12 @@ let make =
   };
 
   let removeNotUploaded = (allSprites: list(notUploadedSprite), spriteToRemoveName: string) => {
-    let spriteToRemove = allSprites |> List.filter((sprite: notUploadedSprite) => sprite.name !== spriteToRemoveName);
-    onNotUploadedSpritesChange |> OptionUtils.execIfSome(spriteToRemove);
+    let otherSprites = allSprites |> List.filter((sprite: notUploadedSprite) => sprite.name !== spriteToRemoveName);
+    onNotUploadedSpritesChange |> OptionUtils.execIfSome(otherSprites);
   };
 
-  let removeUploaded = (allSprites: list(uploadedSprite), spriteToRemoveName: string) => {
-    let spriteToRemove = allSprites |> List.find((sprite: uploadedSprite) => sprite.name === spriteToRemoveName);
-    onUploadedSpriteRemove |> OptionUtils.execIfSome(spriteToRemove);
+  let removeUploaded = (spriteToRemoveName: string) => {
+    onUploadedSpriteRemove |> OptionUtils.execIfSome(spriteToRemoveName);
   };
 
   let spriteElements =
@@ -96,7 +95,7 @@ let make =
           |> List.map(({name, fileId}) =>
                <div key=name>
                  <span> {ReasonReact.string(name)} </span>
-                 <Button label="common.remove" onClick={() => removeUploaded(uploadedSprites, name)} />
+                 <Button label="common.remove" onClick={() => removeUploaded(name)} />
                  <img src={Environment.storageUrl ++ fileId} width height />
                </div>
              )

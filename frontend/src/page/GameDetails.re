@@ -83,12 +83,12 @@ let make = (~gameId) => {
       }
     );
 
-  let removeSprite = (gameId: string, sprite: SpriteList.uploadedSprite) => {
-    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName=sprite.name, ()))
+  let removeSprite = (gameId: string, spriteName: string) => {
+    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName, ()))
     |> Repromise.Rejectable.wait(response =>
          switch (response) {
          | Belt.Result.Ok(_) =>
-           let filterSprites = sprites => sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== sprite.name);
+           let filterSprites = sprites => sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== spriteName);
            setGame(game => {...game, sprites: filterSprites(game.sprites)});
          | _ => ()
          }
@@ -129,7 +129,7 @@ let make = (~gameId) => {
       ratings
       <SpriteList
         uploadedSprites={game.sprites}
-        onUploadedSpriteRemove={spriteToRemove => removeSprite(game.id, spriteToRemove)}
+        onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
         canAdd=false
       />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
