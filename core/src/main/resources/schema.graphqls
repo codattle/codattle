@@ -36,6 +36,9 @@ type Game {
     logo: File
     sprites: [Sprite!]!
     ratings: [Rating!]!
+    scripts(authorId: ID): [Script!]!
+    allowedPlayerCounts: [Int!]!
+    maxAllowedPlayerCount: Int!
 }
 
 type Script {
@@ -69,6 +72,15 @@ type File {
     contentType: String!
 }
 
+input NewGame {
+    name: String!
+    description: String!
+    code: String!
+    logo: ID
+    sprites: [NewSprite!]
+    allowedPlayerCounts: [Int!]!
+}
+
 input NewResultFrame {
     order: Int!
     content: String!
@@ -84,15 +96,19 @@ type Query {
 
     games: [Game!]!
 
+    searchGames(name: String): [Game!]!
+
     match(matchId: ID!): Match!
 
     matches(gameId: ID!): [Match!]!
 
-    scripts: [Script!]!
+    script(scriptId: ID!): Script!
+
+    scripts(gameId: ID, authorId: ID): [Script!]!
 }
 
 type Mutation {
-    createGame(name: String!, description: String!, code: String!, logo: ID, sprites: [NewSprite!]): Game!
+    createGame(game: NewGame): Game!
 
     addSpriteToGame(gameId: ID!, sprite: NewSprite!): Boolean!
 
@@ -103,6 +119,8 @@ type Mutation {
     createMatch(name: String!, gameId: ID!): Match!
 
     sendScript(gameId: ID!, code: String!): Script!
+
+    updateScriptCode(scriptId: ID!, code: String!): Boolean!
 
     joinMatch(matchId: ID!, scriptId: ID!): Boolean!
 

@@ -1,4 +1,4 @@
-let sendFile = (file: File.t) =>
+let sendFile = (file: File.t): PromiseUtils.t(string) =>
   Fetch.fetchWithInit(
     "/api/v1/file",
     Fetch.RequestInit.make(
@@ -7,22 +7,12 @@ let sendFile = (file: File.t) =>
       (),
     ),
   )
-  |> Repromise.Rejectable.fromJsPromise
-  |> Repromise.Rejectable.catch(_error => Repromise.Rejectable.rejected("Error occurred while HTTP request"))
-  |> Repromise.Rejectable.andThen(response =>
-       if (Fetch.Response.ok(response)) {
-         Fetch.Response.json(response)
-         |> Repromise.Rejectable.fromJsPromise
-         |> Repromise.Rejectable.catch(_error => Repromise.Rejectable.rejected("Cannot parse HTTP response as JSON"));
-       } else {
-         Repromise.Rejectable.rejected("Response hasn't ok status");
-       }
-     )
-  |> Repromise.Rejectable.andThen(json =>
+  |> FetchUtils.parseJson
+  |> PromiseUtils.flatMapOk(json =>
        Json.Decode.(
          switch (json |> field("id", string)) {
-         | id => Repromise.Rejectable.resolved(id)
-         | exception (DecodeError(_)) => Repromise.Rejectable.rejected("JSON from HTTP response has invalid format")
+         | id => Belt.Result.Ok(id)
+         | exception (DecodeError(_)) => Belt.Result.Error()
          }
        )
      );

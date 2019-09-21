@@ -1,4 +1,13 @@
-let executeQuery = grapqhQuery =>
+open Rationale.Function.Infix;
+
+type query('a) = {
+  .
+  "parse": Js.Json.t => 'a,
+  "query": string,
+  "variables": Js.Json.t,
+};
+
+let executeQuery = (grapqhQuery: query('a)): PromiseUtils.t('a) =>
   Fetch.fetchWithInit(
     Environment.graphqlUrl,
     Fetch.RequestInit.make(
@@ -12,22 +21,12 @@ let executeQuery = grapqhQuery =>
       (),
     ),
   )
-  |> Repromise.Rejectable.fromJsPromise
-  |> Repromise.Rejectable.andThen(response =>
-       if (Fetch.Response.ok(response)) {
-         Fetch.Response.json(response) |> Repromise.Rejectable.fromJsPromise |> Repromise.Rejectable.map(json => Some(json));
-       } else {
-         Repromise.Rejectable.resolved(None);
-       }
-     )
-  |> Repromise.Rejectable.map(optionalJson =>
-       switch (optionalJson) {
-       | Some(json) =>
-         switch (Js.Json.decodeObject(json)) {
-         | Some(obj) => Some(Js.Dict.unsafeGet(obj, "data") |> grapqhQuery##parse)
-         | None => None
-         }
-       | None => None
-       }
-     )
-  |> Repromise.Rejectable.catch(_error => Repromise.resolved(None));
+  |> FetchUtils.parseJson
+  |> PromiseUtils.flatMapOk(
+       Js.Json.decodeObject
+       ||> Rationale.Option.flatMap(Js.Dict.get(_, "data"))
+       ||> Rationale.Option.flatMap(Js.Json.decodeObject)
+       ||> Rationale.Option.map(Js.Json.object_)
+       ||> Rationale.Option.map(grapqhQuery##parse)
+       ||> Rationale.Result.ofOption(),
+     );

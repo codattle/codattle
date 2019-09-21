@@ -4,13 +4,30 @@ type resource('a) =
   | Loaded('a)
   | Failure;
 
+let useEffectWithInit = (initialize, effect, cancel, shouldRefresh) => {
+  let (initialized, setInitialized) = React.useState(() => false);
+
+  React.useEffect1(
+    () => {
+      if (initialized) {
+        effect();
+      } else {
+        initialize();
+        setInitialized(_ => true);
+      };
+      cancel;
+    },
+    shouldRefresh,
+  );
+};
+
 let loadResource = (query, setter, mapper) => {
   setter(_ => Loading);
   GraphqlService.executeQuery(query)
   |> Repromise.wait(result =>
        switch (result) {
-       | Some(data) => setter(_ => Loaded(mapper(data)))
-       | None => setter(_ => Failure)
+       | Belt.Result.Ok(data) => setter(_ => Loaded(mapper(data)))
+       | Error(_) => setter(_ => Failure)
        }
      );
 };
@@ -43,6 +60,24 @@ let useResource = (query, shouldRefresh, mapper) => {
   resource;
 };
 
+let useResourceWithDebounce = (query, shouldRefresh, wait, mapper) => {
+  let (resource, setResource) = React.useState(() => NotLoaded);
+  let (loadResourceDebouncer, _) =
+    React.useState(() => Debouncer.makeCancelable(~wait, ((query, setResource, mapper)) => loadResource(query, setResource, mapper)));
+
+  useEffectWithInit(
+    () => loadResourceDebouncer.invoke((query, setResource, mapper)),
+    () => loadResourceDebouncer.schedule((query, setResource, mapper)),
+    // TODO: this cancels only scheduled invocation of request, sent request won't be cancelled,
+    // request should be unsubscribed using AbortController
+    // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
+    Some(loadResourceDebouncer.cancel),
+    shouldRefresh,
+  );
+
+  resource;
+};
+
 let useRefresh = () => {
   let (version, setVersion) = React.useState(() => 0);
 
@@ -53,6 +88,8 @@ let useRefresh = () => {
 
 let componentList = (mapper, items) => items |> List.map(mapper) |> Array.of_list |> ReasonReact.array;
 
+let componentListWithIndex = (mapper, items) => items |> List.mapi(mapper) |> Array.of_list |> ReasonReact.array;
+
 let withDataAttributes = (~data, element) => ReasonReact.cloneElement(element, ~props=Obj.magic(Js.Dict.fromList(data)), [||]);
 
 let withDataCy = (dataCy, element) =>
@@ -60,3 +97,16 @@ let withDataCy = (dataCy, element) =>
   | Some(dataCy) => withDataAttributes(~data=[("data-cy", dataCy)], element)
   | None => element
   };
+
+let displayResource = (resource, displayLoadedResource) =>
+  switch (resource) {
+  | NotLoaded => <div />
+  | Loading => <div> <Translation id="common.loading" /> </div>
+  | Loaded(loadedResource) => displayLoadedResource(loadedResource)
+  | Failure => <div> <Translation id="common.error" /> </div>
+  };
+
+let intOfString = (string: string): option(int) => switch (int_of_string(string)) {
+  | int => Some(int)
+  | exception Failure(_) => None
+}

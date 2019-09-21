@@ -1,5 +1,5 @@
-open Rationale.Option;
-open Rationale.RList;
+open Rationale.Option.Infix;
+open OptionUtils.Infix;
 
 type rating = {
   author: string,
@@ -70,9 +70,6 @@ let mapRating = rating => {
   description: rating##description,
 };
 
-// TODO: remove after implementing authorization with Keycloak
-let username = "test";
-
 [@react.component]
 let make = (~gameId) => {
   let (game, setGame) =
@@ -80,9 +77,9 @@ let make = (~gameId) => {
       {
         id: data##game##id,
         name: data##game##name,
-        logo: data##game##logo |> fmap(logo => logo##id),
-        sprites: data##game##sprites |> Array.map(sprite => {name: sprite##name, SpriteList.fileId: sprite##image##id}) |> Array.to_list,
-        ratings: data##game##ratings |> Array.map(mapRating) |> Array.to_list,
+        logo: data##game##logo <$> (logo => logo##id),
+        sprites: data##game##sprites |> ArrayUtils.mapToList(sprite => {name: sprite##name, SpriteList.fileId: sprite##image##id}),
+        ratings: data##game##ratings |> ArrayUtils.mapToList(mapRating),
       }
     );
 
@@ -90,53 +87,45 @@ let make = (~gameId) => {
     GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~sprite={"name": sprite.name, "fileId": sprite.fileId}, ()))
     |> Repromise.Rejectable.wait(response =>
          switch (response) {
-         | Some(_) =>
-           setGame(game =>
-             {
-               id: game.id,
-               name: game.name,
-               logo: game.logo,
-               sprites: game.sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== sprite.name),
-               ratings: game.ratings,
-             }
-           )
+         | Belt.Result.Ok(_) =>
+           let filterSprites = sprites => sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== sprite.name);
+           setGame(game => {...game, sprites: filterSprites(game.sprites)});
          | _ => ()
          }
        );
   };
 
-  switch (game) {
-  | NotLoaded => <div />
-  | Loading => <span> {ReasonReact.string("Loading...")} </span>
-  | Loaded(game) =>
+  game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
-      |> Repromise.Rejectable.wait(response =>
+      |> Repromise.wait(response =>
            switch (response) {
-           | Some(response) =>
+           | Belt.Result.Ok(response) =>
              let rating = response##rateGame |> mapRating;
              let isSameAuthor = (firstRating, secondRating) => firstRating.author === secondRating.author;
-             setGame(game => {...game, ratings: game.ratings |> unionWith(isSameAuthor, [rating])});
-           | None => ()
+             setGame(game => {...game, ratings: game.ratings |> Rationale.RList.unionWith(isSameAuthor, [rating])});
+           | _ => ()
            }
          );
     };
-    let existsCurrentUserRating = game.ratings |> any(rating => rating.author === username);
+    let existsCurrentUserRating = game.ratings |> Rationale.RList.any(rating => rating.author === ProfileService.username);
     let logo = game.logo->Belt.Option.mapWithDefault(<> </>, logo => <img src={Environment.storageUrl ++ logo} width="64" height="64" />);
     let ratings =
       game.ratings
       |> Utils.componentList(rating => {
            let author = <span> {ReasonReact.string(rating.author)} </span>;
            let ratingValue = <Rating initialValue={rating.ratingValue} readOnly=true />;
-           let description =
-             rating.description |> fmap(description => <span> {ReasonReact.string(description)} </span>) |> default(<> </>);
-           <div> author ratingValue description </div>;
+           let description = rating.description <$> ReasonReact.string ||? <> </>;
+           <div key={rating.author}> author ratingValue description </div>;
          });
     <div>
       logo
       <span> {ReasonReact.string("Details of game with id: " ++ game.id)} </span>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")}>
+        <Translation id="gameDetails.myScripts" />
+      </button>
       ratings
       <SpriteList
         uploadedSprites={game.sprites}
@@ -145,6 +134,5 @@ let make = (~gameId) => {
       />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
     </div>;
-  | Failure => <Translation id="common.error" />
-  };
+  });
 };

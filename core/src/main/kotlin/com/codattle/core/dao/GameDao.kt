@@ -10,7 +10,9 @@ import com.mongodb.client.model.Updates
 import org.bson.conversions.Bson
 import org.litote.kmongo.eq
 import org.litote.kmongo.pullByFilter
+import org.bson.conversions.Bson
 import org.litote.kmongo.push
+import org.litote.kmongo.regex
 import javax.inject.Singleton
 
 @Singleton
@@ -21,8 +23,8 @@ class GameDao(private val daoUtils: DaoUtils) {
                 ?: throw IllegalArgumentException("Game with id \"$gameId\" doesn't exist.")
     }
 
-    fun getGames(): List<Game> {
-        return daoUtils.getMany()
+    fun getGames(filter: Bson? = null): List<Game> {
+        return daoUtils.getMany(filter)
     }
 
     fun saveGame(game: GameBuilder): Game {
@@ -30,15 +32,11 @@ class GameDao(private val daoUtils: DaoUtils) {
     }
 
     fun addSprite(gameId: Id<Game>, sprite: Sprite) {
-        modifyGame(gameId, push(Game::sprites, sprite))
+        daoUtils.findAndModify(gameId, push(Game::sprites, sprite))
+        daoUtils.findAndModify(gameId, push(Game::sprites, sprite))
     }
 
     fun removeSprite(gameId: Id<Game>, spriteName: String) {
-        modifyGame(gameId, pullByFilter(Game::sprites, Sprite::name eq spriteName));
+        daoUtils.findAndModify(gameId, pullByFilter(Game::sprites, Sprite::name eq spriteName));
     }
-
-    private fun modifyGame(gameId: Id<Game>, updater: Bson): Game? {
-        return daoUtils.findAndModify(Game::class.java, gameId, updater);
-    }
-
 }

@@ -84,6 +84,10 @@ class DaoUtils(
         }
     }
 
+    inline fun <reified T : DaoModel<T>> findAndModify(id: Id<T>, update: Bson): T? {
+        return findAndModify(T::class.java, id, update)
+    }
+
     fun <T : DaoModel<T>> findAndModify(model: Class<T>, id: Id<T>, update: Bson): T? {
         return findAndModify(model, DaoModel<T>::id eq id, update)
     }

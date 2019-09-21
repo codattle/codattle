@@ -45,26 +45,20 @@ let make = (~gameId) => {
     ++ "/2)"
     ++ Belt.Option.mapWithDefault(match.winner, "", winner => " Winner: Player " ++ string_of_int(winner + 1));
 
-  <div>
-    {switch (matches) {
-     | NotLoaded => <> </>
-     | Loading => <span> {ReasonReact.string("Loading...")} </span>
-     | Loaded(matches) =>
-       let matchList =
-         if (List.length(matches) == 0) {
-           <span> {ReasonReact.string("No matches")} </span>;
-         } else {
-           <ul>
-             {matches
-              |> Utils.componentList(match =>
-                   <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
-                     {ReasonReact.string(getMatchDescription(match))}
-                   </li>
-                 )}
-           </ul>;
-         };
-       <div> <button onClick={_ => refresh()}> {ReasonReact.string("Refresh")} </button> matchList </div>;
-     | Failure => <span> {ReasonReact.string("Error")} </span>
-     }}
-  </div>;
+  matches->Utils.displayResource(matches => {
+    let matchList =
+      if (List.length(matches) == 0) {
+        <span> {ReasonReact.string("No matches")} </span>;
+      } else {
+        <ul>
+          {matches
+           |> Utils.componentList(match =>
+                <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
+                  {ReasonReact.string(getMatchDescription(match))}
+                </li>
+              )}
+        </ul>;
+      };
+    <div> <button onClick={_ => refresh()}> {ReasonReact.string("Refresh")} </button> matchList </div>;
+  });
 };

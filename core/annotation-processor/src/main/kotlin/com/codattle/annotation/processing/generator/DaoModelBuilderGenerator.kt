@@ -155,8 +155,14 @@ class DaoModelBuilderGenerator : AbstractProcessor() {
         if (javaTypeName == "java.lang.String") {
             return String::class.asTypeName()
         }
+        if (javaTypeName == "java.lang.Integer") {
+            return Int::class.asTypeName()
+        }
         if (javaType is ParameterizedTypeName && javaType.rawType == ClassName("java.util", "List")) {
-            return List::class.asClassName().parameterizedBy(javaType.typeArguments[0])
+            return List::class.asClassName().parameterizedBy(mapJavaTypeToKotlinType(javaType.typeArguments[0]))
+        }
+        if (javaType is ParameterizedTypeName && javaType.rawType == ClassName("java.util", "Set")) {
+            return Set::class.asClassName().parameterizedBy(mapJavaTypeToKotlinType(javaType.typeArguments[0]))
         }
         return javaType
     }

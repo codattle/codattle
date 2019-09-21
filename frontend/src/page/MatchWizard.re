@@ -23,8 +23,8 @@ let make = (~gameId) => {
     GraphqlService.executeQuery(CreateMatchMutation.make(~name, ~gameId, ()))
     |> Repromise.wait(result =>
          switch (result) {
-         | Some(result) => ReasonReactRouter.push("/games/matches/" ++ result##createMatch##id)
-         | None => setMode(_ => Failure)
+         | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/matches/" ++ result##createMatch##id)
+         | Error(_) => setMode(_ => Failure)
          }
        );
   };

@@ -13,6 +13,7 @@ type matchResult = {
 type match = {
   game,
   result: option(matchResult),
+  full: bool,
 };
 
 module GetMatchQuery = [%graphql
@@ -26,6 +27,7 @@ module GetMatchQuery = [%graphql
             id
           }
         }
+        maxAllowedPlayerCount
       }
       result {
         winner
@@ -33,6 +35,9 @@ module GetMatchQuery = [%graphql
           order
           content
         }
+      }
+      scripts {
+        id
       }
     }
   }
@@ -54,13 +59,11 @@ let make = (~matchId) => {
         },
         result:
           data##match##result->Belt.Option.map(result => {winner: result##winner, frames: result##resultFrames |> parseResultFrames}),
+        full: data##match##scripts |> Array.length === data##match##game##maxAllowedPlayerCount,
       }
     );
 
-  switch (match) {
-  | NotLoaded => <div />
-  | Loading => <div> {ReasonReact.string("Loading...")} </div>
-  | Loaded(match) =>
+  match->Utils.displayResource(match => {
     let result =
       match.result
       ->Belt.Option.mapWithDefault(
@@ -98,13 +101,13 @@ let make = (~matchId) => {
           },
         );
 
-    <div>
-      <div> {ReasonReact.string("Details of match with id: " ++ matchId)} </div>
-      result
-      <button onClick={_ => ReasonReactRouter.push("/games/matches/" ++ matchId ++ "/new-script")}>
-        {ReasonReact.string("New script")}
-      </button>
-    </div>;
-  | Failure => <div> {ReasonReact.string("Failure while loading match :(")} </div>
-  };
+    let newScriptButton =
+      match.full
+        ? <> </>
+        : <button onClick={_ => ReasonReactRouter.push("/games/matches/" ++ matchId ++ "/new-script")}>
+            {ReasonReact.string("New script")}
+          </button>;
+
+    <div> <div> {ReasonReact.string("Details of match with id: " ++ matchId)} </div> result newScriptButton </div>;
+  });
 };

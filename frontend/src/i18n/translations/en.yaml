@@ -3,18 +3,23 @@ common:
   previous: Previous
   error: Error
   add: Add
+  loading: Loading...
+  notification:
+    updateSuccessfully: Updated successfully
+    errorDuringUpdate: Error during update
 gameWizard:
   name: Name
   createGame: Create game
   creating: Creating...
   errorWhileCreatingGame: Error while creating game :(
-  logo: "Logo"
+  logo: Logo
+  playerCount: Player count
 scriptWizard:
   noDescription: No description...
   description: Description
-  loadingGame: Loading game...
   joinMatch: Join match
   joiningMatch: Joining match...
+  newScript: New script
 scriptEditor:
   code: Code
 matchFrame:
@@ -24,3 +29,17 @@ spriteList:
 ratingForm:
   send: Send rating
   edit: Edit rating
+navigationBar:
+  dashboard: Dashboard
+  createGame: Create game
+  games: Games
+  profile: Profile
+searchList:
+  name: Name
+  nothingFound: Nothing found
+gameDetails:
+  myScripts: My scripts
+myScripts:
+  noScripts: You have not any scripts for this game
+scriptDetails:
+  update: Update

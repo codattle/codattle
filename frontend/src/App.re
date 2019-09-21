@@ -1,3 +1,8 @@
+module ReactIntlProvider = {
+  [@react.component]
+  let make = (~locale, ~messages, ~children) => ReasonReact.element(ReactIntl.IntlProvider.make(~locale, ~messages, children));
+};
+
 [@react.component]
 let make = () => {
   let url = ReasonReactRouter.useUrl();
@@ -13,25 +18,18 @@ let make = () => {
     | ["games", gameId] => <GameDetails gameId />
     | ["games", gameId, "new-match"] => <MatchWizard gameId />
     | ["games", gameId, "matches"] => <MatchList gameId />
+    | ["games", gameId, "my-scripts"] => <MyScripts gameId />
     | ["games", "matches", matchId] => <MatchDetails matchId />
     | ["games", "matches", matchId, "new-script"] => <ScriptWizard matchId />
+    | ["games", "scripts", scriptId] => <ScriptDetails scriptId />
     | _ => <NotFoundPage />
     };
 
-  React.createElement(
-    LanguageContext.provider,
-    {
-      "value": language,
-      "children":
-        ReasonReact.element(
-          {
-            ReactIntl.IntlProvider.make(
-              ~locale=language.locale,
-              ~messages=language.translations,
-              <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>,
-            );
-          },
-        ),
-    },
-  );
+  <Language.Provider value=language>
+    <ReactIntlProvider locale={language.locale} messages={language.translations}>
+      <Notifications.Provider>
+        <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>
+      </Notifications.Provider>
+    </ReactIntlProvider>
+  </Language.Provider>;
 };

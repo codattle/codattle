@@ -4,6 +4,7 @@ import com.codattle.core.dao.GameDao
 import com.codattle.core.dao.RatingDao
 import com.codattle.core.dao.common.Id
 import com.codattle.core.model.*
+import org.litote.kmongo.regex
 import javax.inject.Singleton
 
 @Singleton
@@ -22,14 +23,30 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
         return gameDao.getGames()
     }
 
-    fun createGame(name: String, description: String, code: String, author: Id<User>, logo: Id<File>? = null, sprites: List<Sprite> = listOf()): Game {
+    fun searchGames(name: String? = null): List<Game> {
+        val filter = name?.let { Game::name regex ("^" + Regex.escape(it)) }
+        return gameDao.getGames(filter)
+    }
+
+    data class NewGame(
+            val name: String,
+            val description: String,
+            val code: String,
+            val author: Id<User>,
+            val logo: Id<File>? = null,
+            val sprites: List<Sprite> = listOf(),
+            val allowedPlayerCounts: Set<Int>
+    )
+
+    fun createGame(game: NewGame): Game {
         return gameDao.saveGame(Game.builder()
-                .name(name)
-                .description(I18nText.single(DEFAULT_DESCRIPTION_LANGUAGE, description))
-                .code(code)
-                .logo(logo)
-                .author(author)
-                .sprites(sprites)
+                .name(game.name)
+                .description(I18nText.single(DEFAULT_DESCRIPTION_LANGUAGE, game.description))
+                .code(game.code)
+                .logo(game.logo)
+                .author(game.author)
+                .sprites(game.sprites)
+                .allowedPlayerCounts(game.allowedPlayerCounts)
         )
     }
 
