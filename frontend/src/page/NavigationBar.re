@@ -27,8 +27,8 @@ let make = (~changeLanguage=?) => {
 
   let authButton =
     keycloak |> Keycloak.authenticated
-      ? <Button onClick={() => Keycloak.logout(keycloak)} variant=`Contained> {ReasonReact.string("Logout")} </Button>
-      : <Button onClick={() => Keycloak.login(keycloak)} variant=`Contained> {ReasonReact.string("Login")} </Button>;
+      ? <Button onClick={() => Keycloak.logout(keycloak)} variant=`Contained> <Translation id="authorization.action.login" /> </Button>
+      : <Button onClick={() => Keycloak.login(keycloak)} variant=`Contained> <Translation id="authorization.action.logout" /> </Button>;
 
   <AppBar position=`Static>
     <Toolbar>
