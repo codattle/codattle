@@ -4,6 +4,7 @@ common:
   error: Error
   add: Add
   loading: Loading...
+  remove: Remove
   notification:
     updateSuccessfully: Updated successfully
     errorDuringUpdate: Error during update

@@ -10,6 +10,12 @@ type notUploadedSprite = {
   file: File.t,
 };
 
+module Styles = {
+  open Css;
+
+  let section = style([margin2(~v=20 |> px, ~h=10 |> px)]);
+};
+
 module AddSpriteDialog = {
   type form = {
     name: string,
@@ -45,9 +51,10 @@ module AddSpriteDialog = {
 let make =
     (
       ~uploadedSprites: list(uploadedSprite)=[],
-      ~notUploadedSprites=[],
+      ~notUploadedSprites: list(notUploadedSprite)=[],
       ~onNotUploadedSpritesChange=?,
       ~onNotUploadedSpriteAdded=?,
+      ~onUploadedSpriteRemove=?,
       ~canAdd=true,
     ) => {
   let (dialogOpen, setDialogOpen) = React.useState(() => false);
@@ -56,12 +63,27 @@ let make =
     onNotUploadedSpriteAdded |> OptionUtils.execIfSome(sprite);
     onNotUploadedSpritesChange |> OptionUtils.execIfSome(notUploadedSprites @ [sprite]);
   };
+
   let handleDialogClose = sprite => {
     sprite |> iter(addSprite);
     setDialogOpen(_ => false);
   };
-  let spriteNames =
-    (uploadedSprites |> List.map((sprite: uploadedSprite) => sprite.name)) @ (notUploadedSprites |> List.map(sprite => sprite.name));
+
+  let isAnySprite = List.length(uploadedSprites) > 0 || List.length(notUploadedSprites) > 0;
+
+  let spriteNames = {
+    (uploadedSprites |> List.map((sprite: uploadedSprite) => sprite.name))
+    @ (notUploadedSprites |> List.map((sprite: notUploadedSprite) => sprite.name));
+  };
+
+  let removeNotUploaded = (allSprites: list(notUploadedSprite), spriteToRemoveName: string) => {
+    let otherSprites = allSprites |> List.filter((sprite: notUploadedSprite) => sprite.name !== spriteToRemoveName);
+    onNotUploadedSpritesChange |> OptionUtils.execIfSome(otherSprites);
+  };
+
+  let removeUploaded = (spriteToRemoveName: string) => {
+    onUploadedSpriteRemove |> OptionUtils.execIfSome(spriteToRemoveName);
+  };
 
   let spriteElements =
     <div>
@@ -71,23 +93,30 @@ let make =
         (
           uploadedSprites
           |> List.map(({name, fileId}) =>
-               <div key=name> <span> {ReasonReact.string(name)} </span> <img src={Environment.storageUrl ++ fileId} width height /> </div>
+               <div key=name>
+                 <span> {ReasonReact.string(name)} </span>
+                 <Button label="common.remove" onClick={() => removeUploaded(name)} />
+                 <img src={Environment.storageUrl ++ fileId} width height />
+               </div>
              )
         )
         @ (
           notUploadedSprites
           |> List.map(({name, file}) =>
-               <div key=name> <span> {ReasonReact.string(name)} </span> <ImagePreview image=file width height /> </div>
+               <div key=name>
+                 <ImagePreview image=file width height />
+                 <div> {ReasonReact.string(name)} </div>
+                 <Button label="common.remove" onClick={() => removeNotUploaded(notUploadedSprites, name)} />
+               </div>
              )
         )
         |> Array.of_list
         |> React.array;
       }
     </div>;
-
   <div>
     {canAdd ? <Button label="spriteList.addSprite" onClick={() => setDialogOpen(_ => true)} /> : <> </>}
-    spriteElements
+    {isAnySprite ? <div className=Styles.section> spriteElements </div> : <> </>}
     <AddSpriteDialog _open=dialogOpen otherSpriteNames=spriteNames onClose=handleDialogClose />
   </div>;
 };

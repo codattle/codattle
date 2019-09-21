@@ -26,4 +26,9 @@ class GoogleStorageService(
     override fun upload(name: String, data: InputStream) {
         storage.create(BlobInfo.newBuilder(BlobId.of(bucketName, name)).build(), data.readBytes())
     }
+
+    override fun delete(name: String) {
+        storage.delete(BlobId.of(bucketName, name))
+    }
+
 }

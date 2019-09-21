@@ -15,4 +15,9 @@ class LocalStorageService(
     override fun upload(name: String, data: InputStream) {
         File(path, name).apply { parentFile.mkdirs() }.writeBytes(data.readBytes())
     }
+
+    override fun delete(name: String) {
+        File(path, name).delete()
+    }
+
 }
