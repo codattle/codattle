@@ -39,8 +39,8 @@ class Mutation(private val gameService: GameService,
         return true
     }
 
-    fun removeSpriteFromGame(gameId: Id<Game>, sprite: Sprite) : Boolean {
-        gameService.removeSprite(gameId, sprite)
+    fun removeSpriteFromGame(gameId: Id<Game>, spriteName: String) : Boolean {
+        gameService.removeSprite(gameId, spriteName)
         return true
     }
 

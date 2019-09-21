@@ -50,13 +50,17 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
         )
     }
 
+    fun getSprite(gameId: Id<Game>, spriteName: String): Sprite? {
+        return getGame(gameId).sprites.find { sprite -> sprite.name == spriteName }
+    }
+
     fun addSprite(gameId: Id<Game>, sprite: Sprite)  {
         gameDao.addSprite(gameId, sprite)
     }
 
-    fun removeSprite(gameId: Id<Game>, sprite: Sprite) {
-        gameDao.removeSprite(gameId, sprite.name)
-        fileService.deleteFile(sprite.image)
+    fun removeSprite(gameId: Id<Game>, spriteName: String) {
+        getSprite(gameId, spriteName)?.let { spriteToRemove -> fileService.deleteFile(spriteToRemove.image)  }
+        gameDao.removeSprite(gameId, spriteName)
     }
 
     fun rateGame(gameId: Id<Game>, userId: Id<User>, ratingValue: RatingValue, description: String?): Rating {

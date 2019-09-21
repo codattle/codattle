@@ -34,6 +34,7 @@ class FileService(private val storageService: StorageService, private val fileDa
     }
 
     fun deleteFile(fileId: Id<File>) {
+        fileDao.removeFile(fileId)
         storageService.delete(fileId.value)
     }
 
