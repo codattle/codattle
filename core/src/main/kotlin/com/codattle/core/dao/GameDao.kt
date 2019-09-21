@@ -5,14 +5,10 @@ import com.codattle.core.dao.common.Id
 import com.codattle.core.model.Game
 import com.codattle.core.model.GameBuilder
 import com.codattle.core.model.Sprite
-import com.codattle.core.model.User
-import com.mongodb.client.model.Updates
 import org.bson.conversions.Bson
 import org.litote.kmongo.eq
 import org.litote.kmongo.pullByFilter
-import org.bson.conversions.Bson
 import org.litote.kmongo.push
-import org.litote.kmongo.regex
 import javax.inject.Singleton
 
 @Singleton
@@ -39,4 +35,5 @@ class GameDao(private val daoUtils: DaoUtils) {
     fun removeSprite(gameId: Id<Game>, spriteName: String) {
         daoUtils.findAndModify(gameId, pullByFilter(Game::sprites, Sprite::name eq spriteName));
     }
+
 }

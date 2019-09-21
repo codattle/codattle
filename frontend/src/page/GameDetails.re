@@ -84,7 +84,7 @@ let make = (~gameId) => {
     );
 
   let removeSprite = (gameId: string, sprite: SpriteList.uploadedSprite) => {
-    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~sprite={"name": sprite.name, "fileId": sprite.fileId}, ()))
+    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~sprite={"name": sprite.name, "image": sprite.fileId}, ()))
     |> Repromise.Rejectable.wait(response =>
          switch (response) {
          | Belt.Result.Ok(_) =>

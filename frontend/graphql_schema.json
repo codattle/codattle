@@ -939,7 +939,7 @@
               "defaultValue": null
             },
             {
-              "name": "fileId",
+              "name": "image",
               "description": "",
               "type": {
                 "kind": "NON_NULL",

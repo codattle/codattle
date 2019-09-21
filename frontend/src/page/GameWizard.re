@@ -52,7 +52,7 @@ let make = () => {
                "description": "",
                "code": script,
                "logo": logo,
-               "sprites": Some([||]),
+               "sprites": Some(sprites |> Array.of_list),
                "allowedPlayerCounts": [|playerCount|],
              },
              (),
