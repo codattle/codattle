@@ -112,6 +112,8 @@ type Mutation {
 
     addSpriteToGame(gameId: ID!, sprite: NewSprite!): Boolean!
 
+    removeSpriteFromGame(gameId: ID!, spriteName: String!): Boolean!
+
     rateGame(gameId: ID!, rating: RatingValue!, description: String): Rating!
 
     createMatch(name: String!, gameId: ID!): Match!

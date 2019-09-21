@@ -56,6 +56,14 @@ module RateGameMutation = [%graphql
 |}
 ];
 
+module RemoveSpriteFromGameMutation = [%graphql
+  {|
+  mutation($gameId: ID!, $spriteName: String!) {
+    removeSpriteFromGame(gameId: $gameId, spriteName: $spriteName)
+  }
+|}
+];
+
 let mapRating = rating => {
   author: rating##author##username,
   ratingValue: rating##value |> Json.Decode.int,
@@ -75,6 +83,18 @@ let make = (~gameId) => {
       }
     );
 
+  let removeSprite = (gameId: string, spriteName: string) => {
+    GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName, ()))
+    |> Repromise.Rejectable.wait(response =>
+         switch (response) {
+         | Belt.Result.Ok(_) =>
+           let filterSprites = sprites => sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== spriteName);
+           setGame(game => {...game, sprites: filterSprites(game.sprites)});
+         | _ => ()
+         }
+       );
+  };
+
   game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
@@ -84,7 +104,7 @@ let make = (~gameId) => {
              let rating = response##rateGame |> mapRating;
              let isSameAuthor = (firstRating, secondRating) => firstRating.author === secondRating.author;
              setGame(game => {...game, ratings: game.ratings |> Rationale.RList.unionWith(isSameAuthor, [rating])});
-           | Error(_) => ()
+           | _ => ()
            }
          );
     };
@@ -107,7 +127,11 @@ let make = (~gameId) => {
         <Translation id="gameDetails.myScripts" />
       </button>
       ratings
-      <SpriteList uploadedSprites={game.sprites} canAdd=false />
+      <SpriteList
+        uploadedSprites={game.sprites}
+        onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
+        canAdd=false
+      />
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
     </div>;
   });

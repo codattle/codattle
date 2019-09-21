@@ -4,6 +4,7 @@ common:
   error: Błąd
   add: Dodaj
   loading: Ładowanie...
+  remove: Usuń
   notification:
     updateSuccessfully: Zaktualizowano pomyślnie
     errorDuringUpdate: Błąd podczas aktualizacji
