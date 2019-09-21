@@ -43,3 +43,9 @@ myScripts:
   noScripts: You have not any scripts for this game
 scriptDetails:
   update: Update
+authorization:
+  action:
+    login: login
+    logout: logout
+  notLoggedIn: You are not logged in
+  
