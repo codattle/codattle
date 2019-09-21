@@ -48,7 +48,7 @@ class Mutation(private val gameService: GameService,
     }
 
     fun createInstantMatch(gameId: Id<Game>, scripts: List<Id<Script>>): Match {
-
+        return matchService.createInstantMatch(gameId, scripts)
     }
 
     fun sendScript(gameId: Id<Game>, content: String): Script {

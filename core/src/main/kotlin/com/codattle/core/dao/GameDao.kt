@@ -9,6 +9,7 @@ import com.codattle.core.model.User
 import com.mongodb.client.model.Updates
 import com.sun.org.apache.xpath.internal.operations.Bool
 import org.bson.conversions.Bson
+import org.litote.kmongo.contains
 import org.litote.kmongo.push
 import org.litote.kmongo.regex
 import javax.inject.Singleton
@@ -25,8 +26,8 @@ class GameDao(private val daoUtils: DaoUtils) {
         return daoUtils.getMany(filter)
     }
 
-    fun isPlayersCountAllowed(gameId: Id<Game>, Int playersCount): Boolean {
-        return daoUtils.e
+    fun isPlayersCountAllowed(gameId: Id<Game>, playersCount: Int): Boolean {
+        return daoUtils.exists(gameId, Game::allowedPlayerCounts contains playersCount)
     }
 
     fun saveGame(game: GameBuilder): Game {

@@ -61,6 +61,6 @@ let make =
     }
     className={Styles.select(variant)}
     classes={MaterialSelect.classes(~icon=Styles.icon(variant), ())}>
-    {value |> Selector.Optional.all |> Utils.componentList(value => <MenuItem value> {nameMapper(value)} </MenuItem>)}
+    {value |> Selector.Optional.toList |> Utils.componentList(value => <MenuItem value> {nameMapper(value)} </MenuItem>)}
   </MaterialSelect>;
 };

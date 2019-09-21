@@ -1,5 +1,6 @@
+open Rationale.Function.Infix;
+
 type resource('a) =
-  | NotLoaded
   | Loading
   | Loaded('a)
   | Failure;
@@ -21,29 +22,23 @@ let useEffectWithInit = (initialize, effect, cancel, shouldRefresh) => {
   );
 };
 
-let loadResource = (query, setter, mapper) => {
-  setter(_ => Loading);
-  GraphqlService.executeQuery(query)
-  |> Repromise.wait(result =>
-       switch (result) {
-       | Belt.Result.Ok(data) => setter(_ => Loaded(mapper(data)))
-       | Error(_) => setter(_ => Failure)
-       }
-     );
+let loadResource = (query: GraphqlService.query('a), callback: Belt.Result.t('b, unit) => unit, mapper: 'a => 'b): (unit => unit) => {
+  GraphqlService.executeQuery(query) |> Repromise.wait(Rationale.Result.fmap(mapper) ||> callback);
+  // TODO: request should be unsubscribed using AbortController
+  // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
+  () => ();
 };
 
-let useEditableResource = (query, shouldRefresh, mapper) => {
-  let (resource, setResource) = React.useState(() => NotLoaded);
+let mapResultToResourceSetter = (result: Belt.Result.t('a, unit)): (resource('a) => resource('a)) =>
+  switch (result) {
+  | Ok(data) => (_ => Loaded(data))
+  | Error(_) => (_ => Failure)
+  };
 
-  React.useEffect1(
-    () => {
-      loadResource(query, setResource, mapper);
-      // TODO: request should be unsubscribed using AbortController
-      // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-      None;
-    },
-    shouldRefresh,
-  );
+let useEditableResource = (query, shouldRefresh, mapper) => {
+  let (resource, setResource) = React.useState(() => Loading);
+
+  React.useEffect1(() => Some(loadResource(query, mapResultToResourceSetter ||> setResource, mapper)), shouldRefresh);
 
   (
     resource,
@@ -61,17 +56,26 @@ let useResource = (query, shouldRefresh, mapper) => {
 };
 
 let useResourceWithDebounce = (query, shouldRefresh, wait, mapper) => {
-  let (resource, setResource) = React.useState(() => NotLoaded);
+  let (resource, setResource) = React.useState(() => Loading);
+  let (cancel, setCancel) = React.useState(() => None);
   let (loadResourceDebouncer, _) =
-    React.useState(() => Debouncer.makeCancelable(~wait, ((query, setResource, mapper)) => loadResource(query, setResource, mapper)));
+    React.useState(() =>
+      Debouncer.makeCancelable(~wait, ((query, setResource, mapper)) => setCancel(_ => Some(loadResource(query, setResource, mapper))))
+    );
 
   useEffectWithInit(
-    () => loadResourceDebouncer.invoke((query, setResource, mapper)),
-    () => loadResourceDebouncer.schedule((query, setResource, mapper)),
-    // TODO: this cancels only scheduled invocation of request, sent request won't be cancelled,
-    // request should be unsubscribed using AbortController
-    // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-    Some(loadResourceDebouncer.cancel),
+    () => loadResourceDebouncer.invoke((query, mapResultToResourceSetter ||> setResource, mapper)),
+    () => loadResourceDebouncer.schedule((query, mapResultToResourceSetter ||> setResource, mapper)),
+    Some(
+      () => {
+        cancel
+        |> Rationale.Option.iter(cancel => {
+             cancel();
+             setCancel(_ => None);
+           });
+        loadResourceDebouncer.cancel();
+      },
+    ),
     shouldRefresh,
   );
 
@@ -100,13 +104,13 @@ let withDataCy = (dataCy, element) =>
 
 let displayResource = (resource, displayLoadedResource) =>
   switch (resource) {
-  | NotLoaded => <div />
   | Loading => <div> <Translation id="common.loading" /> </div>
   | Loaded(loadedResource) => displayLoadedResource(loadedResource)
   | Failure => <div> <Translation id="common.error" /> </div>
   };
 
-let intOfString = (string: string): option(int) => switch (int_of_string(string)) {
+let intOfString = (string: string): option(int) =>
+  switch (int_of_string(string)) {
   | int => Some(int)
-  | exception Failure(_) => None
-}
+  | exception (Failure(_)) => None
+  };

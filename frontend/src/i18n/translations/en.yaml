@@ -45,3 +45,5 @@ scriptDetails:
 scriptTesting:
   save: Save
   newScript: New script
+  test: Test
+  refresh: Refresh

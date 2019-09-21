@@ -31,7 +31,7 @@ let make = (~value: t, ~onChange: t => unit) => {
     |> (
       ({before, selected, after}) =>
         switch (selected) {
-        | Some(selected) => Selector.{before: [newScript, ...before], selected, after}
+        | Some(selected) => ({before: [newScript, ...before], selected, after}: Selector.Required.t(selectorItem))
         | None => {before: [], selected: newScript, after: before @ after}
         }
     );

@@ -45,3 +45,5 @@ scriptDetails:
 scriptTesting:
   save: Zapisz
   newScript: Nowy skrypt
+  test: Testuj
+  refresh: Odśwież

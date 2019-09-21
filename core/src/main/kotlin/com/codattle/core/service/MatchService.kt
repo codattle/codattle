@@ -34,9 +34,11 @@ class MatchService(private val matchDao: MatchDao, private val gameDao: GameDao,
     }
 
     fun createInstantMatch(gameId: Id<Game>, scripts: List<Id<Script>>): Match {
-        val game = gameDao.getGame(gameId)
+        require(gameDao.isPlayersCountAllowed(gameId, scripts.size)) { "Cannot create instant match to this game with ${scripts.size} scripts" }
 
-        return matchDao.saveMatch(Match.builder().name(name).game(gameId))
+        val match = matchDao.saveMatch(Match.builder().name("").game(gameId).scripts(scripts))
+        startMatch(match.id)
+        return match
     }
 
     fun joinMatch(matchId: Id<Match>, scriptId: Id<Script>) {
@@ -54,6 +56,7 @@ class MatchService(private val matchDao: MatchDao, private val gameDao: GameDao,
     }
 
     private fun canJoinMatch(match: Match, game: Game): Boolean {
+        // TODO: Joining to started match should be impossible
         return match.scripts.size < game.maxAllowedPlayerCount
     }
 

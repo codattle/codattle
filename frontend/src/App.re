@@ -27,15 +27,15 @@ let make = () => {
     };
 
   <Language.Provider value=language>
-<Keycloak.Provider>
-    <ReactIntlProvider locale={language.locale} messages={language.translations}>
-      <Notifications.Provider>
-        <div>
-          <NavigationBar changeLanguage={language => language |> Rationale.Option.iter(language => setLanguage(_ => language))} />
-          page
-        </div>
-      </Notifications.Provider>
-    </ReactIntlProvider>
-</Keycloak.Provider>
+    <Keycloak.Provider>
+      <ReactIntlProvider locale={language.locale} messages={language.translations}>
+        <Notifications.Provider>
+          <div>
+            <NavigationBar changeLanguage={language => language |> Rationale.Option.iter(language => setLanguage(_ => language))} />
+            page
+          </div>
+        </Notifications.Provider>
+      </ReactIntlProvider>
+    </Keycloak.Provider>
   </Language.Provider>;
 };

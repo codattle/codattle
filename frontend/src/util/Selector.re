@@ -12,18 +12,34 @@ module Required = {
   type t('a) = selector('a, 'a);
 
   let single = (item: 'a): t('a) => {before: [], selected: item, after: []};
+  let fromListWithFirstSelected = (list: list('a)): option(t('a)) =>
+    switch (list) {
+    | [x, ...xs] => Some({before: [], selected: x, after: xs})
+    | _ => None
+    };
   let fromListWithSelected = (pred: 'a => bool, list: list('a)): option(t('a)) => {
     switch (list |> ListUtils.split(pred)) {
     | Some((before, selected, after)) => Some({before, selected, after})
     | None => None
     };
   };
-  let all = ({before, selected, after}: t('a)): list('a) => before @ [selected] @ after;
-  let select = (pred: 'a => bool, list: t('a)): option(t('a)) => list |> all |> fromListWithSelected(pred);
+  let toList = ({before, selected, after}: t('a)): list('a) => before @ [selected] @ after;
+  let select = (pred: 'a => bool, selector: t('a)): option(t('a)) => selector |> toList |> fromListWithSelected(pred);
   let map = (map: 'a => 'b, {before, selected, after}: t('a)): t('b) => {
     before: List.map(map, before),
     selected: map(selected),
     after: List.map(map, after),
+  };
+  let next = ({before, selected, after} as selector: t('a)): t('a) =>
+    switch (after) {
+    | [x, ...xs] => {before: before @ [selected], selected: x, after: xs}
+    | _ => selector
+    };
+  let previous = ({before, selected, after} as selector: t('a)): t('a) => {
+    switch (ListUtils.splitLast(before)) {
+    | (xs, Some(x)) => {before: xs, selected: x, after: [selected] @ after}
+    | _ => selector
+    };
   };
 };
 
@@ -42,9 +58,9 @@ module Optional = {
     | None => fromList(list)
     };
   };
-  let all = ({before, selected, after}: t('a)): list('a) => before @ (selected |> Rationale.Option.toList) @ after;
-  let select = (pred: 'a => bool, list: t('a)): t('a) => list |> all |> fromListWithSelected(pred);
-  let unselect = (list: t('a)): t('a) => list |> all |> fromList;
+  let toList = ({before, selected, after}: t('a)): list('a) => before @ (selected |> Rationale.Option.toList) @ after;
+  let select = (pred: 'a => bool, selector: t('a)): t('a) => selector |> toList |> fromListWithSelected(pred);
+  let unselect = (selector: t('a)): t('a) => selector |> toList |> fromList;
   let map = (map: 'a => 'b, {before, selected, after}: t('a)): t('b) => {
     before: List.map(map, before),
     selected: selected <$> map,
@@ -72,11 +88,26 @@ module Optional = {
        )
     ||? {before, selected, after};
   };
-  let length = (list: t('a)): int => list |> all |> List.length;
+  let length = (selector: t('a)): int => selector |> toList |> List.length;
+  let next = ({before, selected, after} as selector: t('a)): t('a) =>
+    switch (after) {
+    | [x, ...xs] => {before: before @ Rationale.Option.toList(selected), selected: Some(x), after: xs}
+    | _ => selector
+    };
+  let previous = ({before, selected, after} as selector: t('a)): t('a) => {
+    switch (ListUtils.splitLast(before)) {
+    | (xs, Some(x)) => {before: xs, selected: Some(x), after: Rationale.Option.toList(selected) @ after}
+    | _ => selector
+    };
+  };
+  let makeEmpty = (): t('a) => [] |> fromList;
 };
 
 let toOptional = ({before, selected, after}: Required.t('a)): Optional.t('a) => {before, selected: Some(selected), after};
 let toRequired = ({before, selected, after}: Optional.t('a)): option(Required.t('a)) =>
   selected <$> (selected => {before, selected, after});
-let addFirst = (item: 'a, list: t('a, 'b)): t('a, 'b) => {...list, before: [item, ...list.before]};
-let addLast = (item: 'a, list: t('a, 'b)): t('a, 'b) => {...list, after: list.after @ [item]};
+let addFirst = (item: 'a, selector: t('a, 'b)): t('a, 'b) => {...selector, before: [item, ...selector.before]};
+let addLast = (item: 'a, selector: t('a, 'b)): t('a, 'b) => {...selector, after: selector.after @ [item]};
+let selected = (selector: t(_, 'a)): 'a => selector.selected;
+let canNext = ({after}: t(_, _)): bool => ListUtils.notEmpty(after);
+let canPrevious = ({before}: t(_, _)): bool => ListUtils.notEmpty(before);

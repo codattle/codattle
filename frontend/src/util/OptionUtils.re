@@ -1,8 +1,10 @@
-let ifSome2 = (action: ('a, 'b) => unit, (item1: option('a), item2: option('b))): unit =>
+let map2 = (map: ('a, 'b) => 'c, (item1: option('a), item2: option('b))): option('c) =>
   switch (item1, item2) {
-  | (Some(item1), Some(item2)) => action(item1, item2)
-  | _ => ()
+  | (Some(item1), Some(item2)) => Some(map(item1, item2))
+  | _ => None
   };
+
+let ifSome2 = (action: ('a, 'b) => unit, (item1: option('a), item2: option('b))): unit => (item1, item2) |> map2(action) |> ignore;
 
 let execIfSome = (argument: 'a, action: option('a => unit)) =>
   switch (action) {
