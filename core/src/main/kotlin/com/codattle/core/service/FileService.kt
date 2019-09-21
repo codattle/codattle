@@ -33,9 +33,8 @@ class FileService(private val storageService: StorageService, private val fileDa
         }
     }
 
-    fun deleteFile(fileId: Id<File>) : Boolean {
+    fun deleteFile(fileId: Id<File>) {
         storageService.delete(fileId.value)
-        return true
     }
 
 }
