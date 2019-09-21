@@ -26,10 +26,12 @@ let make = () => {
     };
 
   <Language.Provider value=language>
-    <ReactIntlProvider locale={language.locale} messages={language.translations}>
-      <Notifications.Provider>
-        <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>
-      </Notifications.Provider>
-    </ReactIntlProvider>
+    <Keycloak.Provider>
+      <ReactIntlProvider locale={language.locale} messages={language.translations}>
+        <Notifications.Provider>
+          <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> page </div>
+        </Notifications.Provider>
+      </ReactIntlProvider>
+    </Keycloak.Provider>
   </Language.Provider>;
 };
