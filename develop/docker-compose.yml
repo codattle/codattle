@@ -21,6 +21,17 @@ services:
     - "8081:8080"
     volumes:
     - ./storage:/web
+  keycloak:
+    image: jboss/keycloak
+    ports:
+    - "8090:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/tmp/realm.json
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: H2
+      KEYCLOAK_IMPORT: /tmp/realm.json
 volumes:
   rabbitmq_data: {}
   mongodb_data: {}
