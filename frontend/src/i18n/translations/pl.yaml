@@ -44,3 +44,8 @@ myScripts:
   noScripts: Nie masz żadnych skryptów do tej gry
 scriptDetails:
   update: Aktualizuj
+authorization:
+  action:
+    login: Zaloguj się
+    logout: Wyloguj się
+  notLoggedIn: Nie jesteś zalogowany

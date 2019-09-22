@@ -4,6 +4,7 @@ module Styles = {
   open Css;
 
   let tabs = style([marginLeft(10 |> px), marginRight(10 |> px)]);
+  let toolbarButton = style([marginLeft(auto), marginRight((-11) |> px)]);
 };
 
 type navigation = {
@@ -15,6 +16,7 @@ type navigation = {
 let make = (~changeLanguage=?) => {
   let url = ReasonReactRouterUtils.useUrlPath();
   let language = Language.useLanguage();
+  let (keycloak, _) = Keycloak.useKeycloak();
 
   let navigation = [
     {name: "navigationBar.dashboard", href: "/dashboard"},
@@ -22,6 +24,11 @@ let make = (~changeLanguage=?) => {
     {name: "navigationBar.games", href: "/games"},
     {name: "navigationBar.profile", href: "/profile"},
   ];
+
+  let authButton =
+    keycloak |> Keycloak.authenticated
+      ? <Button onClick={() => Keycloak.logout(keycloak)} variant=`Contained> <Translation id="authorization.action.login" /> </Button>
+      : <Button onClick={() => Keycloak.login(keycloak)} variant=`Contained> <Translation id="authorization.action.logout" /> </Button>;
 
   <AppBar position=`Static>
     <Toolbar>
@@ -39,6 +46,7 @@ let make = (~changeLanguage=?) => {
         onChange={language => changeLanguage |> OptionUtils.execIfSome(language)}
         variant=`Negative
       />
+      <span className=Styles.toolbarButton> authButton </span>
     </Toolbar>
   </AppBar>;
 };
