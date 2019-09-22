@@ -8,6 +8,7 @@ import com.codattle.core.model.User
 import org.litote.kmongo.`in`
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import java.lang.IllegalArgumentException
 import javax.inject.Singleton
 
 @Singleton
@@ -21,9 +22,8 @@ class ScriptService(private val scriptDao: ScriptDao) {
         return if (ids.isEmpty()) {
             emptyList()
         } else {
-            val scripts = scriptDao.getScripts(Script::id `in` ids)
-            require(scripts.size == ids.size) { "At least one script doesn't exist: $ids" }
-            scripts
+            val scripts = scriptDao.getScripts(Script::id `in` ids).map { it.id to it }.toMap()
+            ids.map { scripts[it] ?: throw IllegalArgumentException("Script with id \"$it\" doesn't exist.") }
         }
     }
 

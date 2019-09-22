@@ -50,6 +50,7 @@ class QueueHelper(@Value("\${codattle.queue.host}") private val queueHost: Strin
         })
 
         latch.await(timeout, TimeUnit.SECONDS)
+        channel.close()
 
         return response
     }

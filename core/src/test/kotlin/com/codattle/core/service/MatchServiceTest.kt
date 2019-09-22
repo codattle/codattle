@@ -128,4 +128,27 @@ class MatchServiceTest : BaseTest() {
                 .isInstanceOf(IllegalArgumentException::class.java)
                 .hasMessage("Cannot join to match with id $matchId")
     }
+
+    @Test
+    fun `create instant match`() {
+        val game = databasePopulator.createGame(allowedPlayerCounts = setOf(3, 5))
+        val scripts = databasePopulator.createScripts(count = 3, game = game.id).map { it.id }
+
+        val match = matchService.createInstantMatch(game.id, scripts)
+
+        assertThat(match.game).isEqualTo(game.id)
+        assertThat(match.scripts).isEqualTo(scripts)
+        assertThat(queueHelper.countMessages(QueueHelper.SIMULATION)).isEqualTo(1)
+        assertThat(queueHelper.readMessage(QueueHelper.SIMULATION)).isEqualTo(match.id.toString().toByteArray())
+    }
+
+    @Test
+    fun `throw exception if try to create instant match with disallowed player count`() {
+        val game = databasePopulator.createGame(allowedPlayerCounts = setOf(3, 5))
+        val scripts = databasePopulator.createScripts(count = 4, game = game.id).map { it.id }
+
+        assertThatThrownBy { matchService.createInstantMatch(game.id, scripts) }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("Cannot create instant match to this game with ${scripts.size} scripts")
+    }
 }

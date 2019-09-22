@@ -126,6 +126,9 @@ let make = (~gameId) => {
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")}>
         <Translation id="gameDetails.myScripts" />
       </button>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/script-testing")}>
+        <Translation id="gameDetails.scriptTesting" />
+      </button>
       ratings
       <SpriteList
         uploadedSprites={game.sprites}

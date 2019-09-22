@@ -366,7 +366,7 @@ while (winner === undefined) {
     height: 20,
     sprite:
       GameObjectType[object.getType()] +
-      ((object.hasComponent(HasPlayerComponent.Class) ? object.getComponent(HasPlayerComponent.Class).player : "")
+      ((object.hasComponent(HasPlayerComponent.Class) ? object.getComponent(HasPlayerComponent.Class).player : ""))
   }));
 
   emitFrame({ mode: "2d", width: WIDTH * 20, height: HEIGHT * 20, objects });

@@ -1,4 +1,5 @@
 open Rationale.RList;
+open OptionUtils.Infix;
 
 module Styles = {
   open Css;
@@ -16,6 +17,7 @@ type navigation = {
 let make = (~changeLanguage=?) => {
   let url = ReasonReactRouterUtils.useUrlPath();
   let language = Language.useLanguage();
+  let languages = [Language.en, Language.pl] |> Selector.Optional.fromListWithSelected(Rationale.Util.identical(language));
   let (keycloak, _) = Keycloak.useKeycloak();
 
   let navigation = [
@@ -27,8 +29,8 @@ let make = (~changeLanguage=?) => {
 
   let authButton =
     keycloak |> Keycloak.authenticated
-      ? <Button onClick={() => Keycloak.logout(keycloak)} variant=`Contained> <Translation id="authorization.action.login" /> </Button>
-      : <Button onClick={() => Keycloak.login(keycloak)} variant=`Contained> <Translation id="authorization.action.logout" /> </Button>;
+      ? <Button onClick={() => Keycloak.logout(keycloak)} variant=`Contained> <Translation id="authorization.action.logout" /> </Button>
+      : <Button onClick={() => Keycloak.login(keycloak)} variant=`Contained> <Translation id="authorization.action.login" /> </Button>;
 
   <AppBar position=`Static>
     <Toolbar>
@@ -40,10 +42,9 @@ let make = (~changeLanguage=?) => {
         {navigation |> Utils.componentList(({name, href}) => <Tab value=href label={<Translation id=name />} />)}
       </Tabs>
       <Select
-        value=language
-        items=[Language.en, Language.pl]
-        itemMapper={({name}) => React.string(name |> Language.languageNameToJs)}
-        onChange={language => changeLanguage |> OptionUtils.execIfSome(language)}
+        value=languages
+        nameMapper={({name}) => React.string(name |> Language.languageNameToJs)}
+        onChange={({selected}) => selected |?> changeLanguage}
         variant=`Negative
       />
       <span className=Styles.toolbarButton> authButton </span>

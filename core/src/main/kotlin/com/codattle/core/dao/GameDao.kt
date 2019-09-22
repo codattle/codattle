@@ -6,6 +6,7 @@ import com.codattle.core.model.Game
 import com.codattle.core.model.GameBuilder
 import com.codattle.core.model.Sprite
 import org.bson.conversions.Bson
+import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.push
@@ -21,6 +22,10 @@ class GameDao(private val daoUtils: DaoUtils) {
 
     fun getGames(filter: Bson? = null): List<Game> {
         return daoUtils.getMany(filter)
+    }
+
+    fun isPlayersCountAllowed(gameId: Id<Game>, playersCount: Int): Boolean {
+        return daoUtils.exists(gameId, Game::allowedPlayerCounts contains playersCount)
     }
 
     fun saveGame(game: GameBuilder): Game {

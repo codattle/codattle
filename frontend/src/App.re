@@ -11,7 +11,10 @@ let make = () => {
     <Language.Provider value=language>
       <ReactIntlProvider locale={language.locale} messages={language.translations}>
         <Notifications.Provider>
-          <div> <NavigationBar changeLanguage={language => setLanguage(_ => language)} /> <AppRouter /> </div>
+          <div>
+            <NavigationBar changeLanguage={language => language |> Rationale.Option.iter(language => setLanguage(_ => language))} />
+            <AppRouter />
+          </div>
         </Notifications.Provider>
       </ReactIntlProvider>
     </Language.Provider>

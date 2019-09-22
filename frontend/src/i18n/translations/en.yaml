@@ -21,8 +21,6 @@ scriptWizard:
   joinMatch: Join match
   joiningMatch: Joining match...
   newScript: New script
-scriptEditor:
-  code: Code
 matchFrame:
   errorWhileParsingFrame: Error while parsing frame :(
 spriteList:
@@ -40,10 +38,16 @@ searchList:
   nothingFound: Nothing found
 gameDetails:
   myScripts: My scripts
+  scriptTesting: Script testing
 myScripts:
   noScripts: You have not any scripts for this game
 scriptDetails:
   update: Update
+scriptTesting:
+  save: Save
+  newScript: New script
+  test: Test
+  refresh: Refresh
 authorization:
   action:
     login: login
