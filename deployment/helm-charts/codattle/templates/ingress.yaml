@@ -30,3 +30,7 @@ spec:
             backend:
               serviceName: codattle-core
               servicePort: 80
+          - path: /auth/*
+            backend:
+              serviceName: codattle-keycloak-http
+              servicePort: 80

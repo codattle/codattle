@@ -23,7 +23,7 @@ type initConfig = {onLoad: string};
 [@bs.send] external logout: keycloakReact => unit = "logout";
 
 let initConfig = initConfig(~onLoad="check-sso");
-let keycloakConfig = config(~url="http://localhost:8090/auth", ~realm="Keycloak", ~clientId="keycloak-client");
+let keycloakConfig = config(~url=Environment.keycloakUrl, ~realm="Keycloak", ~clientId="keycloak-client");
 let keycloak = keycloakConfig |> keycloak;
 
 module Authorization = {

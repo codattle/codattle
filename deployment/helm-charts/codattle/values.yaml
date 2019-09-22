@@ -18,3 +18,19 @@ mongodb:
   mongodbUsername: mongo
   mongodbPassword: mongo
   mongodbDatabase: default
+
+keycloak:
+  keycloak:
+    username: admin
+    password: admin
+    service:
+      type: NodePort
+    extraVolumes: |
+      - name: realm-secret
+        secret:
+          secretName: realm-secret
+    extraVolumeMounts: |
+      - name: realm-secret
+        mountPath: "/realm/"
+        readOnly: true
+    extraArgs: -Dkeycloak.import=/realm/realm.json
