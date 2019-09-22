@@ -27,9 +27,9 @@ deploy:
     script: chmod +x deployment/gcr/build-containers.sh && deployment/gcr/build-containers.sh
     skip_cleanup: true
     on:
-      branch: develop
+      branch: master
   - provider: script
     script: ./codacy-coverage-reporter report -l Java -r $TRAVIS_BUILD_DIR/core/build/reports/jacoco/test/jacocoTestReport.xml
     skip_cleanup: true
     on:
-      branch: develop
+      branch: master
