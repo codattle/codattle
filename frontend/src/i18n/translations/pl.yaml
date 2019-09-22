@@ -48,3 +48,8 @@ scriptTesting:
   newScript: Nowy skrypt
   test: Testuj
   refresh: Odśwież
+authorization:
+  action:
+    login: Zaloguj się
+    logout: Wyloguj się
+  notLoggedIn: Nie jesteś zalogowany

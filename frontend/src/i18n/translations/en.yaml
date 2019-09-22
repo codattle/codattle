@@ -48,3 +48,9 @@ scriptTesting:
   newScript: New script
   test: Test
   refresh: Refresh
+authorization:
+  action:
+    login: login
+    logout: logout
+  notLoggedIn: You are not logged in
+  
