@@ -356,7 +356,9 @@ engine.addSystem(new PlayerMovementSystem(players));
 engine.addSystem(new WinSystem());
 engine.addEntities(...prepareObjects());
 
-while (winner === undefined) {
+let cycles = 0;
+
+while (winner === undefined && cycles < 100) {
   engine.update(0);
 
   const objects = (engine.entities as GameObject[]).map(object => ({
@@ -366,10 +368,14 @@ while (winner === undefined) {
     height: 20,
     sprite:
       GameObjectType[object.getType()] +
-      ((object.hasComponent(HasPlayerComponent.Class) ? object.getComponent(HasPlayerComponent.Class).player : ""))
+      (object.hasComponent(HasPlayerComponent.Class) ? object.getComponent(HasPlayerComponent.Class).player : "")
   }));
 
   emitFrame({ mode: "2d", width: WIDTH * 20, height: HEIGHT * 20, objects });
+
+  cycles++;
 }
 
-end(winner);
+if (winner !== undefined) {
+  end(winner);
+}

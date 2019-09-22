@@ -21,9 +21,9 @@ while (state.score1 < 3 && state.score2 < 3) {
   var secondPlayerChoice = parseChoice(runPlayerScript(1));
 
   if (isWin(firstPlayerChoice, secondPlayerChoice)) {
-    data.score1++;
+    state.score1++;
   } else if (isWin(secondPlayerChoice, firstPlayerChoice)) {
-    data.score2++;
+    state.score2++;
   }
 
   emitFrame({
@@ -32,8 +32,8 @@ while (state.score1 < 3 && state.score2 < 3) {
   });
 }
 
-if (data.score1 === 3) {
+if (state.score1 === 3) {
   end(0);
-} else if (data.score2 === 3) {
+} else if (state.score2 === 3) {
   end(1);
 }
