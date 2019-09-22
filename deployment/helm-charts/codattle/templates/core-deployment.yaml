@@ -54,6 +54,6 @@ spec:
               value: codattle
             - name: CODATTLE_STORAGE_GOOGLE_CREDENTIALS
               valueFrom:
-              secretKeyRef:
-                name: codattle-secrets
-                key: google-storage-credentials
+                secretKeyRef:
+                  name: codattle-secrets
+                  key: google-storage-credentials

@@ -5,5 +5,8 @@ dependencies:
 - name: rabbitmq
   repository: https://kubernetes-charts.storage.googleapis.com
   version: 4.2.0
-digest: sha256:b0f3d126327b8dc4e49c8f2d82d7b975c4616219d8893ea0aa8076a69463cf02
-generated: 2019-03-17T14:07:21.104382005+01:00
+- name: keycloak
+  repository: https://codecentric.github.io/helm-charts
+  version: 5.1.7
+digest: sha256:e3d12898b150509f8a881eca9beb2f512373f0befd0836bb65b2adabd3ab9026
+generated: "2019-09-22T16:09:58.683684079+02:00"

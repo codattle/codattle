@@ -9,3 +9,4 @@ RUN npm run webpack:production
 
 FROM nginx:1.15.9-alpine
 COPY --from=0 /usr/src/app/build /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/
