@@ -41,6 +41,7 @@ interface GameSandbox {
   emitFrame: (frame: any) => any;
   end: (newWinderIndex: any) => void;
   runPlayerScript: (playerIndx: any, gameState: any) => any;
+  getCountOfPlayers: () => number;
 }
 
 interface PlayerSandbox {
@@ -74,6 +75,7 @@ class GameVM {
         this.validatePlayerIndex(playerIndex);
         return this.runPlayerScript(playerIndex, gameState);
       },
+      getCountOfPlayers: () => scripts.size
     };
   }
 
