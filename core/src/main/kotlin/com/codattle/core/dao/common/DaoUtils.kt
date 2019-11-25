@@ -13,6 +13,7 @@ import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
 import java.lang.IllegalArgumentException
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import javax.inject.Singleton
 import kotlin.reflect.KProperty
 
@@ -119,7 +120,8 @@ class DaoUtils(
 
     private fun fillAuditFields(entity: DaoModelBuilder<*>) {
         if (entity.creationDate == null) {
-            entity.creationDate = Instant.now()
+            // The date type in MongoDB has only millisecond resolution
+            entity.creationDate = Instant.now().truncatedTo(ChronoUnit.MILLIS)
         }
     }
 }
