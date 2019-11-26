@@ -22,10 +22,8 @@ let make =
       ~context: MatchFrame.context,
       ~onChange: Selector.Required.t(frame) => unit,
     ) => {
-  let winnerComponent = winner <$> (winner => <div> {ReasonReact.string("Winner: " ++ string_of_int(winner + 1))} </div>) ||? <> </>;
-
   <div>
-    winnerComponent
+    <WinnerComponent winner />
     {frames
      <$> (
        frames =>

@@ -52,15 +52,7 @@ let make = (~gameId) => {
   let getMatchDescription = (~maxCountOfScripts, ~match) => {
     <div>
       {ReasonReact.string(match.name ++ " (" ++ string_of_int(match.scriptsCount) ++ "/" ++ string_of_int(maxCountOfScripts) ++ ")")}
-      {Belt.Option.mapWithDefault(match.winner, <> </>, winner =>
-         <span>
-           {ReasonReact.string(" ")}
-           <Translation id="matchList.winner" />
-           {ReasonReact.string(": \"")}
-           <Translation id="matchList.player" />
-           {ReasonReact.string(" " ++ string_of_int(winner + 1) ++ "\"")}
-         </span>
-       )}
+      <WinnerComponent winner={match.winner} />
     </div>;
   };
 
