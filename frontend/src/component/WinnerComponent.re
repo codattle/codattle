@@ -1,7 +1,13 @@
+module Styles = {
+  open Css;
+
+  let bold = style([fontWeight(`bold)]);
+};
+
 [@react.component]
 let make = (~winner: option(int)) => {
   Belt.Option.mapWithDefault(winner, <> </>, winner =>
-    <span>
+    <span className=Styles.bold>
       {ReasonReact.string(" ")}
       <Translation id="matchList.winner" />
       {ReasonReact.string(": \"")}
