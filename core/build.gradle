@@ -21,7 +21,7 @@ allprojects {
 
 dependencyManagement {
     imports {
-        mavenBom 'io.micronaut:micronaut-bom:1.1.4'
+        mavenBom 'io.micronaut:micronaut-bom:1.2.6'
     }
 }
 
@@ -44,6 +44,9 @@ dependencies {
     compile 'com.graphql-java-kickstart:graphql-java-tools:5.5.1'
     compile 'com.google.cloud:google-cloud-storage:1.85.0'
     compile 'com.github.cloudyrock.mongock:mongock-core:3.0.0.BETA'
+    compile 'io.micronaut.configuration:micronaut-security-oauth2:1.2.3.BUILD-SNAPSHOT'
+    compile "io.micronaut:micronaut-security"
+    compile "io.micronaut:micronaut-security-jwt"
     compileOnly project("annotation-processor")
     kapt project("annotation-processor")
     kapt "io.micronaut:micronaut-inject-java"
@@ -51,6 +54,7 @@ dependencies {
     kaptTest "io.micronaut:micronaut-inject-java"
     runtime "ch.qos.logback:logback-classic:1.2.3"
     runtime "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7"
+    annotationProcessor "io.micronaut:micronaut-security"
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testCompile "org.junit.jupiter:junit-jupiter-api"
     testCompile "org.jetbrains.spek:spek-api:1.1.5"
