@@ -5,6 +5,11 @@ type match = {
   winner: option(int),
 };
 
+type x = {
+  matches: list(match),
+  maxCountOfScripts: int,
+};
+
 module GetMatchesQuery = [%graphql
   {|
   query($gameId: ID!) {
@@ -16,37 +21,33 @@ module GetMatchesQuery = [%graphql
         winner
       }
     }
-  }
-|}
-];
-
-module GetMaxCountOfScripts = [%graphql {|
-  query($gameId: ID!) {
     game(gameId: $gameId) {
       maxAllowedPlayerCount
     }
   }
-|}];
+|}
+];
 
 [@react.component]
 let make = (~gameId) => {
   let (version, refresh) = Utils.useRefresh();
 
-  let maxCountOfScripts =
-    Utils.useResource(GetMaxCountOfScripts.make(~gameId, ()), [|gameId, version|], data => data##game##maxAllowedPlayerCount);
-
-  let matches =
+  let queryResult =
     Utils.useResource(GetMatchesQuery.make(~gameId, ()), [|gameId, version|], data =>
-      data##matches
-      |> Array.to_list
-      |> List.map(match =>
-           {
-             id: match##id,
-             name: match##name,
-             scriptsCount: match##scriptsCount,
-             winner: Belt.Option.mapWithDefault(match##result, None, result => result##winner),
-           }
-         )
+      {
+        matches:
+          data##matches
+          |> Array.to_list
+          |> List.map(match =>
+               {
+                 id: match##id,
+                 name: match##name,
+                 scriptsCount: match##scriptsCount,
+                 winner: Belt.Option.mapWithDefault(match##result, None, result => result##winner),
+               }
+             ),
+        maxCountOfScripts: data##game##maxAllowedPlayerCount,
+      }
     );
 
   let getMatchDescription = (~maxCountOfScripts, ~match) => {
@@ -56,22 +57,20 @@ let make = (~gameId) => {
     </div>;
   };
 
-  maxCountOfScripts->Utils.displayResource(maxCountOfScripts =>
-    matches->Utils.displayResource(matches => {
-      let matchList =
-        if (List.length(matches) == 0) {
-          <span> {ReasonReact.string("No matches")} </span>;
-        } else {
-          <ul>
-            {matches
-             |> Utils.componentList(match =>
-                  <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
-                    {getMatchDescription(~maxCountOfScripts, ~match)}
-                  </li>
-                )}
-          </ul>;
-        };
-      <div> <button onClick={_ => refresh()}> <Translation id="common.refresh" /> </button> matchList </div>;
-    })
-  );
+  queryResult->Utils.displayResource(({matches, maxCountOfScripts}) => {
+    let matchList =
+      if (List.length(matches) == 0) {
+        <span> {ReasonReact.string("No matches")} </span>;
+      } else {
+        <ul>
+          {matches
+           |> Utils.componentList(match =>
+                <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
+                  {getMatchDescription(~maxCountOfScripts, ~match)}
+                </li>
+              )}
+        </ul>;
+      };
+    <div> <button onClick={_ => refresh()}> <Translation id="common.refresh" /> </button> matchList </div>;
+  });
 };
