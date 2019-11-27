@@ -9,6 +9,7 @@ type query('a) = {
 
 let executeQuery = (grapqhQuery: query('a)): PromiseUtils.t('a) =>
   {
+    // TODO: Hook cannot be used here
     let (keycloak, _) = Keycloak.useKeycloak();
     Fetch.fetchWithInit(
       Environment.graphqlUrl,

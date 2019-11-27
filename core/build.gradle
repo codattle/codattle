@@ -44,7 +44,7 @@ dependencies {
     compile 'com.graphql-java-kickstart:graphql-java-tools:5.5.1'
     compile 'com.google.cloud:google-cloud-storage:1.85.0'
     compile 'com.github.cloudyrock.mongock:mongock-core:3.0.0.BETA'
-    compile 'io.micronaut.configuration:micronaut-security-oauth2:1.2.3.BUILD-SNAPSHOT'
+    compile 'io.micronaut.configuration:micronaut-security-oauth2:1.2.2'
     compile "io.micronaut:micronaut-security"
     compile "io.micronaut:micronaut-security-jwt"
     compileOnly project("annotation-processor")

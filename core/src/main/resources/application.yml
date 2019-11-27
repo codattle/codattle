@@ -6,11 +6,12 @@ micronaut:
         oauth2:
             enabled: true
             clients:
-                keycloak: 
+                keycloak:
                     client-id: 'keycloak-client'
                     openid:
-                        issuer: http://localhost:8090/auth/realms/Keycloak
+                        issuer: ${CODATTLE_KEYCLOAK_ISSUER_PATH:`localhost:8090/auth/realms/Keycloak`}
         intercept-url-map:
+# TODO: fix or remove Graphiql
         -
             pattern: /graphiql
             access:
@@ -27,7 +28,7 @@ micronaut:
                 signatures:
                     jwks:
                         keycloak:
-                            url: http://localhost:8090/auth/realms/Keycloak/protocol/openid-connect/certs
+                            url: ${CODATTLE_KEYCLOAK_TOKEN_SIGNATURE_PATH:`localhost:8090/auth/realms/Keycloak/protocol/openid-connect/certs`}
 jackson:
     module-scan: false
 graphql:
