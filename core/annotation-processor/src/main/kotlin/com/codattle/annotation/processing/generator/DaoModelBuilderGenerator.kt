@@ -47,7 +47,7 @@ class DaoModelBuilderGenerator : AbstractProcessor() {
             Parameter(
                     name = it.simpleName.toString(),
                     type = mapJavaTypeToKotlinType(it.asType().asTypeName()).copy(nullable = true),
-                    nonNullable = it.getAnnotation(org.jetbrains.annotations.NotNull::class.java) != null)
+                    nonNullable = it.getAnnotation(org.jetbrains.annotations.NotNull::class.java) != null || it.asType().kind.isPrimitive)
         }
 
         val fileSpec = FileSpec.builder(packageName, builderClassName)

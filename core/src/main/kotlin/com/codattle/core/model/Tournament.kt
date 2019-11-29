@@ -6,22 +6,23 @@ import com.codattle.core.dao.common.Id
 import java.time.Instant
 
 @GenerateDaoModelBuilder
-data class Match(
-        override val id: Id<Match>,
+data class Tournament(
+        override val id: Id<Tournament>,
         override val creationDate: Instant,
         val name: String,
         val game: Id<Game>,
         val scripts: List<Id<Script>>,
-        val result: MatchResult?
-) : DaoModel<Match> {
+        val maxScriptCount: Int,
+        val matches: List<Id<Match>>?
+) : DaoModel<Tournament> {
 
     companion object {
-        fun builder(): MatchBuilder {
-            return MatchBuilder.withoutDefault(scripts = listOf())
+        fun builder(): TournamentBuilder {
+            return TournamentBuilder.withoutDefault()
         }
     }
 
-    override fun toBuilder(): MatchBuilder {
-        return MatchBuilder.fromModel(this)
+    override fun toBuilder(): TournamentBuilder {
+        return TournamentBuilder.fromModel(this)
     }
 }

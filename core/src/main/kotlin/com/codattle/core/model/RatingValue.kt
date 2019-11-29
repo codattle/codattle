@@ -8,6 +8,6 @@ data class RatingValue(val value: Int) {
     }
 
     init {
-        require(!(value < MIN_VALUE || value > MAX_VALUE)) { "Rating value must be between $MIN_VALUE nad $MAX_VALUE" }
+        require(value in MIN_VALUE..MAX_VALUE) { "Rating value must be between $MIN_VALUE nad $MAX_VALUE" }
     }
 }

@@ -3,6 +3,8 @@ let make = () => {
   let url = ReasonReactRouter.useUrl();
   let (keycloak, _) = Keycloak.useKeycloak();
 
+  Js.Console.log(keycloak);
+
   keycloak |> Keycloak.authenticated
     ? switch (url.path) {
       | [] => <HomePage />

@@ -72,6 +72,15 @@ type File {
     contentType: String!
 }
 
+type Tournament {
+    id: ID!
+    name: String!
+    game: Game!
+    scripts: [Script!]!
+    maxScriptCount: Int!
+    matches: [Match!]!
+}
+
 input NewGame {
     name: String!
     description: String!
@@ -105,6 +114,10 @@ type Query {
     script(scriptId: ID!): Script!
 
     scripts(gameId: ID, authorId: ID): [Script!]!
+
+    tournament(tournamentId: ID!): Tournament!
+
+    tournaments(gameId: ID!): [Tournament!]!
 }
 
 type Mutation {
@@ -129,5 +142,9 @@ type Mutation {
     provideResultFrames(matchId: ID!, resultFrames: [NewResultFrame!]!): Boolean!
 
     provideMatchWinner(matchId: ID!, winner: Int!): Boolean!
+
+    createTournament(name: String!, gameId: ID!, maxScriptCount: Int!): Tournament!
+
+    joinTournament(tournamentId: ID!, scriptId: ID!): Boolean!
 }
 

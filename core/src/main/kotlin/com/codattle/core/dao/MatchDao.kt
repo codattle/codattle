@@ -14,6 +14,10 @@ class MatchDao(private val daoUtils: DaoUtils) {
                 ?: throw IllegalArgumentException("Match with id \"$matchId\" doesn't exist.")
     }
 
+    fun getMatches(matchIds: List<Id<Match>>): List<Match> {
+        return daoUtils.getMany(Match::id `in` matchIds)
+    }
+
     fun getMatchesOfGame(gameId: Id<Game>): List<Match> {
         return daoUtils.getMany(Match::game eq gameId)
     }
@@ -27,8 +31,8 @@ class MatchDao(private val daoUtils: DaoUtils) {
         return daoUtils.save(match)
     }
 
-    fun addScriptIfScriptsCountEquals(matchId: Id<Match>, scriptId: Id<Script>, scriptsCount: Int): Match? {
-        return daoUtils.findAndModify(Match::class.java, and(Match::id eq matchId, Match::scripts size scriptsCount), push(Match::scripts, scriptId))
+    fun addScriptIfScriptCountEquals(matchId: Id<Match>, scriptId: Id<Script>, scriptCount: Int): Match? {
+        return daoUtils.findAndModify(matchId, Match::scripts size scriptCount, push(Match::scripts, scriptId))
     }
 
     fun provideResultFrames(matchId: Id<Match>, resultFrames: List<ResultFrame>) {
