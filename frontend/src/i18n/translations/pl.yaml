@@ -1,4 +1,5 @@
 common:
+  refresh: Odśwież
   next: Dalej
   previous: Wstecz
   error: Błąd
@@ -53,3 +54,6 @@ authorization:
     login: Zaloguj się
     logout: Wyloguj się
   notLoggedIn: Nie jesteś zalogowany
+matchList:
+  winner: Zwycięzca
+  player: Gracz
