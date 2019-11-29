@@ -19,6 +19,12 @@ var allCardColor = [
     "\u2666" /* Caro */,
     "\u2665" /* Heart */
 ];
+function emitText(text) {
+    return emitFrame({
+        mode: 'text',
+        output: text
+    });
+}
 function printCard(card) {
     return card.symbol + card.color;
 }
@@ -48,7 +54,7 @@ function shuffle(array) {
 function isWin(cards) {
     return cards.every(function (card) { return card.color === cards[0].color; }) || cards.every(function (card) { return card.symbol === cards[0].symbol; });
 }
-var countOfPlayers = 4;
+var countOfPlayers = getCountOfPlayers();
 var allCards = shuffle(generateCards());
 var playersCards = [];
 for (var i = 0; i < countOfPlayers; i++) {
@@ -62,8 +68,9 @@ for (var i = 0; i < countOfPlayers; i++) {
 var playerIndex = 0;
 while (true) {
     var playerCards = playersCards[playerIndex];
-    emitFrame({ mode: 'text', output: playersCards.map(function (cards, player) { return "Player " + player + ": " + cards.map(function (card) { return printCard(card); }).join(', '); }).join('  ') });
+    emitText(playersCards.map(function (cards, player) { return "Player " + player + ": " + cards.map(function (card) { return printCard(card); }).join(', '); }).join(' '));
     if (isWin(playerCards)) {
+        emitText("Player " + playerIndex + " says Kuku !!!");
         end(playerIndex);
         break;
     }
@@ -72,7 +79,8 @@ while (true) {
     if (cardToGiveAway == null) {
         throw new Error("Bad card !");
     }
-    playerIndex = (playerIndex + 1) % countOfPlayers;
+    var nextPlayerIndex = (playerIndex + 1) % countOfPlayers;
+    emitText("Player " + playerIndex + " gives " + printCard(cardToGiveAway) + " to player " + nextPlayerIndex);
+    playerIndex = nextPlayerIndex;
     playersCards[playerIndex].push(cardToGiveAway);
 }
-end(0);

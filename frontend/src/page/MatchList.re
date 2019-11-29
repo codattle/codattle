@@ -5,6 +5,11 @@ type match = {
   winner: option(int),
 };
 
+type x = {
+  matches: list(match),
+  maxCountOfScripts: int,
+};
+
 module GetMatchesQuery = [%graphql
   {|
   query($gameId: ID!) {
@@ -16,6 +21,9 @@ module GetMatchesQuery = [%graphql
         winner
       }
     }
+    game(gameId: $gameId) {
+      maxAllowedPlayerCount
+    }
   }
 |}
 ];
@@ -24,28 +32,32 @@ module GetMatchesQuery = [%graphql
 let make = (~gameId) => {
   let (version, refresh) = Utils.useRefresh();
 
-  let matches =
+  let queryResult =
     Utils.useResource(GetMatchesQuery.make(~gameId, ()), [|gameId, version|], data =>
-      data##matches
-      |> Array.to_list
-      |> List.map(match =>
-           {
-             id: match##id,
-             name: match##name,
-             scriptsCount: match##scriptsCount,
-             winner: Belt.Option.mapWithDefault(match##result, None, result => result##winner),
-           }
-         )
+      {
+        matches:
+          data##matches
+          |> Array.to_list
+          |> List.map(match =>
+               {
+                 id: match##id,
+                 name: match##name,
+                 scriptsCount: match##scriptsCount,
+                 winner: Belt.Option.mapWithDefault(match##result, None, result => result##winner),
+               }
+             ),
+        maxCountOfScripts: data##game##maxAllowedPlayerCount,
+      }
     );
 
-  let getMatchDescription = match =>
-    match.name
-    ++ " ("
-    ++ string_of_int(match.scriptsCount)
-    ++ "/2)"
-    ++ Belt.Option.mapWithDefault(match.winner, "", winner => " Winner: Player " ++ string_of_int(winner + 1));
+  let getMatchDescription = (~maxCountOfScripts, ~match) => {
+    <div>
+      {ReasonReact.string(match.name ++ " (" ++ string_of_int(match.scriptsCount) ++ "/" ++ string_of_int(maxCountOfScripts) ++ ")")}
+      <WinnerComponent winner={match.winner} />
+    </div>;
+  };
 
-  matches->Utils.displayResource(matches => {
+  queryResult->Utils.displayResource(({matches, maxCountOfScripts}) => {
     let matchList =
       if (List.length(matches) == 0) {
         <span> {ReasonReact.string("No matches")} </span>;
@@ -54,11 +66,11 @@ let make = (~gameId) => {
           {matches
            |> Utils.componentList(match =>
                 <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
-                  {ReasonReact.string(getMatchDescription(match))}
+                  {getMatchDescription(~maxCountOfScripts, ~match)}
                 </li>
               )}
         </ul>;
       };
-    <div> <button onClick={_ => refresh()}> {ReasonReact.string("Refresh")} </button> matchList </div>;
+    <div> <button onClick={_ => refresh()}> <Translation id="common.refresh" /> </button> matchList </div>;
   });
 };
