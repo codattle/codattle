@@ -40,6 +40,7 @@ searchList:
 gameDetails:
   myScripts: My scripts
   scriptTesting: Script testing
+  newTournament: New tournament
 myScripts:
   noScripts: You have not any scripts for this game
 scriptDetails:
@@ -57,3 +58,13 @@ authorization:
 matchList:
   winner: Winner
   player: Player
+tournamentWizard:
+  playerCount: Player count
+  createTournament: Create tournament
+  creating: Creating...
+  errorWhileCreatingTournament: Error while creating tournament :(
+tournamentList:
+  noTournaments: No tournaments
+tournamentDetails:
+  joinToTournament: Join to tournament
+  detailsOfTournament: Details of tournament

@@ -28,4 +28,8 @@ class TournamentResolver(
     fun matches(tournament: Tournament): List<Match>? {
         return tournament.matches?.let { matchService.getMatches(it) }
     }
+
+    fun currentScriptCount(tournament: Tournament): Int {
+        return tournament.scripts.size
+    }
 }

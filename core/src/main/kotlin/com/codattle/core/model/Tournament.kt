@@ -18,7 +18,7 @@ data class Tournament(
 
     companion object {
         fun builder(): TournamentBuilder {
-            return TournamentBuilder.withoutDefault()
+            return TournamentBuilder.withoutDefault(scripts = listOf())
         }
     }
 

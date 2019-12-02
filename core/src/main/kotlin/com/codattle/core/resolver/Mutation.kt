@@ -86,4 +86,9 @@ class Mutation(private val gameService: GameService,
     fun createTournament(name: String, gameId: Id<Game>, maxScriptCount: Int): Tournament {
         return tournamentService.createTournament(name, gameId, maxScriptCount)
     }
+
+    fun joinTournament(tournamentId: Id<Tournament>, scriptId: Id<Script>): Boolean {
+        tournamentService.joinTournament(tournamentId, scriptId)
+        return true
+    }
 }

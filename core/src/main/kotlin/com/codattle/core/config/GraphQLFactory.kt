@@ -20,7 +20,6 @@ class GraphQLFactory {
                 .file("schema.graphqls")
                 .resolvers(resolvers)
                 .scalars(IdScalar(), RatingValueScalar())
-                .dictionary()
                 .build()
                 .makeExecutableSchema()
 

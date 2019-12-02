@@ -77,6 +77,7 @@ type Tournament {
     name: String!
     game: Game!
     scripts: [Script!]!
+    currentScriptCount: Int!
     maxScriptCount: Int!
     matches: [Match!]!
 }

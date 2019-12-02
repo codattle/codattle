@@ -122,6 +122,7 @@ let make = (~gameId) => {
       logo
       <span> {ReasonReact.string("Details of game with id: " ++ game.id)} </span>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
+      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-tournament")}> <Translation id="gameDetails.newTournament"/> </button>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
       <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")}>
         <Translation id="gameDetails.myScripts" />

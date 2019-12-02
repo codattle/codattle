@@ -1,3 +1,5 @@
+open OptionUtils.Infix;
+
 type mode =
   | Editing
   | Creating
@@ -5,25 +7,28 @@ type mode =
 
 module CreateTournamentMutation = [%graphql
   {|
-  mutation($name: String!, $gameId: ID!, $scripts: [ID!]!) {
-    createTournament(name: $name, gameId: $gameId, scripts: $scripts) {
+  mutation($name: String!, $gameId: ID!, $maxScriptCount: Int!) {
+    createTournament(name: $name, gameId: $gameId, maxScriptCount: $maxScriptCount) {
       id
     }
   }
 |}
 ];
 
+let defaultPlayerCount = 4;
+
 [@react.component]
 let make = (~gameId) => {
   let (name, setName) = React.useState(() => "");
+  let (maxScriptCount, setMaxScriptCount) = React.useState(() => defaultPlayerCount);
   let (mode, setMode) = React.useState(() => Editing);
 
-  let createMatch = () => {
-    setMode(_ => Editing);
-    GraphqlService.executeQuery(CreateTournamentMutation.make(~name, ~gameId, ()))
+  let createTournament = () => {
+    setMode(_ => Creating);
+    GraphqlService.executeQuery(CreateTournamentMutation.make(~name, ~gameId, ~maxScriptCount, ()))
     |> Repromise.wait(result =>
          switch (result) {
-         | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/matches/" ++ result##createMatch##id)
+         | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/tournaments/" ++ result##createTournament##id)
          | Error(_) => setMode(_ => Failure)
          }
        );
@@ -33,9 +38,14 @@ let make = (~gameId) => {
   | Editing =>
     <div>
       <input onChange={event => setName(ReactEvent.Form.target(event)##value)} />
-      <button onClick={_ => createMatch()}> {ReasonReact.string("Create match")} </button>
+      <NumberField
+        label="tournamentWizard.playerCount"
+        value=maxScriptCount
+        onChange={maxScriptCount => setMaxScriptCount(_ => maxScriptCount ||? defaultPlayerCount)}
+      />
+      <button onClick={_ => createTournament()}> <Translation id="tournamentWizard.createTournament" /> </button>
     </div>
-  | Creating => ReasonReact.string("Creating...")
-  | Failure => ReasonReact.string("Creating fail :(")
+  | Creating => <Translation id="tournamentWizard.creating" />
+  | Failure => <Translation id="tournamentWizard.errorWhileCreatingTournament" />
   };
 };
