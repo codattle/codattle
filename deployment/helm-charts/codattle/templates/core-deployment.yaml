@@ -52,10 +52,6 @@ spec:
               value: "5672"
             - name: CODATTLE_STORAGE_GOOGLE_BUCKET_NAME
               value: codattle
-            - name: CODATTLE_KEYCLOAK_ISSUER_PATH
-              value: "/auth/realms/Keycloak"
-            - name: CODATTLE_KEYCLOAK_TOKEN_PATH
-              value: "/auth/realms/Keycloak/protocol/openid-connect/certs"
             - name: CODATTLE_STORAGE_GOOGLE_CREDENTIALS
               valueFrom:
                 secretKeyRef:

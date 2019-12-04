@@ -54,9 +54,6 @@ module.exports = {
       },
       '/auth': {
         target: 'http://localhost:8090'
-      },
-      '/oauth': {
-        target: 'http://localhost:8080'
       }
     }
   }

@@ -12,10 +12,7 @@ type config = {
 };
 
 [@bs.deriving {abstract: light}]
-type keycloakReact = {
-  authenticated: bool,
-  token: string
-};
+type keycloakReact = {authenticated: bool};
 
 [@bs.deriving abstract]
 type initConfig = {onLoad: string};

@@ -1,34 +1,6 @@
 micronaut:
     application:
         name: core
-    security:
-        enabled: true
-        oauth2:
-            enabled: true
-            clients:
-                keycloak:
-                    client-id: 'keycloak-client'
-                    openid:
-                        issuer: ${CODATTLE_KEYCLOAK_ISSUER_PATH:`localhost:8090/auth/realms/Keycloak`}
-        intercept-url-map:
-# TODO: fix or remove Graphiql
-        -
-            pattern: /graphiql
-            access:
-                - isAuthenticated()
-        -
-            pattern: /graphql
-            access:
-                - isAuthenticated()
-        token:
-            jwt:
-                enabled: true 
-                cookie:
-                    enabled: true
-                signatures:
-                    jwks:
-                        keycloak:
-                            url: ${CODATTLE_KEYCLOAK_TOKEN_SIGNATURE_PATH:`localhost:8090/auth/realms/Keycloak/protocol/openid-connect/certs`}
 jackson:
     module-scan: false
 graphql:
