@@ -14,8 +14,9 @@ gameWizard:
   createGame: Stwórz grę
   creating: Tworzenie...
   errorWhileCreatingGame: Błąd podczas tworzenia gry :(
-  logo: "Logo"
+  addLogo: Dodaj logo
   playerCount: Liczba graczy
+  description: Opis
 scriptWizard:
   noDescription: Brak opisu...
   description: Opis
@@ -26,6 +27,8 @@ matchFrame:
   errorWhileParsingFrame: Błąd podczas parsowania ramki :(
 spriteList:
   addSprite: Dodaj sprite
+  addSpriteDialog:
+    name: Name
 ratingForm:
   send: Wyślij ocenę
   edit: Edytuj ocenę

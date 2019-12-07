@@ -1,3 +1,9 @@
+module Styles = {
+  open Css;
+
+  let label = style([display(`inlineBlock), marginRight(15 |> px)]);
+};
+
 [@react.component]
 let make = (~label=?, ~onChange=?, ~dataCy=?) => {
   let getFileFromEvent = (event): option(File.t) => {
@@ -5,7 +11,7 @@ let make = (~label=?, ~onChange=?, ~dataCy=?) => {
     event##validity##valid ? ListUtils.first(event##files) : None;
   };
 
-  let labelElement = label->Belt.Option.mapWithDefault(<> </>, label => <Translation id=label />);
+  let labelElement = label->Belt.Option.mapWithDefault(<> </>, label => <span className=Styles.label> <Translation id=label /> </span>);
 
   <div>
     labelElement

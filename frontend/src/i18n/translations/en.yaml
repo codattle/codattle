@@ -14,8 +14,9 @@ gameWizard:
   createGame: Create game
   creating: Creating...
   errorWhileCreatingGame: Error while creating game :(
-  logo: Logo
+  addLogo: Add logo
   playerCount: Player count
+  description: Description
 scriptWizard:
   noDescription: No description...
   description: Description
@@ -26,6 +27,8 @@ matchFrame:
   errorWhileParsingFrame: Error while parsing frame :(
 spriteList:
   addSprite: Add sprite
+  addSpriteDialog:
+    name: Name
 ratingForm:
   send: Send rating
   edit: Edit rating

@@ -18,8 +18,13 @@ module CreateGameMutation = [%graphql {|
 module Styles = {
   open Css;
 
-  let section = style([margin2(~v=20 |> px, ~h=10 |> px)]);
-  let scriptEditor = style([width(300 |> px), height(500 |> px)]);
+  let container = style([display(`flex), padding(30 |> px), marginTop((-20) |> px)]);
+  let left = style([width(50.0 |> pct)]);
+  let right = style([flexGrow(1.0), paddingLeft(30 |> px)]);
+  let section = style([margin2(~v=20 |> px, ~h=0 |> px)]);
+  let input = style([width(100.0 |> pct), margin2(~v=0 |> px, ~h=10 |> px) |> important]);
+  let sectionGroup = style([display(`flex), margin2(~v=20 |> px, ~h=(-10) |> px)]);
+  let scriptEditor = style([width(100.0 |> pct), height(500 |> px)]);
 };
 
 let defaultPlayerCount = 2;
@@ -28,6 +33,7 @@ let defaultPlayerCount = 2;
 let make = () => {
   let (mode, setMode) = React.useState(() => Editing);
   let (name, setName) = React.useState(() => "");
+  let (description, setDescription) = React.useState(() => "");
   let (script, setScript) = React.useState(() => "");
   let (playerCount, setPlayerCount) = React.useState(() => defaultPlayerCount);
   let (logo: option(File.t), setLogo) = React.useState(() => None);
@@ -49,7 +55,7 @@ let make = () => {
            CreateGameMutation.make(
              ~game={
                "name": name,
-               "description": "",
+               "description": description,
                "code": script,
                "logo": logo,
                "sprites": Some(sprites |> Array.of_list),
@@ -70,22 +76,44 @@ let make = () => {
   switch (mode) {
   | Editing =>
     Styles.(
-      <div>
-        <div className=section> <InputFile label="gameWizard.logo" onChange={file => setLogo(_ => Some(file))} dataCy="logo" /> </div>
-        <div className=section> <TextField label="gameWizard.name" onChange={name => setName(_ => name)} dataCy="name" /> </div>
-        <div className=section>
-          <NumberField
-            label="gameWizard.playerCount"
-            value=playerCount
-            onChange={playerCount => setPlayerCount(_ => playerCount ||? defaultPlayerCount)}
-          />
+      <div className=Styles.container>
+        <div className=Styles.left>
+          <div className=section>
+            <InputFileButton label="gameWizard.addLogo" file=logo onChange={file => setLogo(_ => Some(file))} />
+          </div>
+          <div className=Styles.sectionGroup>
+            <TextField
+              label="gameWizard.name"
+              onChange={name => setName(_ => name)}
+              variant=`Outlined
+              className=Styles.input
+              dataCy="name"
+            />
+            <NumberField
+              label="gameWizard.playerCount"
+              value=playerCount
+              onChange={playerCount => setPlayerCount(_ => playerCount ||? defaultPlayerCount)}
+              variant=`Outlined
+              className=Styles.input
+            />
+          </div>
+          <div className=section>
+            <TextArea
+              label="gameWizard.description"
+              rows=5
+              onChange={description => setDescription(_ => description)}
+              dataCy="description"
+            />
+          </div>
+          <div className={j|$section $scriptEditor|j}>
+            <CodeEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
+          </div>
+          <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
         </div>
-        <div className=section> <Button label="gameWizard.createGame" onClick={_ => createGame()} dataCy="create" /> </div>
-        <div className={j|$section $scriptEditor|j}>
-          <CodeEditor value=script onChange={script => setScript(_ => script)} dataCy="code" />
-        </div>
-        <div className=section>
-          <SpriteList notUploadedSprites=sprites onNotUploadedSpritesChange={sprites => setSprites(_ => sprites)} />
+        <div className=Styles.right>
+          <div className=section>
+            <SpriteList notUploadedSprites=sprites onNotUploadedSpritesChange={sprites => setSprites(_ => sprites)} />
+          </div>
         </div>
       </div>
     )

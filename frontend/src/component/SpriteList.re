@@ -13,10 +13,17 @@ type notUploadedSprite = {
 module Styles = {
   open Css;
 
-  let section = style([margin2(~v=20 |> px, ~h=10 |> px)]);
+  let section = style([margin2(~v=20 |> px, ~h=(-16) |> px)]);
+  let spriteElement = style([display(`flex), alignItems(`center), children([margin2(~v=0 |> px, ~h=20 |> px)])]);
 };
 
 module AddSpriteDialog = {
+  module Styles = {
+    open Css;
+
+    let container = style([padding(20 |> px), children([margin2(~v=20 |> px, ~h=0 |> px), width(100.0 |> pct)])]);
+  };
+
   type form = {
     name: string,
     file: option(File.t),
@@ -39,9 +46,11 @@ module AddSpriteDialog = {
 
     <div>
       <Dialog _open onClose={() => onClose(None)}>
-        <TextField onChange=setName />
-        <InputFile onChange=setFile />
-        <Button label="common.add" disabled={isFormInvalid()} onClick={() => onClose(getSprite())} />
+        <div className=Styles.container>
+          <TextField label="spriteList.addSpriteDialog.name" onChange=setName variant=`Outlined />
+          <InputFile onChange=setFile />
+          <Button label="common.add" disabled={isFormInvalid()} onClick={() => onClose(getSprite())} />
+        </div>
       </Dialog>
     </div>;
   };
@@ -93,19 +102,19 @@ let make =
         (
           uploadedSprites
           |> List.map(({name, fileId}) =>
-               <div key=name>
+               <div key=name className=Styles.spriteElement>
                  <span> {ReasonReact.string(name)} </span>
-                 <Button label="common.remove" onClick={() => removeUploaded(name)} />
                  <img src={Environment.storageUrl ++ fileId} width height />
+                 <Button label="common.remove" onClick={() => removeUploaded(name)} />
                </div>
              )
         )
         @ (
           notUploadedSprites
           |> List.map(({name, file}) =>
-               <div key=name>
-                 <ImagePreview image=file width height />
+               <div key=name className=Styles.spriteElement>
                  <div> {ReasonReact.string(name)} </div>
+                 <ImagePreview image=file width height />
                  <Button label="common.remove" onClick={() => removeNotUploaded(notUploadedSprites, name)} />
                </div>
              )

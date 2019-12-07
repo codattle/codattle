@@ -2,7 +2,15 @@ open OptionUtils.Infix;
 open Rationale.Option.Infix;
 
 [@react.component]
-let make = (~label: option(string)=?, ~value: option(int)=?, ~onChange: option(option(int) => unit)=?, ~dataCy: option(string)=?) => {
+let make =
+    (
+      ~label: option(string)=?,
+      ~value: option(int)=?,
+      ~onChange: option(option(int) => unit)=?,
+      ~variant=?,
+      ~className: option(string)=?,
+      ~dataCy: option(string)=?,
+    ) => {
   let (displayValue, setDisplayValue) = React.useState(() => value <$> string_of_int ||? "");
 
   ReasonReact.element(
@@ -18,6 +26,8 @@ let make = (~label: option(string)=?, ~value: option(int)=?, ~onChange: option(o
         },
       ~onBlur=_ => setDisplayValue(_ => value <$> string_of_int ||? ""),
       ~inputProps={"min": 0, "step": 1},
+      ~variant?,
+      ~className?,
       [||],
     ),
   )

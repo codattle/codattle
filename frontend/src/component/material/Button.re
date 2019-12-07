@@ -11,7 +11,17 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~onClick=?, ~label=?, ~variant=`Contained, ~disabled=false, ~dataCy=?, ~disableRipple: bool=?, ~children=?) =>
+let make =
+    (
+      ~onClick=?,
+      ~label=?,
+      ~variant=`Contained,
+      ~disabled=false,
+      ~dataCy=?,
+      ~disableRipple: bool=?,
+      ~component: option(string)=?,
+      ~children=?,
+    ) =>
   ReasonReact.element(
     MaterialUi.Button.make(
       ~disabled,
@@ -19,6 +29,7 @@ let make = (~onClick=?, ~label=?, ~variant=`Contained, ~disabled=false, ~dataCy=
       ~variant,
       ~classes=[Label(Styles.labelStyle), Contained(Styles.containedStyle)],
       ~disableRipple,
+      ~component=?component->Belt.Option.map(component => `String(component)),
       label <$> (label => <Translation id=label />) |? children ||? <> </>,
     ),
   )
