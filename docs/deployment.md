@@ -42,6 +42,5 @@
 
    ```bash
    cd $PROJECT_DIR/codattle/deployment/helm-charts
-   helm init
-   helm install --namespace codattle --name codattle ./codattle
+   helm install codattle ./codattle --namespace codattle
    ```
