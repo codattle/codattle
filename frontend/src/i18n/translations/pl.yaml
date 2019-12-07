@@ -55,7 +55,6 @@ authorization:
   action:
     login: Zaloguj się
     logout: Wyloguj się
-  notLoggedIn: Nie jesteś zalogowany
 matchList:
   winner: Zwycięzca
   player: Gracz

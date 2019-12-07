@@ -19,6 +19,7 @@ module Styles = {
       color(white),
       textShadows([textShadow(~blur=2 |> px, black)]),
       flexGrow(1.0),
+      textAlign(`center),
     ]);
   let titleHeader = style([fontSize(80 |> px)]);
 };
