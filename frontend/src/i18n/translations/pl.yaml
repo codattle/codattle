@@ -34,6 +34,7 @@ navigationBar:
   createGame: Stwórz grę
   games: Gry
   profile: Profil
+  tutorial: Tutorial
 searchList:
   name: Nazwa
   nothingFound: Nic nie znaleziono
@@ -71,3 +72,15 @@ tournamentDetails:
 tournamentJoin:
   joinToTournament: Dołącz do turnieju
   joiningToTournament: Dołączanie do turnieju
+tutorial:
+  howToMakeGame:
+    header: Jak tworzyć grę ?
+    description: "Tworzenie gier możliwe jest wyłączenie w języku JavaScript, można jednak skorzystać z innych języków, które są kompilowane do JavaScript, np. TypeScript, Dart. Nie narzucono sztywnego interfejsu, który musi spełniać kod gry, aby ułatwić tworzenie różnorodnych rozwiązań. Do dyspozycji twórców udostępniono zbiór funkcji, które mogę zostać wykorzystane w dowolnym miejscu ich kodu, umożliwiając komunikację z platformą i kodem graczy."
+    functions:
+      description: "Funkcję dostępne dla twórców gier:"
+      fn1:
+        key: "countOfPlayers() : number"
+        value: "Zwraca ilość graczy uczestniczących w aktualnej rozgrywce"
+      fn2:
+        key: "runPlayerScript(playerIndex: any, gameState: any) : any"
+        value: "Zwraca obiekt odpowiedzi wygenerowany przez kod gracza o wskazanym indeksie, dodatkowo umożliwia przekazanie mu dowolnego obiektu stanu, który nie musi być identyczny dla każdego gracza. Obiekt gameState, powinien zostać szczegółowo opisany w sposób zrozumiały dla osób, które będą korzystać z gry"

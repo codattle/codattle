@@ -30,6 +30,7 @@ let make = (~changeLanguage=?) => {
     {name: "navigationBar.createGame", href: "/new-game"},
     {name: "navigationBar.games", href: "/games"},
     {name: "navigationBar.profile", href: "/profile"},
+    {name: "navigationBar.tutorial", href: "/tutorial"},
   ];
 
   let authButton =

@@ -6,6 +6,7 @@ let make = () => {
   keycloak |> Keycloak.authenticated
     ? switch (url.path) {
       | [] => <HomePage />
+      | ["tutorial"] => <Tutorial />
       | ["dashboard"] => <Dashboard />
       | ["profile"] => <UserProfile />
       | ["new-game"] => <GameWizard />
