@@ -3,9 +3,14 @@ open OptionUtils.Infix;
 
 module Styles = {
   open Css;
+  open Style.Color;
 
   let tabs = style([marginLeft(10 |> px), marginRight(10 |> px)]);
-  let toolbarButton = style([marginLeft(auto), marginRight((-11) |> px)]);
+  let toolbarButton = style([marginLeft(20 |> px), marginRight((-11) |> px)]);
+  let tabsIndicator = style([backgroundColor(primaryColor) |> important, height(4 |> px) |> important]);
+  let tabRoot = style([minWidth(0 |> px) |> important, paddingLeft(30 |> px) |> important, paddingRight(30 |> px) |> important]);
+  let tabWrapper = style([fontSize(13 |> px), fontWeight(bold)]);
+  let languageSelector = style([marginLeft(auto)]);
 };
 
 type navigation = {
@@ -34,20 +39,31 @@ let make = (~changeLanguage=?) => {
 
   <AppBar position=`Static>
     <Toolbar>
-      <Button onClick={() => ReasonReactRouter.push("/")} variant=`Text> {ReasonReact.string("Codattle")} </Button>
+      <Button onClick={() => ReasonReactRouter.push("/")} variant=`Text disableRipple=true> {ReasonReact.string("Codattle")} </Button>
       <Tabs
         value={navigation |> containsWith(({href}) => href === url) ? Tabs.selected(url) : Tabs.unselected}
         onChange={(_, href) => ReasonReactRouter.push(href)}
-        className=Styles.tabs>
-        {navigation |> Utils.componentList(({name, href}) => <Tab value=href label={<Translation id=name />} />)}
+        className=Styles.tabs
+        classes={Js.Dict.fromList([("indicator", Styles.tabsIndicator)])}>
+        {navigation
+         |> Utils.componentList(({name, href}) =>
+              <Tab
+                value=href
+                label={<Translation id=name />}
+                classes={Js.Dict.fromList([("root", Styles.tabRoot), ("wrapper", Styles.tabWrapper)])}
+                disableRipple=true
+              />
+            )}
       </Tabs>
-      <Select
-        value=languages
-        nameMapper={({name}) => React.string(name |> Language.languageNameToJs)}
-        onChange={({selected}) => selected |?> changeLanguage}
-        variant=`Negative
-      />
-      <span className=Styles.toolbarButton> authButton </span>
+      <div className=Styles.languageSelector>
+        <Select
+          value=languages
+          nameMapper={({name}) => React.string(name |> Language.languageNameToJs)}
+          onChange={({selected}) => selected |?> changeLanguage}
+          variant=`Negative
+        />
+      </div>
+      <div className=Styles.toolbarButton> authButton </div>
     </Toolbar>
   </AppBar>;
 };

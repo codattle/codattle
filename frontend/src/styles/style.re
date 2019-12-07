@@ -4,5 +4,5 @@ module Color = {
   let darken = (ratio, color) => Color.(color |> fromHex |> darken(ratio) |> toHex);
 
   let textColor = white;
-  let primaryColor = hex("2ADB82");
+  let primaryColor = hex("1BA94C");
 };

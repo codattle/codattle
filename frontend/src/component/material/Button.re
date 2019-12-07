@@ -11,13 +11,14 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~onClick=?, ~label=?, ~variant=`Contained, ~disabled=false, ~dataCy=?, ~children=?) =>
+let make = (~onClick=?, ~label=?, ~variant=`Contained, ~disabled=false, ~dataCy=?, ~disableRipple: bool=?, ~children=?) =>
   ReasonReact.element(
     MaterialUi.Button.make(
       ~disabled,
       ~onClick=_ => () |?> onClick,
       ~variant,
       ~classes=[Label(Styles.labelStyle), Contained(Styles.containedStyle)],
+      ~disableRipple,
       label <$> (label => <Translation id=label />) |? children ||? <> </>,
     ),
   )
