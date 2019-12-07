@@ -40,6 +40,8 @@ searchList:
 gameDetails:
   myScripts: Moje skrypty
   scriptTesting: Testowanie skrytptów
+  newTournament: Nowy turniej
+  tournaments: Turnieje
 myScripts:
   noScripts: Nie masz żadnych skryptów do tej gry
 scriptDetails:
@@ -57,3 +59,15 @@ authorization:
 matchList:
   winner: Zwycięzca
   player: Gracz
+tournamentWizard:
+  createTournament: Stwórz turniej
+  creating: Tworzenie...
+  errorWhileCreatingTournament: Błąd podczas tworzenia gry :(
+tournamentList:
+  noTournaments: Brak turniejów
+tournamentDetails:
+  joinToTournament: Dołącz do turnieju
+  detailsOfTournament: Szczegóły turnieju
+tournamentJoin:
+  joinToTournament: Dołącz do turnieju
+  joiningToTournament: Dołączanie do turnieju

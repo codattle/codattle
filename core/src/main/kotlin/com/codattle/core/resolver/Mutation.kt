@@ -5,13 +5,16 @@ import com.codattle.core.model.*
 import com.codattle.core.service.GameService
 import com.codattle.core.service.MatchService
 import com.codattle.core.service.ScriptService
+import com.codattle.core.service.TournamentService
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import javax.inject.Singleton
 
 @Singleton
 class Mutation(private val gameService: GameService,
                private val matchService: MatchService,
-               private val scriptService: ScriptService) : GraphQLMutationResolver {
+               private val scriptService: ScriptService,
+               private val tournamentService: TournamentService
+) : GraphQLMutationResolver {
 
     data class NewGame(
             val name: String,
@@ -77,6 +80,15 @@ class Mutation(private val gameService: GameService,
 
     fun provideMatchWinner(matchId: Id<Match>, winner: Int): Boolean {
         matchService.provideMatchWinner(matchId, winner)
+        return true
+    }
+
+    fun createTournament(name: String, gameId: Id<Game>, maxScriptCount: Int): Tournament {
+        return tournamentService.createTournament(name, gameId, maxScriptCount)
+    }
+
+    fun joinTournament(tournamentId: Id<Tournament>, scriptId: Id<Script>): Boolean {
+        tournamentService.joinTournament(tournamentId, scriptId)
         return true
     }
 }

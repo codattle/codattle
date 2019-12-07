@@ -40,4 +40,7 @@ class GameDao(private val daoUtils: DaoUtils) {
         daoUtils.findAndModify(gameId, pullByFilter(Game::sprites, Sprite::name eq spriteName));
     }
 
+    fun doesGameAllowPlayerCount(gameId: Id<Game>, playerCount: Int): Boolean {
+        return daoUtils.exists(gameId, Game::allowedPlayerCounts contains playerCount)
+    }
 }

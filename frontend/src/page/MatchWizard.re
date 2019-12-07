@@ -19,7 +19,7 @@ let make = (~gameId) => {
   let (mode, setMode) = React.useState(() => Editing);
 
   let createMatch = () => {
-    setMode(_ => Editing);
+    setMode(_ => Creating);
     GraphqlService.executeQuery(CreateMatchMutation.make(~name, ~gameId, ()))
     |> Repromise.wait(result =>
          switch (result) {
