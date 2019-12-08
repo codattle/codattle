@@ -45,6 +45,9 @@ gameDetails:
   scriptTesting: Script testing
   newTournament: New tournament
   tournaments: Tournaments
+  newMatch: New match
+  matches: Matches
+  sprites: Sprites
 myScripts:
   noScripts: You have not any scripts for this game
 scriptDetails:

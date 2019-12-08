@@ -26,7 +26,7 @@ scriptWizard:
 matchFrame:
   errorWhileParsingFrame: Błąd podczas parsowania ramki :(
 spriteList:
-  addSprite: Dodaj sprite
+  addSprite: Dodaj grafikę
   addSpriteDialog:
     name: Name
 ratingForm:
@@ -45,6 +45,9 @@ gameDetails:
   scriptTesting: Testowanie skrytptów
   newTournament: Nowy turniej
   tournaments: Turnieje
+  newMatch: Nowy mecz
+  matches: Mecze
+  sprites: Grafiki
 myScripts:
   noScripts: Nie masz żadnych skryptów do tej gry
 scriptDetails:

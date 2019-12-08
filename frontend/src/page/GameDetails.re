@@ -13,6 +13,8 @@ type game = {
   logo: option(string),
   sprites: list(SpriteList.uploadedSprite),
   ratings: list(rating),
+  description: I18nText.t,
+  code: string,
 };
 
 module GetGameQuery = [%graphql
@@ -21,6 +23,10 @@ module GetGameQuery = [%graphql
     game(gameId: $gameId) {
       id
       name
+      description {
+        language,
+        content
+      }
       logo {
         id
       }
@@ -30,6 +36,7 @@ module GetGameQuery = [%graphql
           id
         }
       }
+      code
       ratings {
         author {
           username
@@ -64,6 +71,26 @@ module RemoveSpriteFromGameMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let section = style([display(`flex), alignItems(`center)]);
+  let gameTitle = style([fontSize(40 |> px), fontWeight(`bold)]);
+  let logo = style([marginRight(20 |> px)]);
+  let actionMenu =
+    style([
+      marginTop(20 |> px),
+      marginBottom(20 |> px),
+      marginLeft((-10) |> px),
+      children([margin2(~v=0 |> px, ~h=10 |> px) |> important]),
+    ]);
+  let ratings = style([marginTop(40 |> px), marginBottom(40 |> px)]);
+  let code = style([height(400 |> px), marginTop(20 |> px), marginBottom(20 |> px)]);
+  let panel = style([marginTop(20 |> px), marginBottom(20 |> px)]);
+  let ratingAuthor = style([fontSize(16 |> px), fontWeight(`bold), marginBottom(5 |> px)]);
+};
+
 let mapRating = rating => {
   author: rating##author##username,
   ratingValue: rating##value |> Json.Decode.int,
@@ -80,6 +107,8 @@ let make = (~gameId) => {
         logo: data##game##logo <$> (logo => logo##id),
         sprites: data##game##sprites |> ArrayUtils.mapToList(sprite => {name: sprite##name, SpriteList.fileId: sprite##image##id}),
         ratings: data##game##ratings |> ArrayUtils.mapToList(mapRating),
+        description: data##game##description |> I18nText.fromJs,
+        code: data##game##code,
       }
     );
 
@@ -109,34 +138,41 @@ let make = (~gameId) => {
          );
     };
     let existsCurrentUserRating = game.ratings |> Rationale.RList.any(rating => rating.author === ProfileService.username);
-    let logo = game.logo->Belt.Option.mapWithDefault(<> </>, logo => <img src={Environment.storageUrl ++ logo} width="64" height="64" />);
+    let logo =
+      game.logo
+      ->Belt.Option.mapWithDefault(<> </>, logo =>
+          <img className=Styles.logo src={Environment.storageUrl ++ logo} width="64" height="64" />
+        );
     let ratings =
       game.ratings
       |> Utils.componentList(rating => {
-           let author = <span> {ReasonReact.string(rating.author)} </span>;
+           let author = <div className=Styles.ratingAuthor> {ReasonReact.string(rating.author)} </div>;
            let ratingValue = <Rating initialValue={rating.ratingValue} readOnly=true />;
-           let description = rating.description <$> ReasonReact.string ||? <> </>;
+           let description = <div> {rating.description <$> ReasonReact.string ||? <> </>} </div>;
            <div key={rating.author}> author ratingValue description </div>;
          });
-    <div>
-      logo
-      <span> {ReasonReact.string("Details of game with id: " ++ game.id)} </span>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")}> {ReasonReact.string("New match")} </button>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-tournament")}> <Translation id="gameDetails.newTournament"/> </button>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/tournaments")}> <Translation id="gameDetails.tournaments"/> </button>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")}> {ReasonReact.string("See matches")} </button>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")}>
-        <Translation id="gameDetails.myScripts" />
-      </button>
-      <button onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/script-testing")}>
-        <Translation id="gameDetails.scriptTesting" />
-      </button>
-      ratings
-      <SpriteList
-        uploadedSprites={game.sprites}
-        onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
-        canAdd=false
-      />
+    <div className=Styles.container>
+      <div className=Styles.section> logo <div className=Styles.gameTitle> {ReasonReact.string(game.name)} </div> </div>
+      <div className=Styles.actionMenu>
+        <Button label="gameDetails.newMatch" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-match")} />
+        <Button label="gameDetails.newTournament" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/new-tournament")} />
+        <Button label="gameDetails.tournaments" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/tournaments")} />
+        <Button label="gameDetails.matches" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/matches")} />
+        <Button label="gameDetails.myScripts" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/my-scripts")} />
+        <Button label="gameDetails.scriptTesting" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/script-testing")} />
+      </div>
+      <div className=Styles.panel> <GameDescription description={game.description} /> </div>
+      <div className=Styles.panel>
+        <ExpansionPanel header="gameDetails.sprites">
+          <SpriteList
+            uploadedSprites={game.sprites}
+            onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
+            canAdd=false
+          />
+        </ExpansionPanel>
+      </div>
+      <div className=Styles.code> <CodeEditor value={game.code} /> </div>
+      <div className=Styles.ratings> ratings </div>
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
     </div>;
   });
