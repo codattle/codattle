@@ -58,6 +58,7 @@ scriptTesting:
   newScript: Nowy skrypt
   test: Testuj
   refresh: Odśwież
+  chooseScriptsToTest: Wybierz skrypty to testu
 authorization:
   action:
     login: Zaloguj się

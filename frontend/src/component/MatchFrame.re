@@ -97,6 +97,12 @@ type state =
   | Loaded(unit => React.element)
   | Failure;
 
+module Styles = {
+  open Css;
+
+  let container = style([boxShadow(~blur=2 |> px, `hex("4A4A4A"))]);
+};
+
 [@react.component]
 let make = (~frame, ~context) => {
   let (state, setState) = React.useState(() => NotLoaded);
@@ -127,7 +133,7 @@ let make = (~frame, ~context) => {
   <div>
     {switch (state) {
      | NotLoaded => <> </>
-     | Loaded(frameElementGenerator) => frameElementGenerator()
+     | Loaded(frameElementGenerator) => <div className=Styles.container> {frameElementGenerator()} </div>
      | Failure => <Translation id="matchFrame.errorWhileParsingFrame" />
      }}
   </div>;

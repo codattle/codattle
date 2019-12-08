@@ -58,6 +58,7 @@ scriptTesting:
   newScript: New script
   test: Test
   refresh: Refresh
+  chooseScriptsToTest: Choose scripts to test
 authorization:
   action:
     login: login

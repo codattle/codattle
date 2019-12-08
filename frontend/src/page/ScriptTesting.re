@@ -120,6 +120,17 @@ module CreateInstantMatchMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let actionMenu = style([display(`flex), marginTop(20 |> px), marginBottom(20 |> px), children([marginRight(20 |> px)])]);
+  let section = style([marginTop(20 |> px), marginBottom(20 |> px)]);
+  let scriptSelectors = style([display(`flex), margin4(~top=20 |> px, ~bottom=20 |> px, ~left=(-10) |> px, ~right=0 |> px)]);
+  let scriptSelector = style([margin2(~v=0 |> px, ~h=10 |> px)]);
+  let header = style([fontSize(16 |> px), fontWeight(`bold), marginTop(40 |> px)]);
+};
+
 let scriptNameMapper = ({index, code, newCode}: script): React.element =>
   React.string("#" ++ string_of_int(index) ++ (code === newCode ? "" : "*"));
 
@@ -276,12 +287,14 @@ let make = (~gameId: string) => {
       <$> (script => <CodeEditor value={script.newCode} onChange={code => send(SetSelectedScriptCode(code))} />)
       ||? <> </>;
     let playerSelectors =
-      players
-      |> Utils.componentListWithIndex((i, player) =>
-           <div key={string_of_int(i)}>
-             <Select value=player nameMapper=scriptNameMapper onChange={newPlayer => send(SelectPlayer(newPlayer, i))} />
-           </div>
-         );
+      <div className=Styles.scriptSelectors>
+        {players
+         |> Utils.componentListWithIndex((i, player) =>
+              <div key={string_of_int(i)} className=Styles.scriptSelector>
+                <Select value=player nameMapper=scriptNameMapper onChange={newPlayer => send(SelectPlayer(newPlayer, i))} />
+              </div>
+            )}
+      </div>;
     let result =
       matchResult
       <$> (
@@ -291,17 +304,24 @@ let make = (~gameId: string) => {
     let refreshResultButton =
       Rationale.Option.isSome(matchId) ? <Button label="scriptTesting.refresh" onClick=refreshMatchResult /> : <> </>;
 
-    <div>
+    <div className=Styles.container>
       <GameDescription description=gameDescription />
-      <div> <Button label="scriptTesting.newScript" onClick=addNewScript /> </div>
-      <div> <Select value=scripts nameMapper=scriptNameMapper onChange={scripts => send(SelectScript(scripts))} /> </div>
-      codeEditor
-      <div>
-        <Button label="scriptTesting.save" disabled={!isSelectedScriptCodeChanged || scriptSaving} onClick=saveSelectedScriptCode />
+      <div className=Styles.actionMenu>
+        <div> <Button label="scriptTesting.newScript" onClick=addNewScript /> </div>
+        <div>
+          <Button label="scriptTesting.save" disabled={!isSelectedScriptCodeChanged || scriptSaving} onClick=saveSelectedScriptCode />
+        </div>
       </div>
+      <div className=Styles.section>
+        <Select value=scripts nameMapper=scriptNameMapper onChange={scripts => send(SelectScript(scripts))} />
+      </div>
+      codeEditor
+      <div className=Styles.header> <Translation id="scriptTesting.chooseScriptsToTest" /> </div>
       <div> playerSelectors </div>
-      <div> <Button label="scriptTesting.test" disabled={!canCreateInstantMatch || matchCreating} onClick=createInstantMatch /> </div>
-      refreshResultButton
+      <div className=Styles.actionMenu>
+        <div> <Button label="scriptTesting.test" disabled={!canCreateInstantMatch || matchCreating} onClick=createInstantMatch /> </div>
+        refreshResultButton
+      </div>
       result
     </div>;
   });

@@ -14,6 +14,13 @@ let parseResultFrames = (frames: array(Js.t({..}))): option(Selector.Required.t(
   |> Selector.Required.fromListWithFirstSelected;
 };
 
+module Styles = {
+  open Css;
+
+  let actionMenu = style([display(`flex), marginTop(20 |> px), children([marginRight(20 |> px)])]);
+  let section = style([marginTop(20 |> px), marginBottom(20 |> px)]);
+};
+
 [@react.component]
 let make =
     (
@@ -23,18 +30,28 @@ let make =
       ~onChange: Selector.Required.t(frame) => unit,
     ) => {
   <div>
-    <WinnerComponent winner />
+    <div className=Styles.section> <WinnerComponent winner /> </div>
     {frames
      <$> (
        frames =>
          <>
            <MatchFrame frame={frames.selected.content} context />
-           <Button
-             label="common.previous"
-             disabled={!Selector.canPrevious(frames)}
-             onClick={() => onChange(Selector.Required.previous(frames))}
-           />
-           <Button label="common.next" disabled={!Selector.canNext(frames)} onClick={() => onChange(Selector.Required.next(frames))} />
+           <div className=Styles.actionMenu>
+             <div>
+               <Button
+                 label="common.previous"
+                 disabled={!Selector.canPrevious(frames)}
+                 onClick={() => onChange(Selector.Required.previous(frames))}
+               />
+             </div>
+             <div>
+               <Button
+                 label="common.next"
+                 disabled={!Selector.canNext(frames)}
+                 onClick={() => onChange(Selector.Required.next(frames))}
+               />
+             </div>
+           </div>
          </>
      )
      ||? <> </>}
