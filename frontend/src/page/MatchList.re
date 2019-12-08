@@ -28,6 +28,27 @@ module GetMatchesQuery = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+  open Style.Color;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let refreshButton = style([marginBottom(20 |> px)]);
+  let item =
+    style([
+      display(`flex),
+      alignItems(`center),
+      height(30 |> px),
+      marginTop(10 |> px),
+      marginBottom(10 |> px),
+      padding(10 |> px),
+      backgroundColor(lightgray),
+      cursor(`pointer),
+      hover([backgroundColor(lightgray |> darken(0.2))]),
+    ]);
+  let itemTitle = style([fontWeight(`bold), overflow(`hidden), whiteSpace(`nowrap), textOverflow(`ellipsis)]);
+};
+
 [@react.component]
 let make = (~gameId) => {
   let (version, refresh) = Utils.useRefresh();
@@ -60,17 +81,20 @@ let make = (~gameId) => {
   queryResult->Utils.displayResource(({matches, maxCountOfScripts}) => {
     let matchList =
       if (List.length(matches) == 0) {
-        <span> {ReasonReact.string("No matches")} </span>;
+        <Translation id="matchList.noMatches" />;
       } else {
-        <ul>
+        <div>
           {matches
            |> Utils.componentList(match =>
-                <li key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
-                  {getMatchDescription(~maxCountOfScripts, ~match)}
-                </li>
+                <div className=Styles.item key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
+                  <span className=Styles.itemTitle> {getMatchDescription(~maxCountOfScripts, ~match)} </span>
+                </div>
               )}
-        </ul>;
+        </div>;
       };
-    <div> <button onClick={_ => refresh()}> <Translation id="common.refresh" /> </button> matchList </div>;
+    <div className=Styles.container>
+      <div className=Styles.refreshButton> <Button label="common.refresh" onClick={_ => refresh()} /> </div>
+      matchList
+    </div>;
   });
 };

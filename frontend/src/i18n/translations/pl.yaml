@@ -64,6 +64,7 @@ authorization:
 matchList:
   winner: Zwycięzca
   player: Gracz
+  noMatches: Brak meczów
 tournamentWizard:
   createTournament: Stwórz turniej
   creating: Tworzenie...

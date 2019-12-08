@@ -64,6 +64,7 @@ authorization:
 matchList:
   winner: Winner
   player: Player
+  noMatches: No matches
 tournamentWizard:
   playerCount: Player count
   createTournament: Create tournament
