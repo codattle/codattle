@@ -1,24 +1,22 @@
 module Styles = {
   open Css;
 
+  let container = style([display(`flex), padding(30 |> px)]);
   let lstinline = style([fontStyle(`italic), fontWeight(`bold)]);
 };
 
-let gameTransaction = (id: string) => <Translation id={"tutorial.howToMakeGame." ++ id} />;
+let gameTransaction = (id: string, ~className) => <Translation className id={"tutorial.howToMakeGame." ++ id} />;
 
 [@react.component]
 let make = () =>
-  <div>
+  <div clasName=Styles.container>
     <h1> {gameTransaction("header")} </h1>
-    <span> {gameTransaction("description")} </span>
+    {gameTransaction("description")}
     <br />
     <br />
-    <span> {gameTransaction("functions.description")} </span>
+    {gameTransaction("functions.description")}
     <ul>
-      <li>
-        <span className=Styles.lstinline> {ReasonReact.string("countOfPlayers() : number")} </span>
-        <span> {ReasonReact.string("- Zwraca ilość graczy uczestniczących w aktualnej rozgrywce")} </span>
-      </li>
+      <li> {gameTransaction("functions.f1.key", ~className=Styles.lstinline)} {gameTransaction("functions.f2.value")} </li>
       <li>
         <span className=Styles.lstinline> {ReasonReact.string("runPlayerScript(playerIndex: any, gameState: any) : any")} </span>
         <span>

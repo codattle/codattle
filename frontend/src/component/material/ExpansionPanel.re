@@ -20,7 +20,7 @@ let make = (~header, ~children) => {
         ReasonReact.element(
           MaterialUi.ExpansionPanelDetails.make(
             ~className=Styles.contentStyle,
-            ReasonReact.element(MaterialUi.Typography.make(children)),
+            children,
           ),
         ),
       |],
