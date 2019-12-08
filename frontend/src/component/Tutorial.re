@@ -1,86 +1,49 @@
 module Styles = {
   open Css;
 
-  let container = style([display(`flex), padding(30 |> px)]);
+  let container = style([padding(30 |> px), maxWidth(800 |> px)]);
   let lstinline = style([fontStyle(`italic), fontWeight(`bold)]);
 };
 
-let gameTransaction = (id: string, ~className) => <Translation className id={"tutorial.howToMakeGame." ++ id} />;
+let gameTransactionKey = (id: string) => "tutorial.howToMakeGame." ++ id;
+
+let pointOfList = (ids: list(string)) => {
+  let key = (value: string) =>
+    gameTransactionKey((ids |> List.fold_left((text, id) => text ++ "fn" ++ id ++ ".", "functions.")) ++ value);
+  <span>
+    <Translation className=Styles.lstinline id={key("key")} />
+    <span> {ReasonReact.string(" - ")} </span>
+    <Translation id={key("value")} />
+  </span>;
+};
 
 [@react.component]
 let make = () =>
-  <div clasName=Styles.container>
-    <h1> {gameTransaction("header")} </h1>
-    {gameTransaction("description")}
+  <div className=Styles.container>
+    <h1> <Translation id={gameTransactionKey("header")} /> </h1>
+    <Translation id={gameTransactionKey("description")} />
     <br />
     <br />
-    {gameTransaction("functions.description")}
+    <Translation id={gameTransactionKey("functions.description")} />
     <ul>
-      <li> {gameTransaction("functions.f1.key", ~className=Styles.lstinline)} {gameTransaction("functions.f2.value")} </li>
+      <li> {pointOfList(["1"])} </li>
+      <li> {pointOfList(["2"])} </li>
+      <li> {pointOfList(["3"])} </li>
       <li>
-        <span className=Styles.lstinline> {ReasonReact.string("runPlayerScript(playerIndex: any, gameState: any) : any")} </span>
-        <span>
-          {ReasonReact.string(
-             "- Zwraca obiekt odpowiedzi wygenerowany przez kod gracza o wskazanym indeksie, dodatkowo umożliwia przekazanie mu dowolnego obiektu stanu, który nie musi być identyczny dla każdego gracza. Obiekt \lstinline|gameState|, powinien zostać szczegółowo opisany w sposób zrozumiały dla osób, które będą korzystać z gry",
-           )}
-        </span>
-      </li>
-      <li>
-        <span className=Styles.lstinline> {ReasonReact.string("end(newWinderIndex: any): void")} </span>
-        <span>
-          {ReasonReact.string(
-             "Kończy rozgrywkę, wybiera gracza o wskazanym indeksie jako zwycięzcę gry. Po wywołaniu tej funkcji, kod gry powinien zostać zakończony.",
-           )}
-        </span>
-      </li>
-      <li>
-        <span className=Styles.lstinline> {ReasonReact.string("emitFrame(frame: any) : any")} </span>
-        <span>
-          {ReasonReact.string(
-             "- Zapisuje pojedynczą ramkę w formacie tekstowym lub graficznym, która po zakończeniu rozgrywki będzie możliwa do wyświetlania przez uczestników. Jako parametr należy podać obiekt zawierający następującego pola:",
-           )}
-        </span>
+        {pointOfList(["4"])}
         <ul>
+          <li> {pointOfList(["4", "1"])} </li>
+          <li> {pointOfList(["4", "2"])} </li>
+          <li> {pointOfList(["4", "3"])} </li>
+          <li> {pointOfList(["4", "4"])} </li>
           <li>
-            <span className=Styles.lstinline> {ReasonReact.string("mode")} </span>
-            <span> {ReasonReact.string("Rodzaj ramki („text” lub „2d”)")} </span>
-          </li>
-          <li>
-            <span className=Styles.lstinline> {ReasonReact.string("output")} </span>
-            <span> {ReasonReact.string("Tylko w przypadku ramki typu „text”, pole zawiera tekst do wyświetlenia")} </span>
-          </li>
-          <li>
-            <span className=Styles.lstinline> {ReasonReact.string("width")} </span>
-            <span> {ReasonReact.string("Tylko w przypadku ramki typu „2d”, pole zawiera szerokość grafiki")} </span>
-          </li>
-          <li>
-            <span className=Styles.lstinline> {ReasonReact.string("height")} </span>
-            <span> {ReasonReact.string("Tylko w przypadku rami typu „2d”, pole zawiera wysokość grafiki")} </span>
-          </li>
-          <li>
-            <span className=Styles.lstinline> {ReasonReact.string("objects")} </span>
-            <span> {ReasonReact.string("Tylko w przypadku ramki typu „2d”")} </span>
+            {pointOfList(["4", "5"])}
             <ul>
-              <li>
-                <span className=Styles.lstinline> {ReasonReact.string("x")} </span>
-                <span> {ReasonReact.string("Położenie „x” obiektu")} </span>
-              </li>
-              <li>
-                <span className=Styles.lstinline> {ReasonReact.string("y")} </span>
-                <span> {ReasonReact.string("Położenie „y” obiektu")} </span>
-              </li>
-              <li>
-                <span className=Styles.lstinline> {ReasonReact.string("width")} </span>
-                <span> {ReasonReact.string("Szerokość obrazka")} </span>
-              </li>
-              <li>
-                <span className=Styles.lstinline> {ReasonReact.string("height")} </span>
-                <span> {ReasonReact.string("Wysokość obrazka")} </span>
-              </li>
-              <li>
-                <span className=Styles.lstinline> {ReasonReact.string("sprite")} </span>
-                <span> {ReasonReact.string("Nazwa obiektu do wyświetlenia")} </span>
-              </li>
+              <li> {pointOfList(["4", "5", "1"])} </li>
+              <li> {pointOfList(["4", "5", "2"])} </li>
+              <li> {pointOfList(["4", "5", "3"])} </li>
+              <li> {pointOfList(["4", "5", "4"])} </li>
+              <li> {pointOfList(["4", "5", "5"])} </li>
             </ul>
           </li>
         </ul>
