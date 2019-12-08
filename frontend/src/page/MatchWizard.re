@@ -13,6 +13,13 @@ module CreateMatchMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px)]);
+  let createButton = style([marginTop(20 |> px)]);
+};
+
 [@react.component]
 let make = (~gameId) => {
   let (name, setName) = React.useState(() => "");
@@ -31,9 +38,9 @@ let make = (~gameId) => {
 
   switch (mode) {
   | Editing =>
-    <div>
-      <input onChange={event => setName(ReactEvent.Form.target(event)##value)} />
-      <button onClick={_ => createMatch()}> {ReasonReact.string("Create match")} </button>
+    <div className=Styles.container>
+      <TextField label="matchWizard.name" onChange={name => setName(_ => name)} variant=`Outlined />
+      <div className=Styles.createButton> <Button label="matchWizard.createMatch" onClick={_ => createMatch()} /> </div>
     </div>
   | Creating => ReasonReact.string("Creating...")
   | Failure => ReasonReact.string("Creating fail :(")

@@ -65,6 +65,10 @@ matchList:
   winner: Zwycięzca
   player: Gracz
   noMatches: Brak meczów
+matchWizard:
+  name: Nazwa
+  createMatch: Stwórz mecz
+  creating: Tworzenie...
 tournamentWizard:
   createTournament: Stwórz turniej
   creating: Tworzenie...
