@@ -79,7 +79,7 @@ tournamentJoin:
   joiningToTournament: Dołączanie do turnieju
 tutorial:
   howToMakeGame:
-    header: Jak tworzyć grę ?
+    header: Jak tworzyć grę?
     description: "Tworzenie gier możliwe jest wyłączenie w języku JavaScript, można jednak skorzystać z innych języków, które są kompilowane do JavaScript, np. TypeScript, Dart. Nie narzucono sztywnego interfejsu, który musi spełniać kod gry, aby ułatwić tworzenie różnorodnych rozwiązań. Do dyspozycji twórców udostępniono zbiór funkcji, które mogę zostać wykorzystane w dowolnym miejscu ich kodu, umożliwiając komunikację z platformą i kodem graczy."
     functions:
       description: "Funkcję dostępne dla twórców gier:"
@@ -125,3 +125,20 @@ tutorial:
           fn5: 
             key: "sprite"
             value: "Nazwa obiektu do wyświetlenia"
+  howToPlayGame:
+    header: Jak wziąć udział w grze?
+    description: "Tworzenie botów uczestniczących w grach odbywa się na takich zadach jak tworzenie gier. Kod uruchamiany jest jednak za każdym wywołaniem funkcji runPlayerScript od nowa, dlatego nie może zawierać nieskończonych pętli, a przechowywanie stanu wymaga użycia wbudowanych metod: loadState i saveState. Każdy cykl musi zostać zakończony w ściśle określonym czasie, w przeciwnym wypadku gra zakończy się niepowodzeniem."
+    functions:
+      description: "Funkcje dostępne dla graczy:"
+      fn1:
+        key: "getGameState(): any"
+        value: "Zwraca obiekt stanu gry, podany przez twórcę gry podczas wywołania funkcji runPlayerScript"
+      fn2:
+        key: "saveState(state: any): any"
+        value: "Funkcja zapisuje dowolny obiekt, który gracz chce przechować pomiędzy kolejnymi wywołanymi jego skryptu"
+      fn3:
+        key: "loadState(): any"
+        value: "Funkcja zwraca stan zapisany wcześniej przez gracza"
+      fn4:
+        key: "answer(playerAnswer: any) : an"
+        value: "Funkcja zwraca odpowiedź, która powinna być zgodna ze schematem określonym przez twórcę gry. Powinna być to ostatnia wywołana funkcja w skrypcie"
