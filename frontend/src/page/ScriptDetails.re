@@ -16,6 +16,14 @@ module UpdateScriptCodeMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let updateButton = style([marginBottom(20 |> px)]);
+  let codeEditor = style([height(600 |> px)]);
+};
+
 [@react.component]
 let make = (~scriptId) => {
   open Notifications;
@@ -39,9 +47,9 @@ let make = (~scriptId) => {
   };
 
   script->Utils.displayResource(({code}) =>
-    <div>
-      <CodeEditor value=code onChange={code => setScript(_ => {code: code})} />
-      <Button label="scriptDetails.update" onClick=updateScriptCode />
+    <div className=Styles.container>
+      <div className=Styles.updateButton> <Button label="scriptDetails.update" onClick=updateScriptCode /> </div>
+      <div className=Styles.codeEditor> <CodeEditor value=code onChange={code => setScript(_ => {code: code})} /> </div>
     </div>
   );
 };

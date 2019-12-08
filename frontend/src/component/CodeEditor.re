@@ -19,7 +19,8 @@ module AceEditor = {
 module Styles = {
   open Css;
 
-  let editorContainer = style([width(100.0 |> pct), height(100.0 |> pct), position(`relative)]);
+  let editorContainer =
+    style([width(100.0 |> pct), height(100.0 |> pct), minHeight(200 |> px), position(`relative), boxShadow(~blur=2 |> px, `hex("4A4A4A"))]);
   let editor = style([position(`absolute), top(0 |> px), right(0 |> px), bottom(0 |> px), left(0 |> px)]);
 };
 
