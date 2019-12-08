@@ -14,15 +14,24 @@ type matchResult = {
 };
 
 type match = {
+  name: string,
   game,
   result: option(matchResult),
   full: bool,
+};
+
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let matchTitle = style([fontSize(40 |> px), fontWeight(`bold), marginBottom(20 |> px)]);
 };
 
 module GetMatchQuery = [%graphql
   {|
   query($matchId: ID!) {
     match_: match(matchId: $matchId) {
+      name
       game {
         sprites {
           name
@@ -52,11 +61,13 @@ let make = (~matchId) => {
   let (match, setMatch) =
     Utils.useEditableResource(GetMatchQuery.make(~matchId, ()), [|matchId|], data =>
       {
+        name: data##match##name,
         game: {
           sprites: data##match##game##sprites |> Js.Array.map(sprite => {name: sprite##name, fileId: sprite##image##id}) |> Array.to_list,
         },
         result:
-          data##match##result->Belt.Option.map(result => {winner: result##winner, frames: result##resultFrames |> MatchResult.parseResultFrames}),
+          data##match##result
+          ->Belt.Option.map(result => {winner: result##winner, frames: result##resultFrames |> MatchResult.parseResultFrames}),
         full: data##match##scripts |> Array.length === data##match##game##maxAllowedPlayerCount,
       }
     );
@@ -65,7 +76,7 @@ let make = (~matchId) => {
     let context =
       MatchFrame.{
         fileIdBySpriteName:
-          match.game.sprites |> List.map(sprite => (sprite.name, sprite.fileId)) |> Array.of_list |> Belt.Map.String.fromArray,
+          match.game.sprites |> List.map((sprite: sprite) => (sprite.name, sprite.fileId)) |> Array.of_list |> Belt.Map.String.fromArray,
       };
 
     let result =
@@ -84,10 +95,12 @@ let make = (~matchId) => {
     let newScriptButton =
       match.full
         ? <> </>
-        : <button onClick={_ => ReasonReactRouter.push("/games/matches/" ++ matchId ++ "/new-script")}>
-            {ReasonReact.string("New script")}
-          </button>;
+        : <Button label="matchDetails.joinToMatch" onClick={_ => ReasonReactRouter.push("/games/matches/" ++ matchId ++ "/new-script")} />;
 
-    <div> <div> {ReasonReact.string("Details of match with id: " ++ matchId)} </div> result newScriptButton </div>;
+    <div className=Styles.container>
+      <div className=Styles.matchTitle> {ReasonReact.string(match.name)} </div>
+      result
+      newScriptButton
+    </div>;
   });
 };

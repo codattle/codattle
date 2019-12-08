@@ -70,6 +70,8 @@ matchWizard:
   name: Name
   createMatch: Create match
   creating: Creating...
+matchDetails:
+  joinToMatch: Join to match
 tournamentWizard:
   playerCount: Player count
   createTournament: Create tournament
@@ -101,34 +103,34 @@ tutorial:
       fn4:
         key: "emitFrame(frame: any) : any"
         value: "Zapisuje pojedynczą ramkę w formacie tekstowym lub graficznym, która po zakończeniu rozgrywki będzie możliwa do wyświetlania przez uczestników. Jako parametr należy podać obiekt zawierający następującego pola:"
-        fn1: 
+        fn1:
           key: "mode"
           value: "Rodzaj ramki („text” lub „2d”)"
-        fn2: 
+        fn2:
           key: "output"
           value: "Tylko w przypadku ramki typu „text”, pole zawiera tekst do wyświetlenia"
-        fn3: 
+        fn3:
           key: "width"
           value: "Tylko w przypadku ramki typu „2d”, pole zawiera szerokość grafiki"
-        fn4: 
+        fn4:
           key: "height"
           value: "Tylko w przypadku rami typu „2d”, pole zawiera wysokość grafiki"
-        fn5: 
+        fn5:
           key: "objects"
           value: "Tylko w przypadku ramki typu „2d”"
           fn1:
             key: "x"
             value: "Położenie „x” obiektu"
-          fn2: 
+          fn2:
             key: "y"
             value: "Położenie „y” obiektu"
-          fn3: 
+          fn3:
             key: "width"
             value: "Szerokość obrazka"
-          fn4: 
+          fn4:
             key: "height"
             value: "Wysokość obrazka"
-          fn5: 
+          fn5:
             key: "sprite"
             value: "Nazwa obiektu do wyświetlenia"
   howToPlayGame:
