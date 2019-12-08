@@ -9,8 +9,8 @@ module Styles = {
   open Css;
   open Style.Color;
 
-  let itemsContainer = style([width(200 |> px)]);
-
+  let searchPhrase = style([width(100.0 |> pct)]);
+  let searchResults = style([marginTop(20 |> px)]);
   let item =
     style([
       display(`flex),
@@ -18,12 +18,11 @@ module Styles = {
       height(30 |> px),
       marginTop(10 |> px),
       marginBottom(10 |> px),
-      padding(5 |> px),
+      padding(10 |> px),
       backgroundColor(lightgray),
       cursor(`pointer),
       hover([backgroundColor(lightgray |> darken(0.2))]),
     ]);
-
   let itemTitle = style([fontWeight(`bold), overflow(`hidden), whiteSpace(`nowrap), textOverflow(`ellipsis)]);
 };
 
@@ -39,8 +38,8 @@ let make =
   let items = Utils.useResourceWithDebounce(search(filters), [|filters|], 500, queryMapper);
 
   <div>
-    <TextField label="searchList.name" onChange={name => setFilters(_ => {name: name})} />
-    <div className=Styles.itemsContainer>
+    <TextField label="searchList.name" onChange={name => setFilters(_ => {name: name})} className=Styles.searchPhrase variant=`Outlined />
+    <div className=Styles.searchResults>
       {items->Utils.displayResource(
          Utils.componentList(item => {
            let {id, name} = displayMapper(item);
