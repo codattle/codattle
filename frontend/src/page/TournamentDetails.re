@@ -15,6 +15,13 @@ module GetTournamentQuery = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let title = style([fontSize(40 |> px), fontWeight(`bold), marginBottom(20 |> px)]);
+};
+
 [@react.component]
 let make = (~tournamentId: string) => {
   let tournament =
@@ -25,11 +32,12 @@ let make = (~tournamentId: string) => {
   tournament->Utils.displayResource(tournament => {
     let joinButton =
       tournament.canJoin
-        ? <button onClick={_ => ReasonReactRouter.push("/games/tournaments/" ++ tournamentId ++ "/join")}>
-            <Translation id="tournamentDetails.joinToTournament" />
-          </button>
+        ? <Button
+            label="tournamentDetails.joinToTournament"
+            onClick={_ => ReasonReactRouter.push("/games/tournaments/" ++ tournamentId ++ "/join")}
+          />
         : <> </>;
 
-    <div> <div> <Translation id="tournamentDetails.detailsOfTournament" /> </div> joinButton </div>;
+    <div className=Styles.container> <div className=Styles.title> {ReasonReact.string(tournament.name)} </div> joinButton </div>;
   });
 };

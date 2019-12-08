@@ -77,6 +77,7 @@ tournamentWizard:
   createTournament: Stwórz turniej
   creating: Tworzenie...
   errorWhileCreatingTournament: Błąd podczas tworzenia gry :(
+  name: Nazwa
 tournamentList:
   noTournaments: Brak turniejów
 tournamentDetails:

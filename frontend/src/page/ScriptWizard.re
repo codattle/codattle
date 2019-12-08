@@ -54,6 +54,13 @@ module JoinMatchMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let section = style([marginBottom(20 |> px)]);
+};
+
 [@react.component]
 let make = (~matchId: string) => {
   let (state, setState) =
@@ -95,10 +102,12 @@ let make = (~matchId: string) => {
            );
       };
 
-      <div>
-        <GameDescription description={game.description} />
-        <ScriptSelector value=scriptSelector onChange={scriptSelector => setState(state => {...state, scriptSelector})} />
-        <Button label="scriptWizard.joinMatch" onClick=joinMatch />
+      <div className=Styles.container>
+        <div className=Styles.section> <GameDescription description={game.description} /> </div>
+        <div className=Styles.section>
+          <ScriptSelector value=scriptSelector onChange={scriptSelector => setState(state => {...state, scriptSelector})} />
+        </div>
+        <div className=Styles.section> <Button label="scriptWizard.joinMatch" onClick=joinMatch /> </div>
       </div>;
     | Joining => <div> <Translation id="scriptWizard.joiningMatch" /> </div>
     | Failure => <div> <Translation id="common.error" /> </div>

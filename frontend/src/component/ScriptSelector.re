@@ -19,7 +19,7 @@ type selectorItem = {
 module Styles = {
   open Css;
 
-  let section = style([marginTop(15 |> px), marginBottom(15 |> px)]);
+  let codeEditor = style([marginTop(20 |> px)]);
 };
 
 [@react.component]
@@ -51,9 +51,11 @@ let make = (~value: t, ~onChange: t => unit) => {
         })
       }
     />
-    <CodeEditor
-      value={scripts.selected.script <$> (x => x.code) ||? value.newScriptCode}
-      onChange={code => onChange({newScriptCode: code, scripts: value.scripts |> Selector.Optional.unselect})}
-    />
+    <div className=Styles.codeEditor>
+      <CodeEditor
+        value={scripts.selected.script <$> (x => x.code) ||? value.newScriptCode}
+        onChange={code => onChange({newScriptCode: code, scripts: value.scripts |> Selector.Optional.unselect})}
+      />
+    </div>
   </div>;
 };

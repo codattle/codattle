@@ -17,6 +17,13 @@ module CreateTournamentMutation = [%graphql
 
 let defaultPlayerCount = 4;
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px)]);
+  let section = style([marginBottom(20 |> px)]);
+};
+
 [@react.component]
 let make = (~gameId) => {
   let (name, setName) = React.useState(() => "");
@@ -36,14 +43,21 @@ let make = (~gameId) => {
 
   switch (mode) {
   | Editing =>
-    <div>
-      <input onChange={event => setName(ReactEvent.Form.target(event)##value)} />
-      <NumberField
-        label="tournamentWizard.playerCount"
-        value=maxScriptCount
-        onChange={maxScriptCount => setMaxScriptCount(_ => maxScriptCount ||? defaultPlayerCount)}
-      />
-      <button onClick={_ => createTournament()}> <Translation id="tournamentWizard.createTournament" /> </button>
+    <div className=Styles.container>
+      <div className=Styles.section>
+        <TextField label="tournamentWizard.name" variant=`Outlined onChange={name => setName(_ => name)} />
+      </div>
+      <div className=Styles.section>
+        <NumberField
+          variant=`Outlined
+          label="tournamentWizard.playerCount"
+          value=maxScriptCount
+          onChange={maxScriptCount => setMaxScriptCount(_ => maxScriptCount ||? defaultPlayerCount)}
+        />
+      </div>
+      <div className=Styles.section>
+        <Button onClick={_ => createTournament()}> <Translation id="tournamentWizard.createTournament" /> </Button>
+      </div>
     </div>
   | Creating => <Translation id="tournamentWizard.creating" />
   | Failure => <Translation id="tournamentWizard.errorWhileCreatingTournament" />

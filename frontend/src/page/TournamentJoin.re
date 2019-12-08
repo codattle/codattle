@@ -45,6 +45,13 @@ module JoinTournamentMutation = [%graphql
 |}
 ];
 
+module Styles = {
+  open Css;
+
+  let container = style([padding(30 |> px), maxWidth(1200 |> px), margin2(~v=0 |> px, ~h=`auto)]);
+  let section = style([marginBottom(20 |> px)]);
+};
+
 [@react.component]
 let make = (~tournamentId: string) => {
   let (state, setState) =
@@ -84,8 +91,10 @@ let make = (~tournamentId: string) => {
            );
       };
 
-      <div>
-        <ScriptSelector value=scriptSelector onChange={scriptSelector => setState(state => {...state, scriptSelector})} />
+      <div className=Styles.container>
+        <div className=Styles.section>
+          <ScriptSelector value=scriptSelector onChange={scriptSelector => setState(state => {...state, scriptSelector})} />
+        </div>
         <Button label="tournamentJoin.joinToTournament" onClick=joinTournament />
       </div>;
     | Joining => <div> <Translation id="tournamentJoin.joiningToTournament" /> </div>

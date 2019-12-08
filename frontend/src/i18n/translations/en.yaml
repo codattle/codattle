@@ -78,6 +78,7 @@ tournamentWizard:
   createTournament: Create tournament
   creating: Creating...
   errorWhileCreatingTournament: Error while creating tournament :(
+  name: Name
 tournamentList:
   noTournaments: No tournaments
 tournamentDetails:
