@@ -73,6 +73,6 @@ class GameService(private val gameDao: GameDao, private val ratingDao: RatingDao
     }
 
     fun doesGameAllowPlayerCount(gameId: Id<Game>, playerCount: Int): Boolean {
-        return gameDao.doesGameAllowPlayerCount(gameId, playerCount)
+        return gameDao.isPlayersCountAllowed(gameId, playerCount)
     }
 }

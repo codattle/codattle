@@ -58,7 +58,13 @@ class TournamentService(
 
     private fun startTournament(tournament: Tournament) {
         val matches = getPairsOfScriptsInRoundRobinSystem(tournament.scripts)
-                .map { matchService.createInstantMatch(tournament.game, listOf(it.first, it.second)).id }
+                .map {
+                    // TODO: matches in tournament shouldn't be shown in match list
+                    val matchName = "Tournament " + tournament.name + ": " + it.first.value + " vs " + it.second.value
+                    val match = matchService.createInstantMatch(tournament.game, listOf(it.first, it.second), matchName)
+
+                    match.id
+                }
 
         tournamentDao.setMatches(tournament.id, matches)
     }

@@ -4,7 +4,7 @@ module Styles = {
   open Css;
 
   let noDescription = style([fontStyle(`italic)]);
-  let container = style([whiteSpace(`pre)]);
+  let container = style([whiteSpace(`preWrap)]);
 };
 
 [@react.component]

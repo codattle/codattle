@@ -43,11 +43,18 @@ class MatchService(private val matchDao: MatchDao, private val gameDao: GameDao,
         return matchDao.saveMatch(Match.builder().name(name).game(gameId))
     }
 
-    fun createInstantMatch(gameId: Id<Game>, scripts: List<Id<Script>>): Match {
-        require(gameDao.isPlayersCountAllowed(gameId, scripts.size)) { "Cannot create instant match to this game with ${scripts.size} scripts" }
+    fun createInstantMatch(gameId: Id<Game>, scripts: List<Id<Script>>, matchName: String = ""): Match {
+        require(gameDao.isPlayersCountAllowed(gameId, scripts.size)) {
+            "Cannot create instant match to this game with ${scripts.size} scripts"
+        }
 
-        val match = matchDao.saveMatch(Match.builder().name("").game(gameId).scripts(scripts))
+        val match = matchDao.saveMatch(Match.builder()
+                .name(matchName)
+                .game(gameId)
+                .scripts(scripts))
+
         startMatch(match.id)
+
         return match
     }
 
