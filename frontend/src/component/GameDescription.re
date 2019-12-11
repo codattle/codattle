@@ -15,7 +15,7 @@ let make = (~description: I18nText.t) => {
     <span className=Styles.container>
       {description
        |> I18nText.getOrBestMatch(language.name)
-       <$> (desc => ReasonReact.string("\'" ++ desc ++ "\'"))
+       <$> ReasonReact.string
        |> default(<Translation id="scriptWizard.noDescription" className=Styles.noDescription />)}
     </span>
   </ExpansionPanel>;
