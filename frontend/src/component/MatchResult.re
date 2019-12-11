@@ -17,6 +17,7 @@ let parseResultFrames = (frames: array(Js.t({..}))): option(Selector.Required.t(
 module Styles = {
   open Css;
 
+  let counter = style([display(`flex), fontSize(16 |> px), alignItems(`center)]);
   let actionMenu = style([display(`flex), marginTop(20 |> px), children([marginRight(20 |> px)])]);
   let section = style([marginTop(20 |> px), marginBottom(20 |> px)]);
 };
@@ -51,6 +52,11 @@ let make =
                  onClick={() => onChange(Selector.Required.next(frames))}
                />
              </div>
+             <span className=Styles.counter>
+               {ReasonReact.string(string_of_int(Selector.beforeCount(frames)))}
+               {ReasonReact.string(" / ")}
+               {ReasonReact.string(string_of_int(Selector.allCount(frames)))}
+             </span>
            </div>
          </>
      )

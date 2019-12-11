@@ -10,4 +10,4 @@ let split = (pred: 'a => bool, list: list('a)): option((list('a), 'a, list('a)))
   | _ => None
   };
 
-let splitLast = (list: list('a)): (list('a), option('a)) => (list |> Rationale.RList.dropLast(1), list |> Rationale.RList.last)
+let splitLast = (list: list('a)): (list('a), option('a)) => (list |> Rationale.RList.dropLast(1), list |> Rationale.RList.last);

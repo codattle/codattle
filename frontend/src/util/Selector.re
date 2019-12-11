@@ -111,3 +111,5 @@ let addLast = (item: 'a, selector: t('a, 'b)): t('a, 'b) => {...selector, after:
 let selected = (selector: t(_, 'a)): 'a => selector.selected;
 let canNext = ({after}: t(_, _)): bool => ListUtils.notEmpty(after);
 let canPrevious = ({before}: t(_, _)): bool => ListUtils.notEmpty(before);
+let allCount = ({before, after}): int => List.length(before) + List.length(after) + 1;
+let beforeCount = ({before}): int => List.length(before) + 1;
