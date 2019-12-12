@@ -53,9 +53,9 @@ let make =
                />
              </div>
              <span className=Styles.counter>
-               {ReasonReact.string(string_of_int(Selector.beforeCount(frames)))}
+               {ReasonReact.string(string_of_int(Selector.Required.currentCount(frames)))}
                {ReasonReact.string(" / ")}
-               {ReasonReact.string(string_of_int(Selector.allCount(frames)))}
+               {ReasonReact.string(string_of_int(Selector.Required.allCount(frames)))}
              </span>
            </div>
          </>
