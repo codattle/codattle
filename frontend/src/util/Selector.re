@@ -41,6 +41,9 @@ module Required = {
     | _ => selector
     };
   };
+  let beforeCount = ({before}: t('a)): int => List.length(before);
+  let currentCount = (selector: t('a)): int => beforeCount(selector) + 1;
+  let allCount = ({after} as selector: t('a)): int => currentCount(selector) + List.length(after);
 };
 
 module Optional = {

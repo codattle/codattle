@@ -21,4 +21,8 @@ let fromJs: array(translatedTextJs) => t = Array.map(x => {language: x##language
 let get = (language, i18nText) => i18nText |> find(x => x.language === language) |> fmap(x => x.content);
 
 let getOrBestMatch = (language, i18nText) =>
-  i18nText |> get(language) |? (i18nText |> get(Language.defaultLanguage.name)) |? (i18nText |> head |> map(x => x.content));
+  i18nText
+  |> get(language)
+  |? (i18nText |> get(Language.defaultLanguage.name))
+  |? (i18nText |> head |> map(x => x.content))
+  |> filter(x => x !== "");

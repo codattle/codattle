@@ -149,5 +149,5 @@ tutorial:
         key: "loadState(): any"
         value: "Funkcja zwraca stan zapisany wcześniej przez gracza"
       fn4:
-        key: "answer(playerAnswer: any) : an"
+        key: "answer(playerAnswer: any) : any"
         value: "Funkcja zwraca odpowiedź, która powinna być zgodna ze schematem określonym przez twórcę gry. Powinna być to ostatnia wywołana funkcja w skrypcie"

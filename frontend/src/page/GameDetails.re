@@ -162,15 +162,19 @@ let make = (~gameId) => {
         <Button label="gameDetails.scriptTesting" onClick={_ => ReasonReactRouter.push("/games/" ++ game.id ++ "/script-testing")} />
       </div>
       <div className=Styles.panel> <GameDescription description={game.description} /> </div>
-      <div className=Styles.panel>
-        <ExpansionPanel header="gameDetails.sprites">
-          <SpriteList
-            uploadedSprites={game.sprites}
-            onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
-            canAdd=false
-          />
-        </ExpansionPanel>
-      </div>
+      {if (List.length(game.sprites) > 0) {
+         <div className=Styles.panel>
+           <ExpansionPanel header="gameDetails.sprites">
+             <SpriteList
+               uploadedSprites={game.sprites}
+               onUploadedSpriteRemove={spriteToRemoveName => removeSprite(game.id, spriteToRemoveName)}
+               canAdd=false
+             />
+           </ExpansionPanel>
+         </div>;
+       } else {
+         <> </>;
+       }}
       <div className=Styles.code> <CodeEditor value={game.code} /> </div>
       <div className=Styles.ratings> ratings </div>
       <RatingForm onSend={({value, description}) => sendRating(value, description)} editRating=existsCurrentUserRating />
