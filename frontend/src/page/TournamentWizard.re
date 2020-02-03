@@ -33,7 +33,7 @@ let make = (~gameId) => {
   let createTournament = () => {
     setMode(_ => Creating);
     GraphqlService.executeQuery(CreateTournamentMutation.make(~name, ~gameId, ~maxScriptCount, ()))
-    |> Repromise.wait(result =>
+    ->Promise.get(result =>
          switch (result) {
          | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/tournaments/" ++ result##createTournament##id)
          | Error(_) => setMode(_ => Failure)

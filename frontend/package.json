@@ -9,7 +9,7 @@
     "webpack": "webpack -w",
     "webpack:production": "NODE_ENV=production webpack",
     "server": "webpack-dev-server --host 0.0.0.0",
-    "generateSchema": "node node_modules/graphql_ppx/sendIntrospectionQuery.js http://localhost:8080/graphql"
+    "generateSchema": "node node_modules/@baransu/graphql_ppx_re/sendIntrospectionQuery.js http://localhost:8080/graphql"
   },
   "keywords": [
     "BuckleScript"
@@ -17,7 +17,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@aantron/repromise": "github:aantron/repromise#792564d55315f68d3644f236ee5d2d8b3b27b592",
     "@fortawesome/fontawesome-svg-core": "^1.2.22",
     "@fortawesome/free-regular-svg-icons": "^5.10.2",
     "@fortawesome/free-solid-svg-icons": "^5.10.2",
@@ -31,7 +30,7 @@
     "bs-react-intl": "^0.8.0",
     "color": "^3.1.2",
     "dotenv-webpack": "^1.7.0",
-    "graphql_ppx": "^0.2.8",
+    "@baransu/graphql_ppx_re": "^0.6.1",
     "keycloak-js": "6.0.1",
     "normalize.css": "^8.0.1",
     "rationale": "^0.1.10",
@@ -43,11 +42,12 @@
     "react-keycloak": "^6.1.0",
     "react-rating": "^1.7.2",
     "react-toast-notifications": "^2.2.5",
+    "reason-promise": "^1.0.2",
     "reason-react": "^0.7.0",
     "reason-react-update": "^0.1.1"
   },
   "devDependencies": {
-    "bs-platform": "^5.0.6",
+    "bs-platform": "^7.0.1",
     "css-loader": "^3.2.0",
     "file-loader": "^5.0.2",
     "html-webpack-plugin": "^3.2.0",

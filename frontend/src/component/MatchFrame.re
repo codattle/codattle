@@ -56,12 +56,12 @@ module CanvasFrame: Frame = {
   let drawFrame = (frame, context) => {
     open Canvas;
 
-    frame.objects
+    (frame.objects
     |> List.map(({spriteFileId}) => spriteFileId)
     |> filter_opt
-    |> List.map(fileId => Image.loadFromUrl(Environment.storageUrl ++ fileId) |> Repromise.map(image => (fileId, image)))
-    |> Repromise.all
-    |> Repromise.wait(images => {
+    |> List.map(fileId => Image.loadFromUrl(Environment.storageUrl ++ fileId)->Promise.map(image => (fileId, image))))
+    ->Promise.all
+    ->Promise.get(images => {
          clear(context);
          frame.objects
          |> List.iter(({spriteFileId, x, y, width, height}) => {

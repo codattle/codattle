@@ -5,7 +5,7 @@ type t;
 [@bs.set] external setSrc: (t, string) => unit = "src";
 
 let loadFromUrl = url => {
-  let (promise, resolve) = Repromise.make();
+  let (promise, resolve) = Promise.pending();
   let image = create();
   image->setOnload(() => resolve(image));
   image->setSrc(url);

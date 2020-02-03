@@ -40,17 +40,17 @@ let make = () => {
   let (sprites, setSprites) = React.useState(() => []);
 
   let sendLogo = (): PromiseUtils.t(option(string)) =>
-    logo <$> (FileRestEndpoint.sendFile ||> Repromise.mapOk(x => Some(x))) ||? PromiseUtils.resolved(None);
+    logo <$> (FileRestEndpoint.sendFile ||> (p => Promise.mapOk(p, x => Some(x)))) ||? PromiseUtils.resolved(None);
 
   let sendSprite = ({name, file}: SpriteList.notUploadedSprite): PromiseUtils.t(Js.t({..})) =>
-    FileRestEndpoint.sendFile(file) |> Repromise.mapOk(fileId => {"name": name, "image": fileId});
+    FileRestEndpoint.sendFile(file)->Promise.mapOk(fileId => {"name": name, "image": fileId});
 
   let sendSprites = (): PromiseUtils.t(list(Js.t({..}))) => sprites |> List.map(sendSprite) |> PromiseUtils.all;
 
   let createGame = () => {
     setMode(_ => Creating);
     PromiseUtils.all2(sendLogo(), sendSprites())
-    |> Repromise.andThenOk(((logo, sprites)) =>
+    ->Promise.flatMapOk(((logo, sprites)) =>
          GraphqlService.executeQuery(
            CreateGameMutation.make(
              ~game={
@@ -65,7 +65,7 @@ let make = () => {
            ),
          )
        )
-    |> Repromise.wait(result =>
+    ->Promise.get(result =>
          switch (result) {
          | Belt.Result.Ok(result) => ReasonReactRouter.push("/games/" ++ result##createGame##id)
          | Error(_) => setMode(_ => Failure)

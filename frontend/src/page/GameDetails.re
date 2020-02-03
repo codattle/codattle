@@ -114,7 +114,7 @@ let make = (~gameId) => {
 
   let removeSprite = (gameId: string, spriteName: string) => {
     GraphqlService.executeQuery(RemoveSpriteFromGameMutation.make(~gameId, ~spriteName, ()))
-    |> Repromise.Rejectable.wait(response =>
+    ->Promise.Js.get(response =>
          switch (response) {
          | Belt.Result.Ok(_) =>
            let filterSprites = sprites => sprites |> List.filter((x: SpriteList.uploadedSprite) => x.name !== spriteName);
@@ -127,7 +127,7 @@ let make = (~gameId) => {
   game->Utils.displayResource(game => {
     let sendRating = (value, description) => {
       GraphqlService.executeQuery(RateGameMutation.make(~gameId=game.id, ~rating=value |> Json.Encode.int, ~description?, ()))
-      |> Repromise.wait(response =>
+      ->Promise.get(response =>
            switch (response) {
            | Belt.Result.Ok(response) =>
              let rating = response##rateGame |> mapRating;
