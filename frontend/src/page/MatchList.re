@@ -1,4 +1,4 @@
-type match = {
+type _match = {
   id: string,
   name: string,
   scriptsCount: int,
@@ -6,7 +6,7 @@ type match = {
 };
 
 type x = {
-  matches: list(match),
+  matches: list(_match),
   maxCountOfScripts: int,
 };
 
@@ -71,10 +71,10 @@ let make = (~gameId) => {
       }
     );
 
-  let getMatchDescription = (~maxCountOfScripts, ~match) => {
+  let getMatchDescription = (~maxCountOfScripts, ~_match) => {
     <div>
-      {ReasonReact.string(match.name ++ " (" ++ string_of_int(match.scriptsCount) ++ "/" ++ string_of_int(maxCountOfScripts) ++ ")")}
-      <WinnerComponent winner={match.winner} />
+      {ReasonReact.string(_match.name ++ " (" ++ string_of_int(_match.scriptsCount) ++ "/" ++ string_of_int(maxCountOfScripts) ++ ")")}
+      <WinnerComponent winner={_match.winner} />
     </div>;
   };
 
@@ -87,7 +87,7 @@ let make = (~gameId) => {
           {matches
            |> Utils.componentList(match =>
                 <div className=Styles.item key={match.id} onClick={_ => ReasonReactRouter.push("/games/matches/" ++ match.id)}>
-                  <span className=Styles.itemTitle> {getMatchDescription(~maxCountOfScripts, ~match)} </span>
+                  <span className=Styles.itemTitle> {getMatchDescription(~maxCountOfScripts, ~_match=match)} </span>
                 </div>
               )}
         </div>;

@@ -75,15 +75,15 @@ let make = (~tournamentId: string) => {
     | SelectingScript =>
       let sendScript = () =>
         GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code=scriptSelector.newScriptCode, ()))
-        |> Repromise.mapOk(result => result##sendScript##id);
+        ->Promise.mapOk(result => result##sendScript##id);
       let joinTournament = () => {
         setState(state => {...state, mode: Joining});
-        scriptSelector.scripts.selected
+        (scriptSelector.scripts.selected
         <$> (({id}) => id)
         <$> PromiseUtils.resolved
-        |> OptionUtils.default(sendScript)
-        |> Repromise.andThenOk(scriptId => GraphqlService.executeQuery(JoinTournamentMutation.make(~tournamentId, ~scriptId, ())))
-        |> Repromise.wait(result =>
+        |> OptionUtils.default(sendScript))
+        ->Promise.flatMapOk(scriptId => GraphqlService.executeQuery(JoinTournamentMutation.make(~tournamentId, ~scriptId, ())))
+        ->Promise.get(result =>
              switch (result) {
              | Belt.Result.Ok(_) => ReasonReactRouter.push("/games/tournaments/" ++ tournamentId)
              | Error(_) => setState(state => {...state, mode: Failure})

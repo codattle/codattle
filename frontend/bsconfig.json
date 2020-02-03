@@ -15,18 +15,18 @@
   "namespace": true,
   "bs-dependencies": [
     "reason-react",
-    "@aantron/repromise",
     "bs-fetch",
     "bs-css",
     "@jsiebern/bs-material-ui",
     "bs-react-intl",
     "@glennsl/bs-json",
     "rationale",
+    "reason-promise",
     "reason-react-update",
     "re-debouncer"
   ],
   "ppx-flags": [
-    "graphql_ppx/ppx"
+    "@baransu/graphql_ppx_re/ppx6"
   ],
   "refmt": 3
 }

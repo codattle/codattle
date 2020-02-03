@@ -23,7 +23,7 @@ let useEffectWithInit = (initialize, effect, cancel, shouldRefresh) => {
 };
 
 let loadResource = (query: GraphqlService.query('a), callback: Belt.Result.t('b, unit) => unit, mapper: 'a => 'b): (unit => unit) => {
-  GraphqlService.executeQuery(query) |> Repromise.wait(Rationale.Result.fmap(mapper) ||> callback);
+  GraphqlService.executeQuery(query)->Promise.get(Rationale.Result.fmap(mapper) ||> callback);
   // TODO: request should be unsubscribed using AbortController
   // https://developer.mozilla.org/en-US/docs/Web/API/AbortController
   () => ();

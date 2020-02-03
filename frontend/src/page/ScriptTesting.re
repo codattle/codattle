@@ -252,13 +252,13 @@ let make = (~gameId: string) => {
         ({id, newCode}) => {
           send(StartSavingScript);
           GraphqlService.executeQuery(UpdateScriptCodeMutation.make(~scriptId=id, ~code=newCode, ()))
-          |> Repromise.wait(result => send(StopSavingScript(Rationale.Result.isOk(result) ? Some({id, code: newCode}) : None)));
+          ->Promise.get(result => send(StopSavingScript(Rationale.Result.isOk(result) ? Some({id, code: newCode}) : None)));
         }
       )
       |> ignore;
     let addNewScript = () =>
       GraphqlService.executeQuery(SendScriptMutation.make(~gameId, ~code="", ()))
-      |> Repromise.wait(result =>
+      ->Promise.get(result =>
            switch (result) {
            | Belt.Result.Ok(data) =>
              send(AddScript({id: data##sendScript##id, index: scripts |> Selector.Optional.length, code: "", newCode: ""}))
@@ -276,9 +276,9 @@ let make = (~gameId: string) => {
         send(StartCreatingMatch);
         GraphqlService.executeQuery(_);
       }
-      <$> Repromise.wait(result =>
+      <$> (p => Promise.get(p, result =>
             send(StopCreatingMatch(result |> Rationale.Option.ofResult <$> (data => data##createInstantMatch##id)))
-          )
+          ))
       |> ignore;
     let canCreateInstantMatch = players |> List.map(Selector.selected) |> Rationale.RList.none(Rationale.Option.isNone);
 
